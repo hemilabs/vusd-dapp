@@ -61,7 +61,8 @@ const createVusdLib = function (web3, options = {}) {
     debug('Getting whitelisted token balances of %s', owner)
     return getWhitelistedTokens().then(function (whitelistedTokens) {
       return Promise.all(
-        whitelistedTokens.map(function ({ address, symbol, decimals }) {
+        whitelistedTokens.map(function (whitelistedToken) {
+          const { address, symbol, decimals } = whitelistedToken
           const contract = new web3.eth.Contract(erc20Abi, address)
           return contract.methods
             .balanceOf(owner)
@@ -73,7 +74,7 @@ const createVusdLib = function (web3, options = {}) {
                 fromUnit(balance, decimals),
                 symbol
               )
-              return { address, balance }
+              return { ...whitelistedToken, balance }
             })
         })
       )

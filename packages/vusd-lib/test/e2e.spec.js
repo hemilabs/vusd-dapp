@@ -70,6 +70,7 @@ describe('End-to-end', function () {
             .property('balance')
             .that.is.a('string')
             .that.matches(/^[0-9]+$/)
+          balance.should.include.all.keys(['name', 'symbol', 'decimals'])
         })
       })
   })
