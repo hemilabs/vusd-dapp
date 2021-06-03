@@ -1,0 +1,20 @@
+{
+  "main": "src/index.js",
+  "scripts": {
+    "coverage": "nyc npm run test",
+    "deps:check": "dependency-check .",
+    "test": "mocha --bail --exit"
+  },
+  "dependencies": {
+    "@uniswap/default-token-list": "^2.0.0",
+    "big.js": "^6.1.1",
+    "debug": "^4.3.1",
+    "erc-20-abi": "^1.0.0",
+    "p-series": "^2.1.0",
+    "p-tap": "^3.0.0",
+    "web3-parse-receipt-events": "^1.0.2"
+  },
+  "engines": {
+    "node": ">= 12"
+  }
+}
