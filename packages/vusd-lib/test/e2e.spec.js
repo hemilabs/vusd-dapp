@@ -41,10 +41,6 @@ describe('End-to-end', function () {
       tokens.should.be.an('array')
       tokens.forEach(function (token) {
         token.should.have
-          .property('token')
-          .that.is.an('object')
-          .that.include.all.keys(['address', 'name', 'symbol', 'decimals'])
-        token.should.have
           .property('redeemable')
           .that.is.a('string')
           .that.matches(/^[0-9]+$/)
@@ -52,6 +48,7 @@ describe('End-to-end', function () {
           .property('redeemFee')
           .that.is.a('number')
           .that.is.within(0, 1)
+        token.should.include.all.keys(['address', 'name', 'symbol', 'decimals'])
       })
     })
   })
@@ -67,14 +64,26 @@ describe('End-to-end', function () {
         balances.should.be.an('array')
         balances.forEach(function (balance) {
           balance.should.have
-            .property('token')
-            .that.is.an('object')
-            .that.include.all.keys(['address', 'name', 'symbol', 'decimals'])
+            .property('address')
+            .that.is.a('string')
+            .that.matches(/^0x[0-9a-fA-F]{40}$/)
           balance.should.have
             .property('balance')
             .that.is.a('string')
             .that.matches(/^[0-9]+$/)
         })
+      })
+  })
+
+  it("should get the user's VUSD balance", function () {
+    const calls = fixtures.getVusdBalance
+    // @ts-ignore ts(2351)
+    const web3 = new Web3(testProvider(calls))
+    const vusdLib = createVusdLib(web3)
+    return vusdLib
+      .getVusdBalance(fixtures.testAccount)
+      .then(function (balance) {
+        balance.should.be.a('string').that.matches(/^[0-9]+$/)
       })
   })
 

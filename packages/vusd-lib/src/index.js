@@ -5,7 +5,7 @@ const debug = require('debug')('vusd-lib')
 const erc20Abi = require('erc-20-abi')
 const parseReceiptEvents = require('web3-parse-receipt-events')
 
-const { fromUnit } = require('./utils')
+const { fromUnit, toUnit } = require('./utils')
 const { findByAddress } = require('./tokens-list')
 const addressListAbi = require('./abi/AddressList.json')
 const contracts = require('./contracts.json')
@@ -66,12 +66,16 @@ const createVusdLib = function (web3, options = {}) {
             .redeemable(address)
             .call()
             .then(function (redeemable) {
+              const redeemableVusd = toUnit(redeemable, 18 - decimals)
               debug(
-                'Redeemable balance is %s %s',
-                fromUnit(redeemable, decimals),
+                'Redeemable balance is %s VUSD from %s',
+                fromUnit(redeemableVusd),
                 symbol
               )
-              return { token, redeemable }
+              return {
+                ...token,
+                redeemable: redeemableVusd
+              }
             })
         })
       )
@@ -97,8 +101,19 @@ const createVusdLib = function (web3, options = {}) {
     )
   }
 
-  const getWhitelistedTokenBalances = function (owner) {
-    debug('Getting whitelisted token balances of %s', owner)
+  const getVusdBalance = function (owner = from) {
+    debug('Getting VUSD balance of %s', owner)
+    return vusd.methods
+      .balanceOf(owner)
+      .call()
+      .then(function (balance) {
+        debug('Balance of %s is %s VUSD', owner, fromUnit(balance))
+        return balance
+      })
+  }
+
+  const getUserBalances = function (owner = from) {
+    debug('Getting token balances of %s', owner)
     return getWhitelistedTokens().then(function (whitelistedTokens) {
       return Promise.all(
         whitelistedTokens.map(function (token) {
@@ -114,32 +129,10 @@ const createVusdLib = function (web3, options = {}) {
                 fromUnit(balance, decimals),
                 symbol
               )
-              return { token, balance }
+              return { address, balance }
             })
         })
       )
-    })
-  }
-
-  const getVusdBalance = function (owner) {
-    debug('Getting VUSD balance of %s', owner)
-    return vusd.methods
-      .balanceOf(owner)
-      .call()
-      .then(function (balance) {
-        debug('Balance of %s is %s VUSD', owner, fromUnit(balance))
-        return balance
-      })
-  }
-
-  const getUserBalances = function (owner = from) {
-    debug('Getting balances of %s', owner)
-    return Promise.all([
-      getWhitelistedTokenBalances(owner),
-      getVusdBalance(owner)
-    ]).then(function ([tokenBalances, balance]) {
-      const token = findByAddress(contracts.VUSD)
-      return [].concat(tokenBalances).concat({ token, balance })
     })
   }
 

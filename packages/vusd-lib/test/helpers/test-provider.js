@@ -51,7 +51,7 @@ const testWeb3Provider = function (calls, recordCalls, provider) {
         param.should.containSubset(call.params[i])
       } catch (err) {
         throw new Error(
-          `Call #${index - 1} to ${method} mismatch: expected (${JSON.stringify(
+          `Call #${index} to ${method} mismatch: expected (${JSON.stringify(
             params
           )}) to match ${JSON.stringify(call.params)}`
         )
