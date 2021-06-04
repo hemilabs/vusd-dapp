@@ -14,13 +14,14 @@ const testWeb3Provider = function (calls, recordCalls, provider) {
   const recordedCalls = []
 
   const _provider =
-    provider ||
-    new HDWalletProvider({
-      addressIndex: Number.parseInt(process.env.ACCOUNT || '0'),
-      mnemonic: process.env.MNEMONIC,
-      numberOfAddresses: 1,
-      providerOrUrl: process.env.NODE_URL
-    })
+    recordCalls &&
+    (provider ||
+      new HDWalletProvider({
+        addressIndex: Number.parseInt(process.env.ACCOUNT || '0'),
+        mnemonic: process.env.MNEMONIC,
+        numberOfAddresses: 1,
+        providerOrUrl: process.env.NODE_URL
+      }))
 
   const request = function ({ method, params }) {
     const call = calls[index++]
@@ -49,7 +50,11 @@ const testWeb3Provider = function (calls, recordCalls, provider) {
       try {
         param.should.containSubset(call.params[i])
       } catch (err) {
-        throw new Error(`Call ${method} params mismatch: ${err.message}`)
+        throw new Error(
+          `Call #${index - 1} to ${method} mismatch: expected (${JSON.stringify(
+            params
+          )}) to match ${JSON.stringify(call.params)}`
+        )
       }
     })
 

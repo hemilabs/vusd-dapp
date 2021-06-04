@@ -45,7 +45,6 @@ const createVusdLib = function (web3, options = {}) {
         )
       })
       .then(function (addresses) {
-        debug('Whitelisted address are %s', addresses.join(', '))
         const whitelistedTokens = addresses.map((address) =>
           findByAddress(address)
         )
@@ -57,46 +56,22 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  const getWhitelistedTokenBalances = function (owner = from) {
-    debug('Getting whitelisted token balances of %s', owner)
-    return getWhitelistedTokens().then(function (whitelistedTokens) {
-      return Promise.all(
-        whitelistedTokens.map(function (whitelistedToken) {
-          const { address, symbol, decimals } = whitelistedToken
-          const contract = new web3.eth.Contract(erc20Abi, address)
-          return contract.methods
-            .balanceOf(owner)
-            .call()
-            .then(function (balance) {
-              debug(
-                'Balance of %s is %s %s',
-                owner,
-                fromUnit(balance, decimals),
-                symbol
-              )
-              return { ...whitelistedToken, balance }
-            })
-        })
-      )
-    })
-  }
-
-  const getTreasuryBalances = function () {
+  const getRedeemableBalances = function () {
     debug('Getting whitelisted token treasury balances')
     return getWhitelistedTokens().then(function (whitelistedTokens) {
       return Promise.all(
-        whitelistedTokens.map(function ({ address, decimals, symbol }) {
-          const contract = new web3.eth.Contract(erc20Abi, address)
-          return contract.methods
-            .balanceOf(contracts.Treasury)
+        whitelistedTokens.map(function (token) {
+          const { address, decimals, symbol } = token
+          return redeemer.methods
+            .redeemable(address)
             .call()
-            .then(function (balance) {
+            .then(function (redeemable) {
               debug(
-                'Treasury balance is %s %s',
-                fromUnit(balance, decimals),
+                'Redeemable balance is %s %s',
+                fromUnit(redeemable, decimals),
                 symbol
               )
-              return { address, balance }
+              return { token, redeemable }
             })
         })
       )
@@ -115,7 +90,38 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  const getVusdBalance = function (owner = from) {
+  const getTokens = function () {
+    debug('Getting tokens information')
+    return Promise.all([getRedeemableBalances(), getRedeemFee()]).then(
+      ([redeemable, redeemFee]) => redeemable.map((r) => ({ ...r, redeemFee }))
+    )
+  }
+
+  const getWhitelistedTokenBalances = function (owner) {
+    debug('Getting whitelisted token balances of %s', owner)
+    return getWhitelistedTokens().then(function (whitelistedTokens) {
+      return Promise.all(
+        whitelistedTokens.map(function (token) {
+          const { address, symbol, decimals } = token
+          const contract = new web3.eth.Contract(erc20Abi, address)
+          return contract.methods
+            .balanceOf(owner)
+            .call()
+            .then(function (balance) {
+              debug(
+                'Balance of %s is %s %s',
+                owner,
+                fromUnit(balance, decimals),
+                symbol
+              )
+              return { token, balance }
+            })
+        })
+      )
+    })
+  }
+
+  const getVusdBalance = function (owner) {
     debug('Getting VUSD balance of %s', owner)
     return vusd.methods
       .balanceOf(owner)
@@ -124,6 +130,17 @@ const createVusdLib = function (web3, options = {}) {
         debug('Balance of %s is %s VUSD', owner, fromUnit(balance))
         return balance
       })
+  }
+
+  const getBalances = function (owner = from) {
+    debug('Getting balances of %s', owner)
+    return Promise.all([
+      getWhitelistedTokenBalances(owner),
+      getVusdBalance(owner)
+    ]).then(function ([tokenBalances, balance]) {
+      const token = findByAddress(contracts.VUSD)
+      return [].concat(tokenBalances).concat({ token, balance })
+    })
   }
 
   const execOptions = { from, web3, overestimation: 2 }
@@ -155,6 +172,7 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
+  // Mints VUSD. The amount is token.
   const mint = function (token, amount, transactionOptions = {}) {
     const { decimals, symbol } = findByAddress(token)
     debug('Minting %s VUSD from %s', fromUnit(amount, decimals), symbol)
@@ -207,6 +225,7 @@ const createVusdLib = function (web3, options = {}) {
     )
   }
 
+  // Redeems a token by burning VUSD. The amount is VUSD.
   const redeem = function (
     token,
     amount,
@@ -255,12 +274,11 @@ const createVusdLib = function (web3, options = {}) {
   }
 
   return {
-    getWhitelistedTokens,
-    getWhitelistedTokenBalances,
-    mint,
-    getVusdBalance,
-    getTreasuryBalances,
+    getBalances,
+    getTokens,
     getRedeemFee,
+    getVusdBalance,
+    mint,
     redeem
   }
 }

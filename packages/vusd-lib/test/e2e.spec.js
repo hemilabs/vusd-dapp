@@ -19,75 +19,55 @@ describe('End-to-end', function () {
   // This commented code helps record Ethereum RPC calls with easy. Just change
   // the Web3 provider used in any test to `recProvider`.
   //
-  // let recProvider;
+  // this.timeout(0)
+  // let recProvider
   // beforeEach(function () {
-  //   recProvider = testWeb3Provider([], true, provider);
-  // });
+  //   recProvider = testProvider([], true)
+  // })
   // afterEach(function () {
-  //   const calls = recProvider.getCalls();
+  //   const calls = recProvider.getCalls()
   //   if (calls.length) {
-  //     console.log("RECORDED CALLS:");
-  //     console.log(JSON.stringify(calls));
+  //     console.log('RECORDED CALLS:')
+  //     console.log(JSON.stringify(calls))
   //   }
-  // });
+  // })
 
   it('should get the list of whitelisted tokens', function () {
-    this.timeout(5000)
     const calls = fixtures.getWhitelistedTokens
     // @ts-ignore ts(2351)
     const web3 = new Web3(testProvider(calls))
     const vusdLib = createVusdLib(web3)
-    return vusdLib.getWhitelistedTokens().then(function (tokens) {
+    return vusdLib.getTokens().then(function (tokens) {
       tokens.should.be.an('array')
       tokens.forEach(function (token) {
-        token.should.include.all.keys([
-          'name',
-          'address',
-          'symbol',
-          'decimals',
-          'chainId'
-        ])
+        token.should.have
+          .property('token')
+          .that.is.an('object')
+          .that.include.all.keys(['address', 'name', 'symbol', 'decimals'])
+        token.should.have
+          .property('redeemable')
+          .that.is.a('string')
+          .that.matches(/^[0-9]+$/)
+        token.should.have
+          .property('redeemFee')
+          .that.is.a('number')
+          .that.is.within(0, 1)
       })
     })
   })
 
-  it("should get the user's balance of whitelisted tokens", function () {
-    this.timeout(5000)
-    const calls = fixtures.getWhitelistedTokenBalances
+  it("should get the user's balances", function () {
+    const calls = fixtures.getUserBalances
     // @ts-ignore ts(2351)
     const web3 = new Web3(testProvider(calls))
     const vusdLib = createVusdLib(web3)
-    return vusdLib
-      .getWhitelistedTokenBalances(fixtures.testAccount)
-      .then(function (balances) {
-        balances.should.be.an('array')
-        balances.forEach(function (balance) {
-          balance.should.have
-            .property('address')
-            .that.is.a('string')
-            .that.matches(/^0x[0-9a-fA-F]{40}$/)
-          balance.should.have
-            .property('balance')
-            .that.is.a('string')
-            .that.matches(/^[0-9]+$/)
-          balance.should.include.all.keys(['name', 'symbol', 'decimals'])
-        })
-      })
-  })
-
-  it('should get the treasury balance of whitelisted tokens', function () {
-    this.timeout(5000)
-    const calls = fixtures.getTreasuryBalances
-    // @ts-ignore ts(2351)
-    const web3 = new Web3(testProvider(calls))
-    const vusdLib = createVusdLib(web3)
-    return vusdLib.getTreasuryBalances().then(function (balances) {
+    return vusdLib.getBalances(fixtures.testAccount).then(function (balances) {
       balances.should.be.an('array')
       balances.forEach(function (balance) {
         balance.should.have
-          .property('address')
-          .that.is.a('string')
-          .that.matches(/^0x[0-9a-fA-F]{40}$/)
+          .property('token')
+          .that.is.an('object')
+          .that.include.all.keys(['address', 'name', 'symbol', 'decimals'])
         balance.should.have
           .property('balance')
           .that.is.a('string')
@@ -96,32 +76,7 @@ describe('End-to-end', function () {
     })
   })
 
-  it("should get the user's VUSD balance", function () {
-    this.timeout(5000)
-    const calls = fixtures.getVusdBalance
-    // @ts-ignore ts(2351)
-    const web3 = new Web3(testProvider(calls))
-    const vusdLib = createVusdLib(web3)
-    return vusdLib
-      .getVusdBalance(fixtures.testAccount)
-      .then(function (balance) {
-        balance.should.be.a('string').that.matches(/^[0-9]+$/)
-      })
-  })
-
-  it('should get the redeem fee', function () {
-    this.timeout(5000)
-    const calls = fixtures.getRedeemFee
-    // @ts-ignore ts(2351)
-    const web3 = new Web3(testProvider(calls))
-    const vusdLib = createVusdLib(web3)
-    return vusdLib.getRedeemFee().then(function (fee) {
-      fee.should.be.a('number').that.is.within(0, 1)
-    })
-  })
-
   it('should mint from USDT', function () {
-    this.timeout(0)
     const calls = fixtures.mint
     const from = fixtures.from
     // @ts-ignore ts(2351)
@@ -195,7 +150,6 @@ describe('End-to-end', function () {
   })
 
   it('should redeem from USDC', function () {
-    this.timeout(0)
     const calls = fixtures.redeem
     const from = fixtures.from
     // @ts-ignore ts(2351)
