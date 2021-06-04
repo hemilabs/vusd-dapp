@@ -132,7 +132,7 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  const getBalances = function (owner = from) {
+  const getUserBalances = function (owner = from) {
     debug('Getting balances of %s', owner)
     return Promise.all([
       getWhitelistedTokenBalances(owner),
@@ -274,7 +274,7 @@ const createVusdLib = function (web3, options = {}) {
   }
 
   return {
-    getBalances,
+    getUserBalances,
     getTokens,
     getRedeemFee,
     getVusdBalance,

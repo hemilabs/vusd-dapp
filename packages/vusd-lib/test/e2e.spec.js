@@ -61,19 +61,21 @@ describe('End-to-end', function () {
     // @ts-ignore ts(2351)
     const web3 = new Web3(testProvider(calls))
     const vusdLib = createVusdLib(web3)
-    return vusdLib.getBalances(fixtures.testAccount).then(function (balances) {
-      balances.should.be.an('array')
-      balances.forEach(function (balance) {
-        balance.should.have
-          .property('token')
-          .that.is.an('object')
-          .that.include.all.keys(['address', 'name', 'symbol', 'decimals'])
-        balance.should.have
-          .property('balance')
-          .that.is.a('string')
-          .that.matches(/^[0-9]+$/)
+    return vusdLib
+      .getUserBalances(fixtures.testAccount)
+      .then(function (balances) {
+        balances.should.be.an('array')
+        balances.forEach(function (balance) {
+          balance.should.have
+            .property('token')
+            .that.is.an('object')
+            .that.include.all.keys(['address', 'name', 'symbol', 'decimals'])
+          balance.should.have
+            .property('balance')
+            .that.is.a('string')
+            .that.matches(/^[0-9]+$/)
+        })
       })
-    })
   })
 
   it('should mint from USDT', function () {
