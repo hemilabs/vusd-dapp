@@ -78,6 +78,8 @@
           "sourceType": "module"
         },
         "rules": {
+          "react/prop-types": "off",
+          "react/react-in-jsx-scope": "off",
           "react/jsx-sort-props": "warn"
         },
         "settings": {
@@ -88,7 +90,7 @@
       }
     ],
     "parserOptions": {
-      "ecmaVersion": 9
+      "ecmaVersion": 2020
     },
     "rules": {
       "no-shadow": "warn",

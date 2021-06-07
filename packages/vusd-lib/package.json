@@ -1,4 +1,6 @@
 {
+  "name": "vusd-lib",
+  "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
     "coverage": "nyc npm run test",
