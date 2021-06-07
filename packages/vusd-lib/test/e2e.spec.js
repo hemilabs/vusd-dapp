@@ -45,6 +45,10 @@ describe('End-to-end', function () {
           .that.is.a('string')
           .that.matches(/^[0-9]+$/)
         token.should.have
+          .property('mintingFee')
+          .that.is.a('number')
+          .that.is.within(0, 1)
+        token.should.have
           .property('redeemFee')
           .that.is.a('number')
           .that.is.within(0, 1)

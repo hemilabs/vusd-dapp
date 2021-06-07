@@ -82,6 +82,18 @@ const createVusdLib = function (web3, options = {}) {
     })
   }
 
+  const getMintingFee = function () {
+    debug('Getting minting fee')
+    return minter.methods
+      .mintingFee()
+      .call()
+      .then(function (response) {
+        const fee = Number.parseInt(response) / 10000
+        debug('Minting fee is %s%', (fee * 100).toFixed(2))
+        return fee
+      })
+  }
+
   const getRedeemFee = function () {
     debug('Getting redeem fee')
     return redeemer.methods
@@ -96,8 +108,12 @@ const createVusdLib = function (web3, options = {}) {
 
   const getTokens = function () {
     debug('Getting tokens information')
-    return Promise.all([getRedeemableBalances(), getRedeemFee()]).then(
-      ([redeemable, redeemFee]) => redeemable.map((r) => ({ ...r, redeemFee }))
+    return Promise.all([
+      getRedeemableBalances(),
+      getMintingFee(),
+      getRedeemFee()
+    ]).then(([redeemable, mintingFee, redeemFee]) =>
+      redeemable.map((r) => ({ ...r, mintingFee, redeemFee }))
     )
   }
 
