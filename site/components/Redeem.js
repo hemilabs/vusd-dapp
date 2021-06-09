@@ -17,7 +17,7 @@ const Redeem = function () {
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
   const redeemDisabled =
     Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0)).gt(Big(selectedToken.redeemable || 0))
+    Big(toUnit(amount || 0)).gt(Big(selectedToken.walletRedeemable || 0))
 
   const registerToken = useRegisterToken(selectedToken)
 
@@ -56,7 +56,7 @@ const Redeem = function () {
       </div>
       <div className="w-full">
         <TokenSelector
-          balanceKey="redeemable"
+          balanceKey="walletRedeemable"
           balancePrefix=" MAX "
           balanceSuffix=" VUSD"
           decimals="18"

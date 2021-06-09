@@ -18,8 +18,7 @@ export const VusdContextProvider = function ({ children }) {
   const mergeTokenData = (tokens, walletBalances, vusdBalance) =>
     tokens.map((token) => ({
       ...token,
-      tonz: token.redeemable,
-      redeemable: Big(token.redeemable).lt(vusdBalance)
+      walletRedeemable: Big(token.redeemable).lt(vusdBalance)
         ? token.redeemable
         : vusdBalance,
       balance: walletBalances.find((t) => t.address === token.address).balance
