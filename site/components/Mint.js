@@ -1,17 +1,23 @@
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
+import useTranslation from 'next-translate/useTranslation'
 import { fromUnit, toUnit, toFixed } from '../utils'
+import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
 import TokenSelector from './TokenSelector'
+import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
 import { useRegisterToken } from '../hooks/useRegisterToken'
 
 const Mint = function () {
+  const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { mint, tokensData, vusdBalance } = vusd
   const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
+  const { t } = useTranslation('common')
+
   const registerVUSD = useRegisterToken({
     symbol: 'VUSD',
     address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
@@ -27,12 +33,65 @@ const Mint = function () {
     )
 
   const handleMint = function (token, mintAmount) {
-    const { promise } = mint(token.address, toUnit(mintAmount, token.decimals))
-    return promise.then(function (res) {
-      console.log(res)
+    const fixedAmount = Big(mintAmount).round(4, 0).toFixed(4)
+    const internalTransactionId = Date.now()
+    const { emitter } = mint(token.address, toUnit(mintAmount, token.decimals))
+    setTimeout(function () {
       setAmount('')
-      registerVUSD()
-    })
+    }, 3000)
+    return emitter
+      .on('transactions', function (transactions) {
+        addTransactionStatus({
+          internalTransactionId,
+          transactionStatus: 'created',
+          sentSymbol: token.symbol,
+          receivedSymbol: 'VUSD',
+          suffixes: transactions.suffixes,
+          expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
+          operation: 'mint',
+          sent: fixedAmount,
+          estimatedReceive: Big(mintAmount).round(4, 0).toFixed(4),
+          redeemFee: token.redeemFee
+        })
+        return transactions.suffixes.forEach(function (suffix, idx) {
+          emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
+            addTransactionStatus({
+              internalTransactionId,
+              transactionStatus: 'in-progress',
+              [`transactionStatus-${idx}`]: 'waiting-to-be-mined',
+              [`transactionHash-${idx}`]: transactionHash
+            })
+          )
+          emitter.on(`receipt-${suffix}`, ({ receipt }) =>
+            addTransactionStatus({
+              internalTransactionId,
+              currentTransaction: idx + 1,
+              [`transactionStatus-${idx}`]: receipt.status
+                ? 'confirmed'
+                : 'canceled',
+              [`transactionHash-${idx}`]: receipt.transactionHash
+            })
+          )
+        })
+      })
+      .on('result', function ({ fees, status, received }) {
+        registerVUSD()
+        addTransactionStatus({
+          internalTransactionId,
+          transactionStatus: status ? 'confirmed' : 'canceled',
+          fee: Big(fromUnit(fees)).toFixed(4),
+          received:
+            status &&
+            Big(fromUnit(received, token.decimals)).round(4, 0).toFixed(4)
+        })
+      })
+      .on('error', function (error) {
+        addTransactionStatus({
+          internalTransactionId,
+          transactionStatus: 'error',
+          message: t(`${getErrorKey(error)}`)
+        })
+      })
   }
 
   const handleChange = (e) => setAmount(e.target.value)

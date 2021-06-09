@@ -158,7 +158,7 @@ const Wallet = function () {
       />
       {!active ? (
         <button
-          className="font-semibold text-cobalt-900 focus:outline-none hover:text-cobalt-1000"
+          className="font-semibold  focus:outline-none hover:"
           onClick={() => setShowWalletConnector(true)}
         >
           {t('connect-wallet')}
@@ -173,7 +173,7 @@ const Wallet = function () {
           </div>
           <div>
             <button
-              className="text-sm font-semibold text-cobalt-900 focus:outline-none"
+              className="text-sm font-semibold  focus:outline-none"
               onClick={deactivateConnector}
               style={{
                 display: account ? 'initial' : 'none'

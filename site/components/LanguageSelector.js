@@ -14,7 +14,7 @@ const LanguageSelector = function () {
               className={`${
                 localeOption === locale
                   ? 'text-gray-300'
-                  : 'hover:text-teal-1000'
+                  : 'hover:text-gray-800'
               }`}
             >
               {idx > 0 && ' / '}

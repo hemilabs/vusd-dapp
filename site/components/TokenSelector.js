@@ -27,7 +27,7 @@ const TokenSelector = function ({
         )
       }
     },
-    [active, selectedToken, tokensList]
+    [active, tokensList]
   )
 
   return (

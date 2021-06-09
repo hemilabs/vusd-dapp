@@ -27,7 +27,7 @@ const ErrorHandler = function ({ error, modalIsOpen, onRequestClose }) {
   const { t } = useTranslation('common')
   return error ? (
     <Modal
-      className="max-w-2xl p-10 text-center bg-white text-navy-750 rounded-md"
+      className="max-w-2xl p-10 text-center bg-white  rounded-md"
       modalIsOpen={modalIsOpen}
       onRequestClose={onRequestClose}
     >
