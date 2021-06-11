@@ -98,7 +98,12 @@ const Redeem = function () {
       })
   }
 
-  const handleChange = (e) => setAmount(e.target.value)
+  const handleChange = function (e) {
+    const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
+    if (e.target.value === '' || re.test(e.target.value)) {
+      setAmount(e.target.value)
+    }
+  }
 
   return (
     <div className="flex flex-wrap w-full py-4 space-y-6">
