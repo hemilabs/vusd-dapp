@@ -50,7 +50,11 @@ const Mint = function () {
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
           operation: 'mint',
           sent: fixedAmount,
-          estimatedReceive: Big(mintAmount).round(4, 0).toFixed(4),
+          estimatedReceive: Big(mintAmount)
+            .times(1 - token.mintingFee)
+            .round(4, 0)
+            .toFixed(4),
+          mintFee: token.mintingFee,
           redeemFee: token.redeemFee
         })
         return transactions.suffixes.forEach(function (suffix, idx) {
@@ -80,9 +84,7 @@ const Mint = function () {
           internalTransactionId,
           transactionStatus: status ? 'confirmed' : 'canceled',
           fee: Big(fromUnit(fees)).toFixed(4),
-          received:
-            status &&
-            Big(fromUnit(received, token.decimals)).round(4, 0).toFixed(4)
+          received: status && Big(fromUnit(received)).round(4, 0).toFixed(4)
         })
       })
       .on('error', function (error) {
@@ -94,7 +96,12 @@ const Mint = function () {
       })
   }
 
-  const handleChange = (e) => setAmount(e.target.value)
+  const handleChange = function (e) {
+    const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
+    if (e.target.value === '' || re.test(e.target.value)) {
+      setAmount(e.target.value)
+    }
+  }
 
   useEffect(
     function () {

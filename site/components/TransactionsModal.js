@@ -81,6 +81,13 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                 </div>
               </div>
             )}
+            {isMint && (
+              <TransactionModalRow
+                text={t('mint-fee')}
+                tipLink="/"
+                value={`${(transaction.mintFee * 100).toFixed(2)}%`}
+              />
+            )}
             <TransactionModalRow
               text={isMint ? t('current-redeem-fee') : t('redeem-fee')}
               tipLink="/"
