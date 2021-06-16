@@ -33,6 +33,9 @@ const Redeem = function () {
     [selectedToken.symbol]
   )
 
+  const handleMaxAmountClick = () =>
+    vusdAvailable && setAmount(fromUnit(selectedToken.walletRedeemable))
+
   const handleRedeem = function (token, mintAmount) {
     const fixedAmount = Big(mintAmount).round(4, 0).toFixed(4)
     const internalTransactionId = Date.now()
@@ -108,16 +111,6 @@ const Redeem = function () {
   return (
     <div className="flex flex-wrap w-full py-4 space-y-6">
       <div className="w-full">
-        <Input
-          caption={`VUSD balance: ${fixedVUSBalance}`}
-          disabled={!vusdAvailable}
-          onChange={handleChange}
-          suffix="VUSD"
-          title="Amount"
-          value={amount}
-        />
-      </div>
-      <div className="w-full">
         <TokenSelector
           balanceKey="walletRedeemable"
           balancePrefix=" MAX "
@@ -126,6 +119,17 @@ const Redeem = function () {
           selectedToken={selectedToken}
           setSelectedToken={setSelectedToken}
           tokensList={tokensData}
+        />
+      </div>
+      <div className="w-full">
+        <Input
+          caption={`VUSD balance: ${fixedVUSBalance}`}
+          disabled={!vusdAvailable}
+          onChange={handleChange}
+          onSuffixClick={() => handleMaxAmountClick()}
+          suffix="MAX"
+          title="Amount"
+          value={amount}
         />
       </div>
       <div className="w-full">

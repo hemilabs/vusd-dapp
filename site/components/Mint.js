@@ -32,6 +32,10 @@ const Mint = function () {
       Big(selectedToken.balance || 0)
     )
 
+  const handleMaxAmountClick = () =>
+    tokenAvailable &&
+    setAmount(fromUnit(selectedToken.balance, selectedToken.decimals))
+
   const handleMint = function (token, mintAmount) {
     const fixedAmount = Big(mintAmount).round(4, 0).toFixed(4)
     const internalTransactionId = Date.now()
@@ -125,6 +129,8 @@ const Mint = function () {
           caption={`VUSD balance: ${fixedVUSBalance}`}
           disabled={!tokenAvailable}
           onChange={handleChange}
+          onSuffixClick={handleMaxAmountClick}
+          suffix="MAX"
           title="Amount"
           value={amount}
         />

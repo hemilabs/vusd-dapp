@@ -6,13 +6,20 @@ const SimpleInput = (props) => (
   <input {...props} className="w-full h-10 text-center align-middle border-2" />
 )
 
-const SuffixedInput = ({ suffix, ...props }) => (
+const SuffixedInput = ({ disabled, suffix, onSuffixClick, ...props }) => (
   <div className="flex w-full h-10 text-center align-middle border-2">
     <input
       {...props}
       className="flex-1 pl-16 text-center border-r-2 tabular-nums"
     />
-    <div className="w-16 m-auto text-center">{suffix}</div>
+    <div
+      className={`w-16 m-auto text-center ${
+        !disabled && onSuffixClick ? 'cursor-pointer' : ''
+      }`}
+      onClick={onSuffixClick}
+    >
+      {suffix}
+    </div>
   </div>
 )
 
