@@ -12,9 +12,8 @@ export const TokenBalances = function ({ tokens = [] }) {
     <table className={styles.balances}>
       <thead>
         <tr>
-          <th>Symbol</th>
-          <th>Balance</th>
-          <th>Value (USD)</th>
+          <th colSpan="2">Balance</th>
+          <th colSpan="2">Value</th>
         </tr>
       </thead>
       <tbody>
@@ -26,13 +25,52 @@ export const TokenBalances = function ({ tokens = [] }) {
               : '-'
           return (
             <tr key={address}>
-              <td className={styles.semiBold}>{symbol}</td>
-              <td>{format(rawBalance)}</td>
-              <td>{format(balanceUsd)}</td>
+              <td className={styles.textAlignRight}>
+                <span>{format(rawBalance)}</span>
+              </td>
+              <td>
+                <span className={styles.semiBold}>{symbol}</span>
+              </td>
+              <td className={styles.textAlignRight}>
+                <span>{format(balanceUsd)}</span>
+              </td>
+              <td>
+                <span className={styles.semiBold}>USD</span>
+              </td>
             </tr>
           )
         })}
       </tbody>
+      <tfoot>
+        <tr>
+          <td
+            className={styles.semiBold}
+            colSpan="2"
+            style={{ textAlign: 'center' }}
+          >
+            Total
+          </td>
+          <td className={styles.textAlignRight}>
+            <span>
+              {format(
+                tokens.reduce((accumulator, token) => {
+                  const { tokenInfo, rawBalance } = token
+                  const { price, decimals } = tokenInfo
+                  if (!price || !price.rate) {
+                    return accumulator
+                  }
+                  return accumulator.plus(
+                    Big(fromUnit(rawBalance, decimals)).times(price.rate)
+                  )
+                }, Big(0))
+              )}
+            </span>
+          </td>
+          <td>
+            <span className={styles.semiBold}>USD</span>
+          </td>
+        </tr>
+      </tfoot>
     </table>
   )
 }
