@@ -17,6 +17,7 @@
     "@web3-react/walletlink-connector": "^6.2.0",
     "autoprefixer": "^10.2.4",
     "big.js": "^6.0.3",
+    "cors": "^2.8.5",
     "next": "^10.0.7",
     "next-translate": "^1.0.6",
     "patch-package": "^6.4.7",

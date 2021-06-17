@@ -32,5 +32,8 @@
     "preexport": "npm run build",
     "prestart": "npm run export",
     "start": "serve out -p 3003"
+  },
+  "devDependencies": {
+    "serve": "^12.0.0"
   }
 }

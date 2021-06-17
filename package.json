@@ -47,7 +47,8 @@
       "prettier"
     ],
     "ignorePatterns": [
-      "site/out"
+      "site/out",
+      "dashboard/out"
     ],
     "overrides": [
       {
