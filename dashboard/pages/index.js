@@ -32,12 +32,12 @@ const useBalance = function (address, initialData) {
 }
 
 const TREASURY = contracts.Treasury
-const MULTI_SIG_GOVERNOR = contracts.MultiSigGovernor
+const GOVERNOR = contracts.Governor
 
 const Home = function ({ treasuryInitialData, multiSigGovernorInitialData }) {
   const { data: treasuryData } = useBalance(TREASURY, treasuryInitialData)
   const { data: multiSigGovernorData } = useBalance(
-    MULTI_SIG_GOVERNOR,
+    GOVERNOR,
     multiSigGovernorInitialData
   )
   if (!treasuryData || !multiSigGovernorData) {
@@ -60,8 +60,8 @@ const Home = function ({ treasuryInitialData, multiSigGovernorInitialData }) {
             <TokenBalances tokens={treasuryData.tokens} />
           </div>
           <div className={styles.operationalAddress}>
-            <h4>MultiSig</h4>
-            <EtherscanLink address={MULTI_SIG_GOVERNOR} long />
+            <h4>Governor</h4>
+            <EtherscanLink address={GOVERNOR} long />
             <TokenBalances tokens={multiSigGovernorData.tokens} />
           </div>
         </section>
@@ -71,13 +71,12 @@ const Home = function ({ treasuryInitialData, multiSigGovernorInitialData }) {
 }
 
 export async function getStaticProps() {
-  return Promise.all([
-    getAddressInfo(TREASURY),
-    getAddressInfo(MULTI_SIG_GOVERNOR)
-  ]).then(([treasuryInitialData, multiSigGovernorInitialData]) => ({
-    props: { treasuryInitialData, multiSigGovernorInitialData },
-    revalidate: 15 // seconds
-  }))
+  return Promise.all([getAddressInfo(TREASURY), getAddressInfo(GOVERNOR)]).then(
+    ([treasuryInitialData, multiSigGovernorInitialData]) => ({
+      props: { treasuryInitialData, multiSigGovernorInitialData },
+      revalidate: 15 // seconds
+    })
+  )
 }
 
 export default Home
