@@ -7,39 +7,33 @@ import { getAddressInfo } from '../services/info'
 import contracts from 'vusd-lib/src/contracts.json'
 import styles from '../styles/Home.module.css'
 
-const useBalance = function (address, initialData) {
-  return useSWR(
-    [`tokenBalances-${address}`],
-    () =>
-      getAddressInfo(address).then(function (info) {
-        const { ETH, tokens = [] } = info
-        const { price, ...restEth } = ETH
-        const etherInfo = Big(ETH.rawBalance).gt(0)
-          ? [
-              {
-                tokenInfo: { price: { ...price }, symbol: 'ETH', address },
-                ...restEth
-              }
-            ]
-          : []
-        return {
-          ...info,
-          tokens: etherInfo.concat(tokens)
-        }
-      }),
-    { initialData }
+const useBalance = function (address) {
+  return useSWR([`tokenBalances-${address}`], () =>
+    getAddressInfo(address).then(function (info) {
+      const { ETH, tokens = [] } = info
+      const { price, ...restEth } = ETH
+      const etherInfo = Big(ETH.rawBalance).gt(0)
+        ? [
+            {
+              tokenInfo: { price: { ...price }, symbol: 'ETH', address },
+              ...restEth
+            }
+          ]
+        : []
+      return {
+        ...info,
+        tokens: etherInfo.concat(tokens)
+      }
+    })
   )
 }
 
 const TREASURY = contracts.Treasury
 const GOVERNOR = contracts.Governor
 
-const Home = function ({ treasuryInitialData, multiSigGovernorInitialData }) {
-  const { data: treasuryData } = useBalance(TREASURY, treasuryInitialData)
-  const { data: multiSigGovernorData } = useBalance(
-    GOVERNOR,
-    multiSigGovernorInitialData
-  )
+const Home = function () {
+  const { data: treasuryData } = useBalance(TREASURY)
+  const { data: multiSigGovernorData } = useBalance(GOVERNOR)
   if (!treasuryData || !multiSigGovernorData) {
     return <p>Loading...</p>
   }
@@ -67,15 +61,6 @@ const Home = function ({ treasuryInitialData, multiSigGovernorInitialData }) {
         </section>
       </main>
     </div>
-  )
-}
-
-export async function getStaticProps() {
-  return Promise.all([getAddressInfo(TREASURY), getAddressInfo(GOVERNOR)]).then(
-    ([treasuryInitialData, multiSigGovernorInitialData]) => ({
-      props: { treasuryInitialData, multiSigGovernorInitialData },
-      revalidate: 15 // seconds
-    })
   )
 }
 
