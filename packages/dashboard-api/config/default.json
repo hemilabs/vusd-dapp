@@ -1,0 +1,19 @@
+{
+  "cors": {
+    "origin": [".*"]
+  },
+  "logger": {
+    "Console": {
+      "level": "debug"
+    },
+    "Papertrail": {
+      "level": "info",
+      "program": "vusd-api-dashboard"
+    }
+  },
+  "ethplorer": {
+    "apiKey": "freekey",
+    "rateLimit": 5
+  },
+  "port": 8000
+}

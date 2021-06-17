@@ -1,0 +1,37 @@
+{
+  "name": "dashboard-api",
+  "version": "1.0.0",
+  "description": "Api for VUSD dashboard",
+  "author": "Bloq",
+  "homepage": "https://github.com/bloqpriv/vusd-dapp#readme",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bloqpriv/vusd-dapp.git"
+  },
+  "scripts": {
+    "debug": "DEBUG=vesper*,promise* npm run dev",
+    "deps:check": "dependency-check --ignore-module forever --ignore-module patch-package --no-dev .",
+    "dev": "forever --watch server.js",
+    "lint": "eslint --cache .",
+    "start": "forever --minUptime 1000 --spinSleepTime 1000 server.js"
+  },
+  "bugs": {
+    "url": "https://github.com/bloqpriv/vusd-dapp/issues"
+  },
+  "dependencies": {
+    "config": "3.3.6",
+    "cors": "2.8.5",
+    "debug": "4.3.1",
+    "express": "4.17.1",
+    "forever": "4.0.1",
+    "helmet": "4.6.0",
+    "morgan": "1.10.0",
+    "node-fetch": "2.6.1",
+    "p-limit": "3.1.0",
+    "p-retry": "4.5.0",
+    "p-tap": "3.0.0",
+    "winston": "3.3.3",
+    "winston-papertrail-transport": "1.0.9"
+  }
+}

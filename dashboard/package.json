@@ -1,0 +1,36 @@
+{
+  "name": "dashboard",
+  "version": "1.0.0",
+  "description": "VUSD dashboard",
+  "private": true,
+  "author": "Bloq",
+  "homepage": "https://github.com/bloqpriv/vusd-dapp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bloqpriv/vusd-dapp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bloqpriv/vusd-dapp/issues"
+  },
+  "dependencies": {
+    "big.js": "^6.1.1",
+    "debug": "^4.3.1",
+    "next": "10.2.3",
+    "p-limit": "^3.1.0",
+    "p-retry": "^4.5.0",
+    "p-tap": "3.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "swr": "^0.5.6"
+  },
+  "scripts": {
+    "build": "next build",
+    "dev": "next -p ${PORT:-3003}",
+    "deps:check": "dependency-check --detective precinct --ignore-module react-dom --no-dev pages/*",
+    "export": "next export",
+    "lint": "eslint --cache .",
+    "preexport": "npm run build",
+    "prestart": "npm run export",
+    "start": "serve out -p 3003"
+  }
+}

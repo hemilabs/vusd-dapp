@@ -1,0 +1,30 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.maxWidthFull {
+  max-width: 100%;
+}
+
+.operationalAddress {
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.semiBold {
+  font-weight: 700;
+}
+
+.balances {
+  border-spacing: 1.75rem 0.75rem;
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
