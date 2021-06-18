@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module tailwindcss --no-dev pages/*",
+    "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module react --ignore-module tailwindcss --ignore-module cors --no-dev pages/*",
     "postinstall": "patch-package",
     "prestart": "npm run build",
     "start": "next start"
@@ -17,6 +17,7 @@
     "@web3-react/walletlink-connector": "^6.2.0",
     "autoprefixer": "^10.2.4",
     "big.js": "^6.0.3",
+    "cors": "^2.8.5",
     "next": "^10.0.7",
     "next-translate": "^1.0.6",
     "patch-package": "^6.4.7",

@@ -4,3 +4,6 @@
 .nyc_output
 coverage
 node_modules
+lerna-debug.log
+out
+.next
