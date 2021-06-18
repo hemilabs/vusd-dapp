@@ -4,11 +4,11 @@ import TabSelector from './TabSelector'
 
 const tabs = [
   {
-    name: 'Mint',
+    name: 'mint',
     component: Mint
   },
   {
-    name: 'Redeem',
+    name: 'redeem',
     component: Redeem
   }
 ]

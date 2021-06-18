@@ -1,5 +1,6 @@
 {
   "address": "Address",
+  "amount": "Amount",
   "connect-wallet": "Connect wallet",
   "copyright": "Copyright © 2021 vUSD. All Rights Reserved.",
   "current-redeem-fee": "Current redeem fee",
@@ -49,11 +50,13 @@
   "status-in-progress": "In Progress",
   "status-waiting-to-be-mined": "Waiting to be mined",
   "status-waiting-wallet": "Waiting confirmation",
+  "token": "Token",
   "total-received": "Total Received",
   "total-transactions": "Total Transactions",
   "total-tx-fee": "Operation Fees",
   "transaction": "Transaction",
   "transaction-failed": "Transaction Failed",
   "transaction-hash": "Transaction Hash",
+  "treasury": "Treasury",
   "view-on-etherscan": "View on Etherscan"
 }

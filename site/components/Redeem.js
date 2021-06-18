@@ -128,7 +128,7 @@ const Redeem = function () {
           onChange={handleChange}
           onSuffixClick={() => handleMaxAmountClick()}
           suffix="MAX"
-          title="Amount"
+          title={t('amount')}
           value={amount}
         />
       </div>
@@ -137,7 +137,7 @@ const Redeem = function () {
           disabled={redeemDisabled}
           onClick={() => handleRedeem(selectedToken, amount)}
         >
-          Redeem
+          {t('redeem')}
         </Button>
       </div>
     </div>

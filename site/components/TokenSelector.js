@@ -3,6 +3,7 @@ import Dropdown from './Dropdown'
 import { useEffect } from 'react'
 import { fromUnit, toFixed } from '../utils'
 import SvgContainer from './svg/SvgContainer'
+import useTranslation from 'next-translate/useTranslation'
 
 const TokenSelector = function ({
   balanceKey,
@@ -14,6 +15,7 @@ const TokenSelector = function ({
   decimals
 }) {
   const { active } = useWeb3React()
+  const { t } = useTranslation('common')
 
   useEffect(
     function () {
@@ -32,7 +34,7 @@ const TokenSelector = function ({
 
   return (
     <>
-      <p className="font-bold text-center text-gray-600 mb-1.5">Token</p>
+      <p className="font-bold text-center text-gray-600 mb-1.5">{t('token')}</p>
       <Dropdown
         className={`relative z-10 ${
           !active ? 'cursor-not-allowed bg-gray-50' : ''

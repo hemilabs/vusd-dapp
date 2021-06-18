@@ -131,7 +131,7 @@ const Mint = function () {
           onChange={handleChange}
           onSuffixClick={handleMaxAmountClick}
           suffix="MAX"
-          title="Amount"
+          title={t('amount')}
           value={amount}
         />
       </div>
@@ -140,7 +140,7 @@ const Mint = function () {
           disabled={mintDisabled}
           onClick={() => handleMint(selectedToken, amount)}
         >
-          Mint
+          {t('mint')}
         </Button>
       </div>
     </div>
