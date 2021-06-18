@@ -16,7 +16,7 @@ const CustomHead = ({ title }) => (
         `
       }}
     /> */}
-    <title>vUSD{title && ` | ${title}`}</title>
+    <title>VUSD{title && ` | ${title}`}</title>
     <link href="/favicon.ico" rel="icon" />
   </Head>
 )

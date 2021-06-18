@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Wallet from './Wallet'
+import SvgContainer from './svg/SvgContainer'
 
 const Navbar = ({ walletConnection }) => {
   return (
@@ -7,7 +8,9 @@ const Navbar = ({ walletConnection }) => {
       <div className="hidden w-1/3 md:block"></div>
       <div className="flex justify-center w-full md:w-1/3">
         <Link href="/">
-          <a className="text-xl font-bold">VUSD</a>
+          <a className="text-xl font-bold">
+            <SvgContainer name="vusdlogo" />
+          </a>
         </Link>
       </div>
       <div className="flex justify-center w-full mt-4 md:w-1/3 md:justify-end md:mt-0">

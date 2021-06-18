@@ -10,6 +10,7 @@ import questionmark from './Questionmark'
 import usdc from './Usdc'
 import usdt from './Usdt'
 import vusd from './Vusd'
+import vusdlogo from './VusdLogo'
 import walletconnect from './WalletConnect'
 
 export default {
@@ -25,5 +26,6 @@ export default {
   usdc,
   usdt,
   vusd,
+  vusdlogo,
   walletconnect
 }
