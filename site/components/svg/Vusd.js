@@ -1,46 +1,28 @@
-import React from 'react'
-
-const VspIcon = (props) => (
+const VusdIcon = (props) => (
   <svg
-    height="79"
-    viewBox="0 0 72.183 79"
-    width="72.183"
+    height="50"
+    viewBox="0 0 50 50"
+    width="50"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <g transform="translate(-120 -1386)">
-      <g transform="translate(120 1392.817)">
-        <path
-          className="a"
-          d="M36.091,0A36.091,36.091,0,1,1,0,36.091,36.091,36.091,0,0,1,36.091,0Z"
-          fill="#716ac1"
-          transform="translate(0 0)"
-        />
-      </g>
-      <g transform="translate(120 1386)">
-        <path
-          className="b"
-          d="M36.909,1A35.909,35.909,0,1,0,72.818,36.908,35.909,35.909,0,0,0,36.909,1Z"
-          fill="#4138ac"
-          transform="translate(-1 -1)"
-        />
+    <g transform="translate(-139 -31)">
+      <g transform="translate(134 26.317)">
         <circle
-          className="c"
-          cx="36"
-          cy="36"
-          fill="#0d124d"
-          r="36"
-          transform="translate(0 0)"
+          cx="25"
+          cy="25"
+          fill="#596aec"
+          r="25"
+          transform="translate(5 4.683)"
         />
         <path
-          className="d"
-          d="M263.826,336.538l-7.5,23.148-7.5-23.148h-14.2l2.208,6.265h6.585l9.5,26.9h6.806l11.711-33.169Z"
+          d="M125.144,132.995l1.043-3.22h-4.212l1.583-4.465h-5.452l-5.214,15.878L107.68,125.31h-5.453l1.584,4.465H99.6l1.043,3.22h4.31l.58,1.632h-4.361l1.043,3.22h4.46l3.013,8.494H116.1l3.013-8.494h4.461l1.043-3.22h-4.361l.578-1.632Z"
           fill="#fff"
-          transform="translate(-218.315 -314.342)"
+          transform="translate(-82.494 -105.14)"
         />
       </g>
     </g>
   </svg>
 )
 
-export default VspIcon
+export default VusdIcon
