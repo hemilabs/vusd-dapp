@@ -9,8 +9,8 @@ const Button = function ({
   return (
     <button
       {...props}
-      className={`w-63 bg-black rounded-3xl py-3 text-white text-center font-bold text-sm focus:outline-none uppercase ${
-        disabled ? 'bg-gray-200 cursor-not-allowed' : 'hover:bg-gray-800'
+      className={`w-32 bg-vesper rounded-3xl py-1 text-white text-center font-bold text-sm focus:outline-none uppercase ${
+        disabled ? 'bg-opacity-25 cursor-not-allowed' : 'hover:bg-opacity-75'
       } ${className}`}
       onClick={handleClick}
     >

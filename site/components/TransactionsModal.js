@@ -3,6 +3,7 @@ import useTranslation from 'next-translate/useTranslation'
 import SvgContainer from './svg/SvgContainer'
 import JustifiedBetweenRow from './JustifiedBetweenRow'
 import Modal from './Modal'
+import { useNumberFormat } from '../hooks/useNumberFormat'
 
 const TransactionModalRow = function ({ text, value, tipLink }) {
   return (
@@ -28,6 +29,7 @@ const TransactionModalRow = function ({ text, value, tipLink }) {
 // eslint-disable-next-line complexity
 const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
   const { t } = useTranslation('common')
+  const formatNumber = useNumberFormat()
   const isConfirmed = transaction.transactionStatus === 'confirmed'
   const isMint = transaction.operation === 'mint'
   const isError =
@@ -59,7 +61,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                         name={transaction.sentSymbol}
                         width="33"
                       />
-                      {transaction.sent}
+                      {formatNumber(transaction.sent)}
                     </span>
                   </p>
                 </div>
@@ -68,8 +70,8 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                   <p className="text-lg font-bold ">
                     <span>
                       {isConfirmed
-                        ? transaction.received
-                        : transaction.estimatedReceive}
+                        ? formatNumber(transaction.received)
+                        : formatNumber(transaction.estimatedReceive)}
                       <SvgContainer
                         className="inline ml-3"
                         height="33"
@@ -85,13 +87,17 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
               <TransactionModalRow
                 text={t('mint-fee')}
                 tipLink="/"
-                value={`${(transaction.mintFee * 100).toFixed(2)}%`}
+                value={`${formatNumber(
+                  (transaction.mintFee * 100).toFixed(2)
+                )}%`}
               />
             )}
             <TransactionModalRow
               text={isMint ? t('current-redeem-fee') : t('redeem-fee')}
               tipLink="/"
-              value={`${(transaction.redeemFee * 100).toFixed(2)}%`}
+              value={`${formatNumber(
+                (transaction.redeemFee * 100).toFixed(2)
+              )}%`}
             />
             <div className="py-4">
               <TransactionModalRow
@@ -101,7 +107,9 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
               <TransactionModalRow
                 text={isConfirmed ? t('total-tx-fee') : t('estimated-tx-fee')}
                 value={`${
-                  isConfirmed ? transaction.fee : transaction.expectedFee
+                  isConfirmed
+                    ? formatNumber(transaction.fee)
+                    : formatNumber(transaction.expectedFee)
                 } ETH`}
               />
               <JustifiedBetweenRow

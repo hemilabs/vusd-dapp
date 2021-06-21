@@ -5,8 +5,10 @@ import coinbasewallet from './CoinbaseWallet'
 import cross from './Cross'
 import dai from './Dai'
 import loading from './Loading'
+import mint from './Mint'
 import metamask from './Metamask'
 import questionmark from './Questionmark'
+import redeem from './Redeem'
 import usdc from './Usdc'
 import usdt from './Usdt'
 import vusd from './Vusd'
@@ -22,7 +24,9 @@ export default {
   dai,
   loading,
   metamask,
+  mint,
   questionmark,
+  redeem,
   usdc,
   usdt,
   vusd,

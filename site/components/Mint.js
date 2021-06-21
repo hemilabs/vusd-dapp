@@ -9,6 +9,7 @@ import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
 import { useRegisterToken } from '../hooks/useRegisterToken'
+import { useNumberFormat } from '../hooks/useNumberFormat'
 
 const Mint = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
@@ -17,6 +18,8 @@ const Mint = function () {
   const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
+
+  const formatNumber = useNumberFormat()
 
   const registerVUSD = useRegisterToken({
     symbol: 'VUSD',
@@ -126,7 +129,6 @@ const Mint = function () {
       </div>
       <div className="w-full">
         <Input
-          caption={`VUSD balance: ${fixedVUSBalance}`}
           disabled={!tokenAvailable}
           onChange={handleChange}
           onSuffixClick={handleMaxAmountClick}
@@ -134,6 +136,10 @@ const Mint = function () {
           title={t('amount')}
           value={amount}
         />
+      </div>
+      <div className="flex justify-between w-full text-xs text-gray-400">
+        <div className="font-semibold">{t('current-vusd-balance')}:</div>
+        <div className="font-sm">{formatNumber(fixedVUSBalance)}</div>
       </div>
       <div className="w-full">
         <Button

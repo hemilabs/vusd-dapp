@@ -3,8 +3,10 @@ import { fromUnit, toFixed } from '../utils'
 import VusdContext from './context/Vusd'
 import useTranslation from 'next-translate/useTranslation'
 import SvgContainer from './svg/SvgContainer'
+import { useNumberFormat } from '../hooks/useNumberFormat'
 
 const Treasury = function () {
+  const formatNumber = useNumberFormat()
   const { t } = useTranslation('common')
   const { vusd } = useContext(VusdContext)
   const { tokensData } = vusd
@@ -12,14 +14,14 @@ const Treasury = function () {
   return (
     <div className="w-full mb-12 xl:w-88">
       <div className="">
-        <p className="mb-2 text-sm font-bold text-left text-vesper">
+        <p className="mb-2 text-sm font-bold text-vesper">
           {t('treasury').toUpperCase()}
         </p>
         <div className="w-full">
           {tokensData &&
             tokensData.map((token) => (
               <div
-                className="flex items-center justify-between w-full h-20 px-5 mb-4 bg-white"
+                className="flex items-center justify-between w-full h-20 px-5 mb-4 bg-white shadow-md rounded-md"
                 key={token.symbol}
               >
                 <div className="flex items-center">
@@ -29,7 +31,7 @@ const Treasury = function () {
                   </span>
                 </div>
                 <div className="font-bold">
-                  {toFixed(fromUnit(token.redeemable), 4)}
+                  {formatNumber(toFixed(fromUnit(token.redeemable), 4))}
                 </div>
               </div>
             ))}

@@ -9,6 +9,7 @@ import { useRegisterToken } from '../hooks/useRegisterToken'
 import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
+import { useNumberFormat } from '../hooks/useNumberFormat'
 
 const Redeem = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
@@ -17,6 +18,7 @@ const Redeem = function () {
   const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
+  const formatNumber = useNumberFormat()
 
   const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
@@ -113,8 +115,6 @@ const Redeem = function () {
       <div className="w-full">
         <TokenSelector
           balanceKey="walletRedeemable"
-          balancePrefix=" MAX "
-          balanceSuffix=" VUSD"
           decimals="18"
           selectedToken={selectedToken}
           setSelectedToken={setSelectedToken}
@@ -123,7 +123,6 @@ const Redeem = function () {
       </div>
       <div className="w-full">
         <Input
-          caption={`VUSD balance: ${fixedVUSBalance}`}
           disabled={!vusdAvailable}
           onChange={handleChange}
           onSuffixClick={() => handleMaxAmountClick()}
@@ -131,6 +130,10 @@ const Redeem = function () {
           title={t('amount')}
           value={amount}
         />
+      </div>
+      <div className="flex justify-between w-full text-xs text-left text-gray-400">
+        <div className="font-semibold">{t('current-vusd-balance')}:</div>
+        <div className="font-sm">{formatNumber(fixedVUSBalance)}</div>
       </div>
       <div className="w-full">
         <Button

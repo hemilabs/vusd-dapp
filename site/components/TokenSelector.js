@@ -4,11 +4,10 @@ import { useEffect } from 'react'
 import { fromUnit, toFixed } from '../utils'
 import SvgContainer from './svg/SvgContainer'
 import useTranslation from 'next-translate/useTranslation'
+import { useNumberFormat } from '../hooks/useNumberFormat'
 
 const TokenSelector = function ({
   balanceKey,
-  balancePrefix,
-  balanceSuffix,
   selectedToken,
   setSelectedToken,
   tokensList,
@@ -16,6 +15,7 @@ const TokenSelector = function ({
 }) {
   const { active } = useWeb3React()
   const { t } = useTranslation('common')
+  const formatNumber = useNumberFormat()
 
   useEffect(
     function () {
@@ -25,7 +25,7 @@ const TokenSelector = function ({
         setSelectedToken(tokensList[0])
       } else {
         setSelectedToken(
-          tokensList.find((t) => t.address === selectedToken.address)
+          tokensList.find((token) => token.address === selectedToken.address)
         )
       }
     },
@@ -34,7 +34,7 @@ const TokenSelector = function ({
 
   return (
     <>
-      <p className="font-bold text-center text-gray-600 mb-1.5">{t('token')}</p>
+      <p className="font-bold text-gray-600 mb-1.5">{t('token')}</p>
       <Dropdown
         className={`relative z-10 ${
           !active ? 'cursor-not-allowed bg-gray-50' : ''
@@ -51,21 +51,22 @@ const TokenSelector = function ({
                       name={selectedToken.symbol}
                     />
                     {selectedToken.symbol}
-                    {balanceKey && (
-                      <span className="ml-2 text-xs font-normal text-gray-400">
-                        {balancePrefix}
-                        {selectedToken[balanceKey] &&
+                  </div>
+                  {balanceKey && (
+                    <div className="mr-2 text-xs font-normal text-gray-400">
+                      <span className="mr-1">MAX</span>
+                      {selectedToken[balanceKey] &&
+                        formatNumber(
                           toFixed(
                             fromUnit(
                               selectedToken[balanceKey],
                               decimals || selectedToken.decimals
                             ),
                             4
-                          )}
-                        {balanceSuffix}
-                      </span>
-                    )}
-                  </div>
+                          )
+                        )}
+                    </div>
+                  )}
                 </div>
                 <SvgContainer name="caret" />
               </>
@@ -86,21 +87,22 @@ const TokenSelector = function ({
                           name={token.symbol}
                         />
                         {token.symbol}
-                        {balanceKey && (
-                          <span className="ml-2 text-xs text-gray-400">
-                            {balancePrefix}
-                            {token[balanceKey] &&
+                      </div>
+                      {balanceKey && (
+                        <div className="mr-6 text-xs text-gray-400">
+                          <span className="mr-1">MAX</span>
+                          {token[balanceKey] &&
+                            formatNumber(
                               toFixed(
                                 fromUnit(
                                   token[balanceKey],
                                   decimals || token.decimals
                                 ),
                                 4
-                              )}
-                            {balanceSuffix}
-                          </span>
-                        )}
-                      </div>
+                              )
+                            )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </li>
