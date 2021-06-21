@@ -158,14 +158,14 @@ const Wallet = function () {
       />
       {!active ? (
         <button
-          className="font-semibold  focus:outline-none hover:"
+          className="font-semibold text-gray-400 focus:outline-none hover:text-gray-200"
           onClick={() => setShowWalletConnector(true)}
         >
           {t('connect-wallet')}
         </button>
       ) : (
         <div className="pt-2 text-center md:text-right md:pt-0">
-          <p className="text-xs font-semibold text-gray-350">{t('address')}:</p>
+          <p className="text-xs font-semibold text-gray-400">{t('address')}:</p>
           <div>
             <div className="font-bold focus:outline-none">
               {shortenedAccount}
@@ -173,7 +173,7 @@ const Wallet = function () {
           </div>
           <div>
             <button
-              className="text-sm font-semibold  focus:outline-none"
+              className="text-sm font-semibold text-vesper focus:outline-none"
               onClick={deactivateConnector}
               style={{
                 display: account ? 'initial' : 'none'

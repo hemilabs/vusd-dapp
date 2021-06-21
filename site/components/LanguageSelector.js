@@ -6,15 +6,15 @@ const LanguageSelector = function () {
   const { pathname, locale, locales } = useRouter()
   const { t } = useTranslation()
   return (
-    <ul className="flex text-sm space-x-1">
+    <ul className="flex space-x-1">
       {locales.map((localeOption, idx) => (
         <li key={localeOption}>
           <Link href={pathname} locale={localeOption}>
             <a
               className={`${
                 localeOption === locale
-                  ? 'text-gray-300'
-                  : 'hover:text-gray-800'
+                  ? 'text-gray-800'
+                  : 'hover:text-gray-400'
               }`}
             >
               {idx > 0 && ' / '}
