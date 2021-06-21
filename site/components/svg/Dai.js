@@ -2,49 +2,37 @@ import React from 'react'
 
 const DaiIcon = (props) => (
   <svg
-    height="79"
-    viewBox="0 0 73 79"
-    width="73"
+    height="45"
+    viewBox="0 0 45 45"
+    width="45"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <g data-name="Group 5242" id="Group_5242" transform="translate(-1269 -464)">
+    <defs>
+      <linearGradient
+        gradientUnits="objectBoundingBox"
+        id="a"
+        x1="0.146"
+        x2="0.854"
+        y1="0.854"
+        y2="0.146"
+      >
+        <stop offset="0" stopColor="#97ebff" />
+        <stop offset="1" stopColor="#4f5fe8" stopOpacity="0.2" />
+      </linearGradient>
+    </defs>
+    <g transform="translate(-1103.247 -639.882)">
       <circle
-        cx="36.5"
-        cy="36.5"
-        data-name="Ellipse 67"
-        fill="#716ac1"
-        id="Ellipse_67"
-        r="36.5"
-        transform="translate(1269 470)"
+        cx="22.5"
+        cy="22.5"
+        fill="url(#a)"
+        r="22.5"
+        transform="translate(1103.247 639.882)"
       />
-      <g data-name="Group 4662" id="Group_4662" transform="translate(1269 464)">
-        <g data-name="Group 68" id="Group_68" transform="translate(0)">
-          <g data-name="Group 64" id="Group_64">
-            <circle
-              cx="36.5"
-              cy="36.5"
-              data-name="Ellipse 58"
-              fill="#fff"
-              id="Ellipse_58"
-              r="36.5"
-            />
-            <path
-              d="M104.362,221.656a34.219,34.219,0,1,1-34.218,34.218,34.258,34.258,0,0,1,34.218-34.218m0-2.281a36.5,36.5,0,1,0,36.5,36.5,36.5,36.5,0,0,0-36.5-36.5Z"
-              data-name="Path 27"
-              fill="#0d124d"
-              id="Path_27"
-              transform="translate(-67.863 -219.375)"
-            />
-          </g>
-        </g>
-      </g>
       <path
-        d="M866.8,430.234H862.83a16.148,16.148,0,0,0-15.14-10.533H833.482v10.533h-4.519v3.844h4.519v3.811h-4.519v3.844h4.519v10.253h14.208a16.148,16.148,0,0,0,15.034-10.253H866.8v-3.844h-3.1a16.3,16.3,0,0,0,.129-2.045h0a16.307,16.307,0,0,0-.1-1.765H866.8Zm-29.541-7.1h10.016a12.713,12.713,0,0,1,11.411,7.1H837.259Zm10.016,25.427H837.259v-6.824h21.284A12.711,12.711,0,0,1,847.274,448.557Zm12.713-12.713h0a12.793,12.793,0,0,1-.165,2.045H837.259v-3.811h22.606A12.854,12.854,0,0,1,859.987,435.843Z"
-        data-name="Path 10539"
-        fill="#0d124d"
-        id="Path_10539"
-        transform="translate(459.037 65.042)"
+        d="M1143.576,663.085h-2.481a10.093,10.093,0,0,0-9.463-6.583h-8.88v6.583h-2.824v2.4h2.824v2.382h-2.824v2.4h2.824v6.408h8.88a10.092,10.092,0,0,0,9.4-6.408h2.548v-2.4h-1.938a10.1,10.1,0,0,0,.081-1.278h0a10.183,10.183,0,0,0-.062-1.1h1.919Zm-18.463-4.437h6.26a7.945,7.945,0,0,1,7.132,4.437h-13.391Zm6.26,15.891h-6.26v-4.265h13.3a7.945,7.945,0,0,1-7.043,4.263Zm7.946-7.946h0a8,8,0,0,1-.1,1.278h-14.1v-2.381h14.128a8,8,0,0,1,.077,1.1Z"
+        fill="#596aec"
+        transform="translate(-4.315 -4.299)"
       />
     </g>
   </svg>
