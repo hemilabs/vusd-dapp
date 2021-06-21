@@ -2,6 +2,7 @@ import { useContext } from 'react'
 import { fromUnit, toFixed } from '../utils'
 import VusdContext from './context/Vusd'
 import useTranslation from 'next-translate/useTranslation'
+import SvgContainer from './svg/SvgContainer'
 
 const Treasury = function () {
   const { t } = useTranslation('common')
@@ -9,15 +10,27 @@ const Treasury = function () {
   const { tokensData } = vusd
 
   return (
-    <div className="w-full mb-12">
-      <div className="border-2 rounded-xl">
-        <p className="mb-2 text-lg font-bold text-center">{t('treasury')}</p>
-        <div className="flex justify-around w-full">
+    <div className="w-full mb-12 xl:w-88">
+      <div className="">
+        <p className="mb-2 text-sm font-bold text-left text-vesper">
+          {t('treasury').toUpperCase()}
+        </p>
+        <div className="w-full">
           {tokensData &&
-            tokensData.map((t) => (
-              <div className="flex space-x-1" key={t.symbol}>
-                <div>{t.symbol}:</div>
-                <div>{toFixed(fromUnit(t.redeemable), 4)}</div>
+            tokensData.map((token) => (
+              <div
+                className="flex items-center justify-between w-full h-20 px-5 mb-4 bg-white"
+                key={token.symbol}
+              >
+                <div className="flex items-center">
+                  <SvgContainer height="45" name={token.symbol} width="45" />
+                  <span className="ml-2 font-semibold text-vesper">
+                    {token.symbol}
+                  </span>
+                </div>
+                <div className="font-bold">
+                  {toFixed(fromUnit(token.redeemable), 4)}
+                </div>
               </div>
             ))}
         </div>

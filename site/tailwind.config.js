@@ -15,7 +15,9 @@ module.exports = {
         19: '4.75rem',
         54: '13.5rem',
         63: '15.75rem',
-        105: '26.25rem'
+        88: '22rem',
+        105: '26.25rem',
+        160: '40rem'
       },
       maxWidth: {
         customscreen: '1085px'
