@@ -8,7 +8,6 @@ const Layout = ({ children, title, walletConnection }) => (
     <div className="w-full px-8 py-4 mx-auto max-w-customscreen xl:px-0">
       <Navbar walletConnection={walletConnection} />
       <div className="w-full pt-6 pb-8 mx-auto md:pb-0 md:pt-19 md:min-h-content">
-        {title && <h1 className="font-bold text-center text-1.5xl">{title}</h1>}
         {children}
       </div>
       <Footer />
