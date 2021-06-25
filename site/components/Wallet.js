@@ -173,11 +173,10 @@ const Wallet = function () {
           </div>
           <div>
             <button
-              className="text-sm font-semibold text-vesper focus:outline-none"
+              className={`text-sm ${
+                !account && 'hidden'
+              } text-sm font-semibold text-vesper focus:outline-none`}
               onClick={deactivateConnector}
-              style={{
-                display: account ? 'initial' : 'none'
-              }}
             >
               {t('disconnect')}
             </button>
