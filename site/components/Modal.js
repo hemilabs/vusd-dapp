@@ -1,7 +1,7 @@
 import { useOnClickOutside } from '../hooks/useOnClickOutside'
 import { useOnKeyUp } from '../hooks/useOnKeyUp'
 
-const Modal = function ({ onRequestClose, children, ...props }) {
+const Modal = function ({ onRequestClose = () => null, children, ...props }) {
   const modalRef = useOnClickOutside(onRequestClose)
 
   useOnKeyUp(function (e) {

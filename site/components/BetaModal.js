@@ -16,11 +16,7 @@ const BetaModal = function () {
     }
   }, [])
   return (
-    <Modal
-      className="p-4 bg-white rounded-md"
-      modalIsOpen={modalIsOpen}
-      onRequestClose={closeModal}
-    >
+    <Modal className="p-4 bg-white rounded-md" modalIsOpen={modalIsOpen}>
       <div className="flex justify-center w-full text-center">
         <div className="flex items-center justify-center w-32 h-32 text-5xl bg-gray-200 rounded-full">
           🛠
