@@ -7,6 +7,7 @@ import SwapBox from '../components/SwapBox'
 import Treasury from '../components/Treasury'
 import { TransactionContextProvider } from '../components/TransactionContext'
 import { VusdContextProvider } from '../components/context/Vusd'
+import BetaModal from '../components/BetaModal'
 
 const HomePage = function ({ tokensInitialData }) {
   const fetcher = (...args) => fetch(...args).then((res) => res.json())
@@ -24,6 +25,7 @@ const HomePage = function ({ tokensInitialData }) {
             <Treasury />
             <SwapBox />
           </div>
+          <BetaModal />
           <Transactions />
         </Layout>
       </TransactionContextProvider>

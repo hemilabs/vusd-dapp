@@ -16,7 +16,7 @@ const tabs = [
 const SwapBox = function () {
   return (
     <TabSelector
-      className="w-full px-8 py-8 bg-white shadow-md xl:px-40 xl:w-160 rounded-md"
+      className="w-full px-2 py-8 bg-white shadow-md md:px-8 xl:px-40 xl:w-160 rounded-md"
       tabs={tabs}
     />
   )
