@@ -1,6 +1,8 @@
 import Mint from './Mint'
 import Redeem from './Redeem'
 import TabSelector from './TabSelector'
+import CurveDeposit from './CurveDeposit'
+import CurveWithdraw from './CurveWithdraw'
 
 const tabs = [
   {
@@ -10,6 +12,14 @@ const tabs = [
   {
     name: 'redeem',
     component: Redeem
+  },
+  {
+    name: 'curvedeposit',
+    component: CurveDeposit
+  },
+  {
+    name: 'curvewithdraw',
+    component: CurveWithdraw
   }
 ]
 

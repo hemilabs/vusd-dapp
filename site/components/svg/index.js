@@ -3,6 +3,8 @@ import checkmark from './Checkmark'
 import close from './Close'
 import coinbasewallet from './CoinbaseWallet'
 import cross from './Cross'
+import curvedeposit from './CurveDeposit'
+import curvewithdraw from './CurveWithdraw'
 import dai from './Dai'
 import loading from './Loading'
 import mint from './Mint'
@@ -21,6 +23,8 @@ export default {
   close,
   coinbasewallet,
   cross,
+  curvedeposit,
+  curvewithdraw,
   dai,
   loading,
   metamask,

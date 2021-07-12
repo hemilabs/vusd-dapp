@@ -12,6 +12,8 @@ const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
 const minterAbi = require('./abi/Minter.json')
 const redeemerAbi = require('./abi/Redeemer.json')
+const dummyAbi = require('./abi/Dummy.json')
+const curveMetapoolAbi = require('./abi/CurveMetapool.json')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
@@ -19,6 +21,11 @@ const createVusdLib = function (web3, options = {}) {
   const minter = new web3.eth.Contract(minterAbi, contracts.Minter)
   const redeemer = new web3.eth.Contract(redeemerAbi, contracts.Redeemer)
   const vusd = new web3.eth.Contract(erc20Abi, contracts.VUSD)
+  const dummy = new web3.eth.Contract(dummyAbi, contracts.dummy)
+  const curveMetapool = new web3.eth.Contract(
+    curveMetapoolAbi,
+    contracts.CurveMetapool
+  )
 
   const getWhitelistedTokens = function () {
     debug('Getting whitelisted tokens')
@@ -53,6 +60,26 @@ const createVusdLib = function (web3, options = {}) {
           whitelistedTokens.map((t) => t.symbol).join(', ')
         )
         return whitelistedTokens
+      })
+  }
+
+  // Checks if an approval is needed to mint from the the given token amount.
+  const isApprovalNeeded = function (token, owner, spender, amount) {
+    const { decimals, symbol } = findByAddress(token)
+    debug(
+      'Checking if approval is needed for %s %s',
+      fromUnit(amount, decimals),
+      symbol
+    )
+    const contract = new web3.eth.Contract(erc20Abi, token)
+    return contract.methods
+      .allowance(owner, spender)
+      .call()
+      .then(function (allowance) {
+        debug('Allowance for %s is %s', symbol, fromUnit(allowance, decimals))
+        const approvalNeeded = Big(allowance).lt(amount)
+        debug('Approval is %s', approvalNeeded ? 'needed' : 'not needed')
+        return approvalNeeded
       })
   }
 
@@ -106,6 +133,15 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
+  const execOptions = { from, web3, overestimation: 2 }
+  const executeTransactions = createExecutor(execOptions)
+
+  const findReturnValue = (receipt, eventName, prop, address) =>
+    []
+      .concat(receipt.events[eventName])
+      .filter((event) => event.address.toLowerCase() === address.toLowerCase())
+      .map((event) => event.returnValues[prop])[0]
+
   const getTokens = function () {
     debug('Getting tokens information')
     return Promise.all([
@@ -126,6 +162,85 @@ const createVusdLib = function (web3, options = {}) {
         debug('Balance of %s is %s VUSD', owner, fromUnit(balance))
         return balance
       })
+  }
+
+  // same as upper function but on different token :P, later we'll use it
+  const getDummyBalance = function (owner = from) {
+    debug('Getting VUSD(dummy) balance of %s', owner)
+    return dummy.methods
+      .balanceOf(owner)
+      .call()
+      .then(function (balance) {
+        debug('Balance of %s is %s DUM', owner, fromUnit(balance))
+        return balance
+      })
+  }
+
+  const getCurveBalance = function (owner = from) {
+    debug('Getting VUSD3CRV-f balance of %s', owner)
+    return curveMetapool.methods
+      .balanceOf(owner)
+      .call()
+      .then(function (balance) {
+        debug('Balance of %s is %s VUSD3CRV-f', owner, fromUnit(balance))
+        return balance
+      })
+  }
+
+  // token: address of vusd token, used for approvals
+  // amount1: amount of vusd
+  // amount2: 3crv, usually zero?
+  // from comes from vusd?
+  const addCurveLiquidity = function (token, amount, transactionOptions = {}) {
+    const { decimals, symbol } = findByAddress(token)
+    debug('Adding liquidity: ', fromUnit(amount, decimals), symbol)
+    const owner = transactionOptions.from || from
+    const transactionsPromise = isApprovalNeeded(
+      token,
+      owner,
+      contracts.CurveMetapool,
+      amount
+    ).then(function (approvalNeeded) {
+      const txs = []
+      if (approvalNeeded) {
+        const contract = new web3.eth.Contract(erc20Abi, token)
+        txs.push({
+          method: contract.methods.approve(contracts.CurveMetapool, amount),
+          suffix: 'approve',
+          gas: 66000
+        })
+      }
+      txs.push({
+        method: curveMetapool.methods.add_liquidity([amount, 0], amount), // [amount vusd, 3crv], min_amount
+        suffix: 'add_liquidity',
+        gas: 100000
+      })
+      return txs
+    })
+    const parseResults = function (transactionsData) {
+      const { receipt } = transactionsData[transactionsData.length - 1]
+      // @ts-ignore ts(2345)
+      parseReceiptEvents(erc20Abi, contracts.VUSD, receipt)
+      const sent = amount
+      const received = findReturnValue(
+        receipt,
+        'Transfer',
+        'value',
+        contracts.VUSD
+      )
+      debug(
+        'Mint of VUSD from %s %s completed',
+        fromUnit(amount, decimals),
+        symbol
+      )
+      debug('Received %s VUSD', fromUnit(received))
+      return { sent, received }
+    }
+    return executeTransactions(
+      transactionsPromise,
+      parseResults,
+      transactionOptions
+    )
   }
 
   const getUserBalances = function (owner = from) {
@@ -150,35 +265,6 @@ const createVusdLib = function (web3, options = {}) {
         })
       )
     })
-  }
-
-  const execOptions = { from, web3, overestimation: 2 }
-  const executeTransactions = createExecutor(execOptions)
-
-  const findReturnValue = (receipt, eventName, prop, address) =>
-    []
-      .concat(receipt.events[eventName])
-      .filter((event) => event.address.toLowerCase() === address.toLowerCase())
-      .map((event) => event.returnValues[prop])[0]
-
-  // Checks if an approval is needed to mint from the the given token amount.
-  const isApprovalNeeded = function (token, owner, spender, amount) {
-    const { decimals, symbol } = findByAddress(token)
-    debug(
-      'Checking if approval is needed for %s %s',
-      fromUnit(amount, decimals),
-      symbol
-    )
-    const contract = new web3.eth.Contract(erc20Abi, token)
-    return contract.methods
-      .allowance(owner, spender)
-      .call()
-      .then(function (allowance) {
-        debug('Allowance for %s is %s', symbol, fromUnit(allowance, decimals))
-        const approvalNeeded = Big(allowance).lt(amount)
-        debug('Approval is %s', approvalNeeded ? 'needed' : 'not needed')
-        return approvalNeeded
-      })
   }
 
   // Mints VUSD. The amount is token.
@@ -287,8 +373,11 @@ const createVusdLib = function (web3, options = {}) {
     getTokens,
     getRedeemFee,
     getVusdBalance,
+    getDummyBalance,
+    getCurveBalance,
     mint,
-    redeem
+    redeem,
+    addCurveLiquidity
   }
 }
 
