@@ -14,12 +14,7 @@ import { useNumberFormat } from '../hooks/useNumberFormat'
 const CurveDeposit = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
-  const {
-    //vusdBalance,
-    dummyBalance,
-    curveBalance,
-    addCurveLiquidity
-  } = vusd
+  const { vusdBalance, curveBalance, addCurveLiquidity } = vusd
   const [
     selectedToken
     //  , setSelectedToken
@@ -28,8 +23,6 @@ const CurveDeposit = function () {
   const { t } = useTranslation('common')
 
   const formatNumber = useNumberFormat()
-
-  //  const curveContract = '0x4df9e1a764fb8df1113ec02fc9dc75963395b508'
 
   const registerLPToken = useRegisterToken({
     symbol: 'VUSD3CRV-f',
@@ -45,23 +38,24 @@ const CurveDeposit = function () {
     symbol: 'VUSD'
   }
 
-  //  const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
-  const fixedDummyBalance = toFixed(fromUnit(dummyBalance || 0), 4)
+  const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
 
-  const tokenAvailable = Big(dummyBalance || 0).gt(0)
+  const tokenAvailable = Big(vusdBalance || 0).gt(0)
   const depositDisabled =
     Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0, 18)).gt(Big(dummyBalance || 0))
+    Big(toUnit(amount || 0, 18)).gt(Big(vusdBalance || 0))
 
   const handleMaxAmountClick = () =>
-    tokenAvailable && setAmount(fromUnit(dummyBalance, 18))
+    tokenAvailable && setAmount(fromUnit(vusdBalance, 18))
 
   const handleDeposit = function (token, depositAmount) {
     const fixedAmount = Big(depositAmount).round(4, 0).toFixed(4)
     const internalTransactionId = Date.now()
-    const { emitter } = addCurveLiquidity(token.address, depositAmount)
-
+    const { emitter } = addCurveLiquidity(
+      token.address,
+      toUnit(depositAmount, token.decimals)
+    )
     setTimeout(function () {
       setAmount('')
     }, 3000)
@@ -74,14 +68,11 @@ const CurveDeposit = function () {
           receivedSymbol: 'VUSD3CRV-f',
           suffixes: transactions.suffixes,
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
-          operation: 'add_liquidity',
+          operation: 'add-liquidity-metapool',
           sent: fixedAmount,
-          estimatedReceive: Big(depositAmount)
-            .times(1 - token.mintingFee)
-            .round(4, 0)
-            .toFixed(4),
-          mintFee: token.mintingFee,
-          redeemFee: token.redeemFee // TODO FEE behaviour?
+          estimatedReceive: Big(depositAmount).times(1).round(4, 0).toFixed(4),
+          mintFee: 0,
+          redeemFee: 0
         })
         return transactions.suffixes.forEach(function (suffix, idx) {
           emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
@@ -158,8 +149,7 @@ const CurveDeposit = function () {
       </div>
       <div className="flex justify-between w-full text-xs text-gray-400">
         <div className="font-semibold">{t('current-vusd-balance')}:</div>
-        {/* <div className="font-sm">{formatNumber(fixedVUSBalance)}</div> */}
-        <div className="font-sm">{formatNumber(fixedDummyBalance)}</div>
+        <div className="font-sm">{formatNumber(fixedVUSBalance)}</div>
       </div>
 
       <div className="flex justify-between w-full text-xs text-gray-400">

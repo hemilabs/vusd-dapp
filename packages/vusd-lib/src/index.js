@@ -12,7 +12,6 @@ const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
 const minterAbi = require('./abi/Minter.json')
 const redeemerAbi = require('./abi/Redeemer.json')
-const dummyAbi = require('./abi/Dummy.json')
 const curveMetapoolAbi = require('./abi/CurveMetapool.json')
 
 const createVusdLib = function (web3, options = {}) {
@@ -21,7 +20,6 @@ const createVusdLib = function (web3, options = {}) {
   const minter = new web3.eth.Contract(minterAbi, contracts.Minter)
   const redeemer = new web3.eth.Contract(redeemerAbi, contracts.Redeemer)
   const vusd = new web3.eth.Contract(erc20Abi, contracts.VUSD)
-  const dummy = new web3.eth.Contract(dummyAbi, contracts.dummy)
   const curveMetapool = new web3.eth.Contract(
     curveMetapoolAbi,
     contracts.CurveMetapool
@@ -164,18 +162,6 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  // same as upper function but on different token :P, later we'll use it
-  const getDummyBalance = function (owner = from) {
-    debug('Getting VUSD(dummy) balance of %s', owner)
-    return dummy.methods
-      .balanceOf(owner)
-      .call()
-      .then(function (balance) {
-        debug('Balance of %s is %s DUM', owner, fromUnit(balance))
-        return balance
-      })
-  }
-
   const getCurveBalance = function (owner = from) {
     debug('Getting VUSD3CRV-f balance of %s', owner)
     return curveMetapool.methods
@@ -189,8 +175,7 @@ const createVusdLib = function (web3, options = {}) {
 
   // token: address of vusd token, used for approvals
   // amount1: amount of vusd
-  // amount2: 3crv, usually zero?
-  // from comes from vusd?
+  // amount2: 3crv, usually zero
   const addCurveLiquidity = function (token, amount, transactionOptions = {}) {
     const { decimals, symbol } = findByAddress(token)
     debug('Adding liquidity: ', fromUnit(amount, decimals), symbol)
@@ -203,6 +188,7 @@ const createVusdLib = function (web3, options = {}) {
     ).then(function (approvalNeeded) {
       const txs = []
       if (approvalNeeded) {
+        // only coin[0]
         const contract = new web3.eth.Contract(erc20Abi, token)
         txs.push({
           method: contract.methods.approve(contracts.CurveMetapool, amount),
@@ -211,9 +197,9 @@ const createVusdLib = function (web3, options = {}) {
         })
       }
       txs.push({
-        method: curveMetapool.methods.add_liquidity([amount, 0], amount), // [amount vusd, 3crv], min_amount
+        method: curveMetapool.methods.add_liquidity([amount, 0], 1), // [amount vusd, 3crv], min_amount
         suffix: 'add_liquidity',
-        gas: 100000
+        gas: 6385876
       })
       return txs
     })
@@ -373,7 +359,6 @@ const createVusdLib = function (web3, options = {}) {
     getTokens,
     getRedeemFee,
     getVusdBalance,
-    getDummyBalance,
     getCurveBalance,
     mint,
     redeem,

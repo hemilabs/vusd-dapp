@@ -15,6 +15,7 @@ import usdc from './Usdc'
 import usdt from './Usdt'
 import vusd from './Vusd'
 import vusdlogo from './VusdLogo'
+import vusd3crv from './Vusd3crv-f'
 import walletconnect from './WalletConnect'
 
 export default {
@@ -25,6 +26,7 @@ export default {
   cross,
   curvedeposit,
   curvewithdraw,
+  'vusd3crv-f': vusd3crv,
   dai,
   loading,
   metamask,
