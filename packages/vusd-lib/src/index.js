@@ -229,6 +229,63 @@ const createVusdLib = function (web3, options = {}) {
     )
   }
 
+  const removeCurveLiquidity = function (
+    token,
+    amount,
+    transactionOptions = {}
+  ) {
+    const { decimals, symbol } = findByAddress(token)
+    debug('Removing liquidity: ', fromUnit(amount, decimals), symbol)
+    const owner = transactionOptions.from || from
+    const transactionsPromise = isApprovalNeeded(
+      token,
+      owner,
+      contracts.CurveMetapool,
+      amount
+    ).then(function (approvalNeeded) {
+      const txs = []
+      if (approvalNeeded) {
+        // only coin[0]
+        const contract = new web3.eth.Contract(erc20Abi, token)
+        txs.push({
+          method: contract.methods.approve(owner, amount), //contracts.CurveMetapool
+          suffix: 'approve',
+          gas: 66000
+        })
+      }
+      txs.push({
+        method: curveMetapool.methods.remove_liquidity_one_coin(amount, 0, 1), // [amount vusd, 3crv], min_amount
+        suffix: 'remove _liquidity',
+        gas: 6385876
+      })
+      return txs
+    })
+    const parseResults = function (transactionsData) {
+      const { receipt } = transactionsData[transactionsData.length - 1]
+      // @ts-ignore ts(2345)
+      parseReceiptEvents(erc20Abi, contracts.VUSD, receipt)
+      const sent = amount
+      const received = findReturnValue(
+        receipt,
+        'Transfer',
+        'value',
+        contracts.VUSD
+      )
+      debug(
+        'Withdraw of VUSD from %s %s completed',
+        fromUnit(amount, decimals),
+        symbol
+      )
+      debug('Received %s VUSD', fromUnit(received))
+      return { sent, received }
+    }
+    return executeTransactions(
+      transactionsPromise,
+      parseResults,
+      transactionOptions
+    )
+  }
+
   const getUserBalances = function (owner = from) {
     debug('Getting token balances of %s', owner)
     return getWhitelistedTokens().then(function (whitelistedTokens) {
@@ -362,7 +419,8 @@ const createVusdLib = function (web3, options = {}) {
     getCurveBalance,
     mint,
     redeem,
-    addCurveLiquidity
+    addCurveLiquidity,
+    removeCurveLiquidity
   }
 }
 

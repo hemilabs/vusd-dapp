@@ -1,8 +1,5 @@
 {
   "address": "Address",
-  "add-liquidity-metapool": "Add liquidity to metapool",
-  "amount": "Amount",
-  "amount-vusd": "VUSD Amount",
   "beta-description": "We want you to use VUSD but we also want you to be aware of the risks that come with a Beta version.",
   "beta-title": "VUSD is on Beta",
   "connect-wallet": "Connect wallet",
@@ -10,11 +7,15 @@
   "current-redeem-fee": "Current redeem fee",
   "current-vusd-balance": "Current VUSD Balance",
   "current-curve-balance": "Current VUSD3CRV-f Balance",
-  "curvedeposit": "Curve deposit",
-  "curvewithdraw": "Curve withdraw",
-  "curve-deposit": "Deposit",
-  "curve-withdraw": "Withdraw",
-  "deposit": "deposit",
+  "curve-button-deposit": "Deposit",
+  "curve-button-withdraw": "Withdraw",
+  "curve-input-title-deposit": "Deposit",
+  "curve-input-title-withdraw": "Withdraw",
+  "curve-modal-title-deposit": "Add liquidity",
+  "curve-modal-title-withdraw": "Withdraw liquidity",
+  "curve-title": "Liquidity",
+  "curvedeposit": "Deposit",
+  "curvewithdraw": "Withdraw",
   "disconnect": "Disconnect",
   "error": "Error",
   "error-404": "Page Not Found",
@@ -69,6 +70,5 @@
   "transaction-failed": "Transaction Failed",
   "transaction-hash": "Transaction Hash",
   "treasury": "Treasury",
-  "view-on-etherscan": "View on Etherscan",
-  "withdraw": "withdraw"
+  "view-on-etherscan": "View on Etherscan"
 }

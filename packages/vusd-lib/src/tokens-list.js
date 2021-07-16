@@ -12,7 +12,17 @@ const vusd = {
   chainId: 1,
   logoURI: ''
 }
-const allTokens = [vusd].concat(tokens)
+
+const VUSD3CRV = {
+  name: 'VUSD3CRV-f',
+  address: contracts.CurveMetapool,
+  symbol: 'VUSD3CRV-f',
+  decimals: 18,
+  chainId: 1,
+  logoURI: ''
+}
+
+const allTokens = [VUSD3CRV].concat([vusd].concat(tokens))
 
 const findByAddress = (address, chainId = 1) =>
   allTokens.find((t) => t.address === address && t.chainId === chainId)

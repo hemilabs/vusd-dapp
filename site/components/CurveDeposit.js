@@ -15,10 +15,7 @@ const CurveDeposit = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { vusdBalance, curveBalance, addCurveLiquidity } = vusd
-  const [
-    selectedToken
-    //  , setSelectedToken
-  ] = useState({})
+  const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
 
@@ -26,7 +23,7 @@ const CurveDeposit = function () {
 
   const registerLPToken = useRegisterToken({
     symbol: 'VUSD3CRV-f',
-    address: '0x4df9e1a764fb8df1113ec02fc9dc75963395b508',
+    address: '0x4dF9E1A764Fb8Df1113EC02fc9dc75963395b508',
     decimals: 18
   })
 
@@ -68,11 +65,9 @@ const CurveDeposit = function () {
           receivedSymbol: 'VUSD3CRV-f',
           suffixes: transactions.suffixes,
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
-          operation: 'add-liquidity-metapool',
+          operation: 'curve-modal-title-deposit',
           sent: fixedAmount,
-          estimatedReceive: Big(depositAmount).times(1).round(4, 0).toFixed(4),
-          mintFee: 0,
-          redeemFee: 0
+          estimatedReceive: Big(depositAmount).times(1).round(4, 0).toFixed(4)
         })
         return transactions.suffixes.forEach(function (suffix, idx) {
           emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
@@ -123,6 +118,7 @@ const CurveDeposit = function () {
   useEffect(
     function () {
       setAmount('')
+      setSelectedToken(vusdToken)
     },
     [selectedToken.symbol]
   )
@@ -143,7 +139,7 @@ const CurveDeposit = function () {
           onChange={handleChange}
           onSuffixClick={handleMaxAmountClick}
           suffix="MAX"
-          title={t('amount-vusd')}
+          title={`${t('curve-input-title-deposit')} ${selectedToken.symbol}`}
           value={amount}
         />
       </div>
@@ -162,7 +158,7 @@ const CurveDeposit = function () {
           disabled={depositDisabled}
           onClick={() => handleDeposit(vusdToken, amount)}
         >
-          {t('curve-deposit')}
+          {t('curve-button-deposit')}
         </Button>
       </div>
     </div>

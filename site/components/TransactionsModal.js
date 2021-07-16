@@ -92,13 +92,15 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                 )}%`}
               />
             )}
-            <TransactionModalRow
-              text={isMint ? t('current-redeem-fee') : t('redeem-fee')}
-              tipLink="/"
-              value={`${formatNumber(
-                (transaction.redeemFee * 100).toFixed(2)
-              )}%`}
-            />
+            {transaction.redeemFee && (
+              <TransactionModalRow
+                text={isMint ? t('current-redeem-fee') : t('redeem-fee')}
+                tipLink="/"
+                value={`${formatNumber(
+                  (transaction.redeemFee * 100).toFixed(2)
+                )}%`}
+              />
+            )}
             <div className="py-4">
               <TransactionModalRow
                 text={t('total-transactions')}
