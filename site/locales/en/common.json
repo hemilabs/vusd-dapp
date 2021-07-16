@@ -1,5 +1,6 @@
 {
   "address": "Address",
+  "amount": "Amount",
   "beta-description": "We want you to use VUSD but we also want you to be aware of the risks that come with a Beta version.",
   "beta-title": "VUSD is on Beta",
   "connect-wallet": "Connect wallet",
@@ -49,6 +50,7 @@
   "global-tx-status": "Operation Status",
   "language-en": "English",
   "language-zh": "中文",
+  "liquidity": "Liquidity",
   "mint": "Mint",
   "mint-fee": "Mint fee",
   "redeem": "Redeem",

@@ -3,6 +3,7 @@ import Redeem from './Redeem'
 import TabSelector from './TabSelector'
 import CurveDeposit from './CurveDeposit'
 import CurveWithdraw from './CurveWithdraw'
+import useTranslation from 'next-translate/useTranslation'
 
 const tabs = [
   {
@@ -24,11 +25,16 @@ const tabs = [
 ]
 
 const SwapBox = function () {
+  const { t } = useTranslation('common')
+
   return (
-    <TabSelector
-      className="w-full px-2 py-8 bg-white shadow-md md:px-8 xl:px-40 xl:w-160 rounded-md"
-      tabs={tabs}
-    />
+    <div className="w-full pt-4 pb-8 pl-8 pr-8 bg-indigo-50 rounded-md">
+      <p className="mb-2 text-lg font-bold">{t('liquidity')}</p>
+      <TabSelector
+        className="w-full px-8 py-8 bg-white  rounded-md"
+        tabs={tabs}
+      />
+    </div>
   )
 }
 

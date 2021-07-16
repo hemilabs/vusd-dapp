@@ -12,16 +12,14 @@ const Treasury = function () {
   const { tokensData } = vusd
 
   return (
-    <div className="w-full mb-12 xl:w-88">
+    <div className="w-full pt-4 pb-4 pl-8 pr-8 mb-4 bg-indigo-50 rounded-md">
       <div className="">
-        <p className="mb-2 text-sm font-bold text-vesper">
-          {t('treasury').toUpperCase()}
-        </p>
-        <div className="w-full">
+        <p className="mb-2 text-lg font-bold">{t('treasury')}</p>
+        <div className="flex w-64 space-x-4">
           {tokensData &&
             tokensData.map((token) => (
               <div
-                className="flex items-center justify-between w-full h-20 px-5 mb-4 bg-white shadow-md rounded-md"
+                className="flex items-center justify-between h-20 px-5 mb-4 bg-white space-x-8 rounded-md"
                 key={token.symbol}
               >
                 <div className="flex items-center">

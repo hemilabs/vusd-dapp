@@ -5,7 +5,6 @@ import { fromUnit, toUnit, toFixed } from '../utils'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
-// import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
 import { useRegisterToken } from '../hooks/useRegisterToken'
@@ -124,15 +123,7 @@ const CurveDeposit = function () {
   )
 
   return (
-    <div className="flex flex-wrap w-full py-4 space-y-6">
-      {/* <div className="w-full">
-        <TokenSelector
-          balanceKey="balance"
-          selectedToken={selectedToken}
-          setSelectedToken={setSelectedToken}
-          tokensList={tokensData}
-        />
-      </div> */}
+    <div className="flex flex-wrap py-4 w-80 space-y-6">
       <div className="w-full">
         <Input
           disabled={!tokenAvailable}

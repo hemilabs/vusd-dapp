@@ -125,16 +125,7 @@ const CurveWithdraw = function () {
   }
 
   return (
-    <div className="flex flex-wrap w-full py-4 space-y-6">
-      {/* <div className="w-full"> // TODO: will be used on next iteration
-        <TokenSelector
-          balanceKey="walletRedeemable"
-          decimals="18"
-          selectedToken={selectedToken}
-          setSelectedToken={setSelectedToken}
-          tokensList={tokensData}
-        />
-      </div> */}
+    <div className="flex flex-wrap py-4 w-80 space-y-6">
       <div className="w-full">
         <Input
           disabled={!lpAvailable}
