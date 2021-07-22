@@ -51,36 +51,37 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
           </div>
           <div className="mt-4">
             {transaction.sent && (
-              <div className="flex justify-between pb-2 mb-4 border-b border-gray-300">
-                <div>
-                  <p className="text-lg font-bold ">
+              <div className=" pb-2 mb-4 border-b border-gray-300">
+                <p className="flex justify-between text-lg font-bold">
+                  <span>
+                    <SvgContainer
+                      className="inline mr-3"
+                      height="33"
+                      name={transaction.sentSymbol}
+                      width="33"
+                    />
+                    {formatNumber(transaction.sent)}
+                  </span>
+                  {!isMint && <span>{transaction.sentSymbol}</span>}
+                  {isMint && <div className="text-2xl">→</div>}
+                  {isMint && (
                     <span>
-                      <SvgContainer
-                        className="inline mr-3"
-                        height="33"
-                        name={transaction.sentSymbol}
-                        width="33"
-                      />
-                      {formatNumber(transaction.sent)}
+                      <p className="text-lg font-bold ">
+                        <span>
+                          {isConfirmed
+                            ? formatNumber(transaction.received)
+                            : formatNumber(transaction.estimatedReceive)}
+                          <SvgContainer
+                            className="inline ml-3"
+                            height="33"
+                            name={transaction.receivedSymbol}
+                            width="33"
+                          />
+                        </span>
+                      </p>
                     </span>
-                  </p>
-                </div>
-                <div className="text-2xl">→</div>
-                <div>
-                  <p className="text-lg font-bold ">
-                    <span>
-                      {isConfirmed
-                        ? formatNumber(transaction.received)
-                        : formatNumber(transaction.estimatedReceive)}
-                      <SvgContainer
-                        className="inline ml-3"
-                        height="33"
-                        name={transaction.receivedSymbol}
-                        width="33"
-                      />
-                    </span>
-                  </p>
-                </div>
+                  )}
+                </p>
               </div>
             )}
             {isMint && (

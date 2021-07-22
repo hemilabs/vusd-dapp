@@ -21,10 +21,8 @@ const HomePage = function ({ tokensInitialData }) {
     <VusdContextProvider tokensInitialData={data}>
       <TransactionContextProvider>
         <Layout walletConnection>
-          <div className="flex flex-wrap justify-between w-full ">
+          <div className="flex flex-wrap justify-between w-full mb-14">
             <Treasury />
-          </div>
-          <div className="flex flex-wrap justify-between w-full ">
             <Liquidity />
           </div>
           <BetaModal />
