@@ -27,7 +27,7 @@ const Mint = function () {
     decimals: 18
   })
 
-  const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
+  const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const tokenAvailable = Big(selectedToken.balance || 0).gt(0)
   const mintDisabled =
     Big(0).gte(Big(amount || 0)) ||
@@ -139,7 +139,7 @@ const Mint = function () {
       </div>
       <div className="flex justify-between w-full text-xs text-gray-400">
         <div className="font-semibold">{t('current-vusd-balance')}:</div>
-        <div className="font-sm">{formatNumber(fixedVUSBalance)}</div>
+        <div className="font-sm">{formatNumber(fixedVusdBalance)}</div>
       </div>
       <div className="w-full">
         <Button

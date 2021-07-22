@@ -5,21 +5,21 @@ const { tokens } = require('@uniswap/default-token-list')
 const contracts = require('./contracts.json')
 
 const vusd = {
-  name: 'VUSD',
   address: contracts.VUSD,
-  symbol: 'VUSD',
-  decimals: 18,
   chainId: 1,
-  logoURI: ''
+  decimals: 18,
+  logoURI: '',
+  name: 'VUSD',
+  symbol: 'VUSD'
 }
 
 const VUSD3CRV = {
-  name: 'VUSD3CRV-f',
   address: contracts.CurveMetapool,
-  symbol: 'VUSD3CRV-f',
-  decimals: 18,
   chainId: 1,
-  logoURI: ''
+  decimals: 18,
+  logoURI: '',
+  name: 'VUSD3CRV-f',
+  symbol: 'VUSD3CRV-f'
 }
 
 const allTokens = [VUSD3CRV].concat([vusd].concat(tokens))

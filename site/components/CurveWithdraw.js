@@ -5,8 +5,6 @@ import { fromUnit, toFixed, toUnit } from '../utils'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
-import { useRegisterToken } from '../hooks/useRegisterToken'
-// import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
 import { useNumberFormat } from '../hooks/useNumberFormat'
@@ -15,12 +13,11 @@ const CurveWithdraw = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { vusdBalance, curveBalance, removeCurveLiquidity } = vusd
-  const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
 
-  const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
+  const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
 
   const withdrawDisabled =
@@ -29,25 +26,29 @@ const CurveWithdraw = function () {
   const lpAvailable = Big(curveBalance || 0).gt(0)
   const vusdToken = {
     address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
+    chainId: 1,
     decimals: 18,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    name: 'VUSD',
     symbol: 'VUSD'
   }
 
-  const registerToken = useRegisterToken(vusdToken)
   const lpToken = {
-    address: '0x4dF9E1A764Fb8Df1113EC02fc9dc75963395b508',
     chainId: 1,
-    decimals: 18,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
     name: 'VUSD3CRV-f',
-    symbol: 'VUSD3CRV-f'
+    symbol: 'VUSD3CRV-f',
+    address: '0x4dF9E1A764Fb8Df1113EC02fc9dc75963395b508',
+    decimals: 18
   }
 
   useEffect(
     function () {
       setAmount('')
-      setSelectedToken(lpToken)
     },
-    [selectedToken.symbol]
+    [vusdBalance]
   )
 
   const handleMaxAmountClick = () =>
@@ -98,7 +99,6 @@ const CurveWithdraw = function () {
         })
       })
       .on('result', function ({ fees, status, received }) {
-        registerToken()
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: status ? 'confirmed' : 'canceled',
@@ -132,14 +132,14 @@ const CurveWithdraw = function () {
           onChange={handleChange}
           onSuffixClick={() => handleMaxAmountClick()}
           suffix="MAX"
-          title={`${t('curve-input-title-withdraw')} ${selectedToken.symbol}`}
+          title={`${t('curve-input-title-withdraw')} ${vusdToken.symbol}`}
           value={amount}
         />
       </div>
 
       <div className="flex justify-between w-full text-xs text-gray-400">
         <div className="font-semibold">{t('current-vusd-balance')}:</div>
-        <div className="font-sm">{formatNumber(fixedVUSBalance)}</div>
+        <div className="font-sm">{formatNumber(fixedVusdBalance)}</div>
       </div>
 
       <div className="flex justify-between w-full text-xs text-gray-400">

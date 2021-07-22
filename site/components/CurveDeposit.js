@@ -14,8 +14,7 @@ const CurveDeposit = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { vusdBalance, curveBalance, addCurveLiquidity } = vusd
-  const [selectedToken, setSelectedToken] = useState({})
-  const [amount, setAmount] = useState('')
+  const [vusdAmount, setvusdAmount] = useState('')
   const { t } = useTranslation('common')
 
   const formatNumber = useNumberFormat()
@@ -34,39 +33,36 @@ const CurveDeposit = function () {
     symbol: 'VUSD'
   }
 
-  const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
+  const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
-
-  const tokenAvailable = Big(vusdBalance || 0).gt(0)
+  const vusdAvailable = Big(vusdBalance || 0).gt(0)
   const depositDisabled =
-    Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0, 18)).gt(Big(vusdBalance || 0))
-
-  const handleMaxAmountClick = () =>
-    tokenAvailable && setAmount(fromUnit(vusdBalance, 18))
-
-  const handleDeposit = function (token, depositAmount) {
-    const fixedAmount = Big(depositAmount).round(4, 0).toFixed(4)
+    Big(0).gte(Big(vusdAmount || 0)) ||
+    Big(toUnit(vusdAmount || 0, 18)).gt(Big(vusdBalance || 0))
+  const handleVusdMaxAmountClick = () =>
+    vusdAvailable && setvusdAmount(fromUnit(vusdBalance, 18))
+  const handleDeposit = function (_vusdToken, _vusdAmount) {
+    const fixedAmount = Big(_vusdAmount).round(4, 0).toFixed(4)
     const internalTransactionId = Date.now()
     const { emitter } = addCurveLiquidity(
-      token.address,
-      toUnit(depositAmount, token.decimals)
+      _vusdToken,
+      toUnit(_vusdAmount, _vusdToken.decimals)
     )
     setTimeout(function () {
-      setAmount('')
+      setvusdAmount('')
     }, 3000)
     return emitter
       .on('transactions', function (transactions) {
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: 'created',
-          sentSymbol: token.symbol,
+          sentSymbol: vusdToken.symbol,
           receivedSymbol: 'VUSD3CRV-f',
           suffixes: transactions.suffixes,
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
           operation: 'curve-modal-title-deposit',
           sent: fixedAmount,
-          estimatedReceive: Big(depositAmount).times(1).round(4, 0).toFixed(4)
+          estimatedReceive: Big(_vusdAmount).times(1).round(4, 0).toFixed(4)
         })
         return transactions.suffixes.forEach(function (suffix, idx) {
           emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
@@ -107,36 +103,35 @@ const CurveDeposit = function () {
       })
   }
 
-  const handleChange = function (e) {
+  const vusdHandleChange = function (e) {
     const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
     if (e.target.value === '' || re.test(e.target.value)) {
-      setAmount(e.target.value)
+      setvusdAmount(e.target.value)
     }
   }
 
   useEffect(
     function () {
-      setAmount('')
-      setSelectedToken(vusdToken)
+      setvusdAmount('')
     },
-    [selectedToken.symbol]
+    [vusdBalance]
   )
 
   return (
     <div className="flex flex-wrap py-4 w-80 space-y-6">
       <div className="w-full">
         <Input
-          disabled={!tokenAvailable}
-          onChange={handleChange}
-          onSuffixClick={handleMaxAmountClick}
+          disabled={!vusdAvailable}
+          onChange={vusdHandleChange}
+          onSuffixClick={handleVusdMaxAmountClick}
           suffix="MAX"
-          title={`${t('curve-input-title-deposit')} ${selectedToken.symbol}`}
-          value={amount}
+          title={`${t('curve-input-title-deposit')} ${vusdToken.symbol}`}
+          value={vusdAmount}
         />
       </div>
       <div className="flex justify-between w-full text-xs text-gray-400">
         <div className="font-semibold">{t('current-vusd-balance')}:</div>
-        <div className="font-sm">{formatNumber(fixedVUSBalance)}</div>
+        <div className="font-sm">{formatNumber(fixedVusdBalance)}</div>
       </div>
 
       <div className="flex justify-between w-full text-xs text-gray-400">
@@ -147,7 +142,7 @@ const CurveDeposit = function () {
       <div className="w-full">
         <Button
           disabled={depositDisabled}
-          onClick={() => handleDeposit(vusdToken, amount)}
+          onClick={() => handleDeposit(vusdToken, vusdAmount)}
         >
           {t('curve-button-deposit')}
         </Button>

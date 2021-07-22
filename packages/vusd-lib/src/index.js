@@ -25,6 +25,7 @@ const createVusdLib = function (web3, options = {}) {
     contracts.CurveMetapool
   )
 
+  const min_mint_amount = 1
   const getWhitelistedTokens = function () {
     debug('Getting whitelisted tokens')
     return minter.methods
@@ -176,38 +177,44 @@ const createVusdLib = function (web3, options = {}) {
   // token: address of vusd token, used for approvals
   // amount1: amount of vusd
   // amount2: 3crv, usually zero
-  const addCurveLiquidity = function (token, amount, transactionOptions = {}) {
-    const { decimals, symbol } = findByAddress(token)
-    debug('Adding liquidity: ', fromUnit(amount, decimals), symbol)
+  const addCurveLiquidity = function (
+    vusdToken,
+    vusdAmount,
+    transactionOptions = {}
+  ) {
+    const { decimals, symbol } = vusdToken
+    debug('Adding liquidity: ', fromUnit(vusdAmount, decimals), symbol)
     const owner = transactionOptions.from || from
     const transactionsPromise = isApprovalNeeded(
-      token,
+      vusdToken.address,
       owner,
       contracts.CurveMetapool,
-      amount
+      vusdAmount
     ).then(function (approvalNeeded) {
       const txs = []
       if (approvalNeeded) {
-        // only coin[0]
-        const contract = new web3.eth.Contract(erc20Abi, token)
+        const contract = new web3.eth.Contract(erc20Abi, vusdToken.address)
         txs.push({
-          method: contract.methods.approve(contracts.CurveMetapool, amount),
+          method: contract.methods.approve(contracts.CurveMetapool, vusdAmount),
           suffix: 'approve',
           gas: 66000
         })
       }
       txs.push({
-        method: curveMetapool.methods.add_liquidity([amount, 0], 1), // [amount vusd, 3crv], min_amount
+        method: curveMetapool.methods.add_liquidity(
+          [vusdAmount, 0],
+          min_mint_amount
+        ),
         suffix: 'add_liquidity',
         gas: 6385876
       })
       return txs
     })
-    const parseResults = function (transactionsData) {
+    const parseResultsVusd = function (transactionsData) {
       const { receipt } = transactionsData[transactionsData.length - 1]
       // @ts-ignore ts(2345)
       parseReceiptEvents(erc20Abi, contracts.VUSD, receipt)
-      const sent = amount
+      const sent = vusdAmount
       const received = findReturnValue(
         receipt,
         'Transfer',
@@ -215,16 +222,16 @@ const createVusdLib = function (web3, options = {}) {
         contracts.VUSD
       )
       debug(
-        'Mint of VUSD from %s %s completed',
-        fromUnit(amount, decimals),
+        'Deposit of VUSD from %s %s completed',
+        fromUnit(vusdAmount, decimals),
         symbol
       )
-      debug('Received %s VUSD', fromUnit(received))
+      debug('Received %s LP', fromUnit(received))
       return { sent, received }
     }
     return executeTransactions(
       transactionsPromise,
-      parseResults,
+      parseResultsVusd,
       transactionOptions
     )
   }
@@ -245,10 +252,9 @@ const createVusdLib = function (web3, options = {}) {
     ).then(function (approvalNeeded) {
       const txs = []
       if (approvalNeeded) {
-        // only coin[0]
         const contract = new web3.eth.Contract(erc20Abi, token)
         txs.push({
-          method: contract.methods.approve(owner, amount), //contracts.CurveMetapool
+          method: contract.methods.approve(owner, amount),
           suffix: 'approve',
           gas: 66000
         })

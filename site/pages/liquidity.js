@@ -3,11 +3,11 @@ import { useWeb3React } from '@web3-react/core'
 import getTokensSS from '../utils/getTokensSS'
 import Layout from '../components/Layout'
 import Transactions from '../components/Transactions'
+import Liquidity from '../components/Liquidity'
 import Treasury from '../components/Treasury'
 import { TransactionContextProvider } from '../components/TransactionContext'
 import { VusdContextProvider } from '../components/context/Vusd'
 import BetaModal from '../components/BetaModal'
-import SwapBox from '../components/SwapBox'
 
 const HomePage = function ({ tokensInitialData }) {
   const fetcher = (...args) => fetch(...args).then((res) => res.json())
@@ -21,9 +21,11 @@ const HomePage = function ({ tokensInitialData }) {
     <VusdContextProvider tokensInitialData={data}>
       <TransactionContextProvider>
         <Layout walletConnection>
-          <div className="flex flex-wrap justify-between w-full mb-14">
+          <div className="flex flex-wrap justify-between w-full ">
             <Treasury />
-            <SwapBox />
+          </div>
+          <div className="flex flex-wrap justify-between w-full ">
+            <Liquidity />
           </div>
           <BetaModal />
           <Transactions />
