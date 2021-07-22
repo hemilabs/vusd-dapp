@@ -1,10 +1,12 @@
 import Head from 'next/head'
 
+const trackingId = process.env.NEXT_PUBLIC_ANALYTICS_ID
+
 const CustomHead = ({ title }) => (
   <Head>
-    {/* <script
+    <script
       async
-      src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_ANALYTICS_ID}`}
+      src={`https://www.googletagmanager.com/gtag/js?id=${trackingId}`}
     ></script>
     <script
       dangerouslySetInnerHTML={{
@@ -12,10 +14,10 @@ const CustomHead = ({ title }) => (
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${process.env.NEXT_PUBLIC_ANALYTICS_ID}');
+          gtag('config', '${trackingId}');
         `
       }}
-    /> */}
+    />
     <title>VUSD{title && ` | ${title}`}</title>
     <link href="/favicon.ico" rel="icon" />
   </Head>
