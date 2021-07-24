@@ -1,3 +1,4 @@
+import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
@@ -10,20 +11,28 @@ import VusdContext from './context/Vusd'
 import { useNumberFormat } from '../hooks/useNumberFormat'
 
 const CurveWithdraw = function () {
+  const { active } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
-  const { vusdBalance, curveBalance, removeCurveLiquidity } = vusd
+  const {
+    vusdBalance,
+    curveBalance,
+    removeCurveLiquidity,
+    calcLpWithdraw,
+    calcWithdraw
+  } = vusd
   const [amount, setAmount] = useState('')
+
+  const [amountVusd, setAmountVusd] = useState(0)
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
 
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
-
   const withdrawDisabled =
     Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0, 18)).gt(Big(curveBalance || 0))
-  const lpAvailable = Big(curveBalance || 0).gt(0)
+    Big(toUnit(amount || 0, 18)).gt(Big(toUnit(amountVusd) || 0))
+
   const vusdToken = {
     address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
     chainId: 1,
@@ -47,74 +56,88 @@ const CurveWithdraw = function () {
   useEffect(
     function () {
       setAmount('')
+      if (active) {
+        calcWithdraw(curveBalance).then(function (result) {
+          setAmountVusd(fromUnit(result))
+        })
+      }
     },
     [vusdBalance]
   )
 
-  const handleMaxAmountClick = () =>
-    lpAvailable && setAmount(fromUnit(curveBalance, 18))
+  const handleMaxAmountClick = function () {
+    active &&
+      calcWithdraw(curveBalance).then(function (result) {
+        setAmountVusd(fromUnit(result))
+        return curveBalance && setAmount(fromUnit(result))
+      })
+  }
 
-  const handleWithdraw = function (token, withdrawAmount) {
-    const fixedAmount = Big(withdrawAmount).round(4, 0).toFixed(4)
-    const internalTransactionId = Date.now()
-    const { emitter } = removeCurveLiquidity(
-      token.address,
-      toUnit(withdrawAmount, token.decimals)
-    )
-    setTimeout(function () {
-      setAmount('')
-    }, 3000)
-    return emitter
-      .on('transactions', function (transactions) {
-        addTransactionStatus({
-          internalTransactionId,
-          transactionStatus: 'created',
-          sentSymbol: 'VUSD3CRV-f',
-          receivedSymbol: token.symbol,
-          suffixes: transactions.suffixes,
-          expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
-          operation: 'curve-modal-title-withdraw',
-          sent: fixedAmount,
-          estimatedReceive: Big(withdrawAmount).times(1).round(4, 0).toFixed(4)
+  const handleWithdraw = function (token, vusdAmount) {
+    calcLpWithdraw(vusdAmount).then(function (withdrawAmount) {
+      const internalTransactionId = Date.now()
+      const { emitter } = removeCurveLiquidity(token.address, withdrawAmount)
+
+      setTimeout(function () {
+        setAmount('')
+      }, 3000)
+
+      return emitter
+        .on('transactions', function (transactions) {
+          addTransactionStatus({
+            internalTransactionId,
+            transactionStatus: 'created',
+            sentSymbol: 'VUSD',
+            receivedSymbol: token.symbol,
+            suffixes: transactions.suffixes,
+            expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
+            operation: 'curve-modal-title-withdraw',
+            sent: Big(vusdAmount).round(4, 0).toFixed(4),
+            estimatedReceive: Big(withdrawAmount)
+              .times(1)
+              .round(4, 0)
+              .toFixed(4)
+          })
+
+          return transactions.suffixes.forEach(function (suffix, idx) {
+            emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
+              addTransactionStatus({
+                internalTransactionId,
+                transactionStatus: 'in-progress',
+                [`transactionStatus-${idx}`]: 'waiting-to-be-mined',
+                [`transactionHash-${idx}`]: transactionHash
+              })
+            )
+            emitter.on(`receipt-${suffix}`, ({ receipt }) =>
+              addTransactionStatus({
+                internalTransactionId,
+                currentTransaction: idx + 1,
+                [`transactionStatus-${idx}`]: receipt.status
+                  ? 'confirmed'
+                  : 'canceled',
+                [`transactionHash-${idx}`]: receipt.transactionHash
+              })
+            )
+          })
         })
-        return transactions.suffixes.forEach(function (suffix, idx) {
-          emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
-            addTransactionStatus({
-              internalTransactionId,
-              transactionStatus: 'in-progress',
-              [`transactionStatus-${idx}`]: 'waiting-to-be-mined',
-              [`transactionHash-${idx}`]: transactionHash
-            })
-          )
-          emitter.on(`receipt-${suffix}`, ({ receipt }) =>
-            addTransactionStatus({
-              internalTransactionId,
-              currentTransaction: idx + 1,
-              [`transactionStatus-${idx}`]: receipt.status
-                ? 'confirmed'
-                : 'canceled',
-              [`transactionHash-${idx}`]: receipt.transactionHash
-            })
-          )
+        .on('result', function ({ fees, status, received }) {
+          addTransactionStatus({
+            internalTransactionId,
+            transactionStatus: status ? 'confirmed' : 'canceled',
+            fee: Big(fromUnit(fees)).toFixed(4),
+            received:
+              status &&
+              Big(fromUnit(received, token.decimals)).round(4, 0).toFixed(4)
+          })
         })
-      })
-      .on('result', function ({ fees, status, received }) {
-        addTransactionStatus({
-          internalTransactionId,
-          transactionStatus: status ? 'confirmed' : 'canceled',
-          fee: Big(fromUnit(fees)).toFixed(4),
-          received:
-            status &&
-            Big(fromUnit(received, token.decimals)).round(4, 0).toFixed(4)
+        .on('error', function (error) {
+          addTransactionStatus({
+            internalTransactionId,
+            transactionStatus: 'error',
+            message: t(`${getErrorKey(error)}`)
+          })
         })
-      })
-      .on('error', function (error) {
-        addTransactionStatus({
-          internalTransactionId,
-          transactionStatus: 'error',
-          message: t(`${getErrorKey(error)}`)
-        })
-      })
+    })
   }
 
   const handleChange = function (e) {
@@ -128,7 +151,7 @@ const CurveWithdraw = function () {
     <div className="flex flex-wrap py-4 w-80 space-y-6">
       <div className="w-full">
         <Input
-          disabled={!lpAvailable}
+          disabled={!curveBalance || !active}
           onChange={handleChange}
           onSuffixClick={() => handleMaxAmountClick()}
           suffix="MAX"
@@ -149,7 +172,7 @@ const CurveWithdraw = function () {
 
       <div className="w-full">
         <Button
-          disabled={withdrawDisabled}
+          disabled={!curveBalance || withdrawDisabled}
           onClick={() => handleWithdraw(lpToken, amount)}
         >
           {t('curve-button-withdraw')}

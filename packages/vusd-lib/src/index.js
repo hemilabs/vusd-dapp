@@ -16,7 +16,6 @@ const curveMetapoolAbi = require('./abi/CurveMetapool.json')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
-
   const minter = new web3.eth.Contract(minterAbi, contracts.Minter)
   const redeemer = new web3.eth.Contract(redeemerAbi, contracts.Redeemer)
   const vusd = new web3.eth.Contract(erc20Abi, contracts.VUSD)
@@ -174,9 +173,31 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  // token: address of vusd token, used for approvals
-  // amount1: amount of vusd
-  // amount2: 3crv, usually zero
+  const calcLpWithdraw = function (vusdAmount) {
+    if (!vusdAmount) return
+    debug(
+      'Calculating amount of LP to burn when exepecting to withdraw %s VUSD',
+      vusdAmount
+    )
+    return curveMetapool.methods
+      .calc_token_amount([toUnit(vusdAmount), 0], false)
+      .call()
+      .then(function (amount) {
+        return amount
+      })
+  }
+
+  const sweepDust = (tokenAmount, balance, limit = 0.999) =>
+    Big(tokenAmount).div(balance).toNumber() > limit ? balance : tokenAmount
+
+  const calcWithdraw = function (lpAmount) {
+    if (!lpAmount) return
+    return curveMetapool.methods
+      .calc_withdraw_one_coin(lpAmount, 0)
+      .call()
+      .then((result) => result)
+  }
+
   const addCurveLiquidity = function (
     vusdToken,
     vusdAmount,
@@ -210,6 +231,7 @@ const createVusdLib = function (web3, options = {}) {
       })
       return txs
     })
+
     const parseResultsVusd = function (transactionsData) {
       const { receipt } = transactionsData[transactionsData.length - 1]
       // @ts-ignore ts(2345)
@@ -221,14 +243,17 @@ const createVusdLib = function (web3, options = {}) {
         'value',
         contracts.VUSD
       )
+
       debug(
         'Deposit of VUSD from %s %s completed',
         fromUnit(vusdAmount, decimals),
         symbol
       )
+
       debug('Received %s LP', fromUnit(received))
       return { sent, received }
     }
+
     return executeTransactions(
       transactionsPromise,
       parseResultsVusd,
@@ -242,29 +267,36 @@ const createVusdLib = function (web3, options = {}) {
     transactionOptions = {}
   ) {
     const { decimals, symbol } = findByAddress(token)
-    debug('Removing liquidity: ', fromUnit(amount, decimals), symbol)
     const owner = transactionOptions.from || from
-    const transactionsPromise = isApprovalNeeded(
-      token,
-      owner,
-      contracts.CurveMetapool,
-      amount
-    ).then(function (approvalNeeded) {
-      const txs = []
-      if (approvalNeeded) {
-        const contract = new web3.eth.Contract(erc20Abi, token)
+    debug('Removing liquidity: ', fromUnit(amount, decimals), symbol)
+    const transactionsPromise = getCurveBalance().then(function (bal) {
+      const sweptAmount = sweepDust(amount, bal)
+      return isApprovalNeeded(
+        token,
+        owner,
+        contracts.CurveMetapool,
+        sweptAmount
+      ).then(function (approvalNeeded) {
+        const txs = []
+        if (approvalNeeded) {
+          const contract = new web3.eth.Contract(erc20Abi, token)
+          txs.push({
+            method: contract.methods.approve(owner, sweptAmount),
+            suffix: 'approve',
+            gas: 66000
+          })
+        }
         txs.push({
-          method: contract.methods.approve(owner, amount),
-          suffix: 'approve',
-          gas: 66000
+          method: curveMetapool.methods.remove_liquidity_one_coin(
+            sweptAmount,
+            0,
+            1
+          ),
+          suffix: 'remove_liquidity',
+          gas: 6385876
         })
-      }
-      txs.push({
-        method: curveMetapool.methods.remove_liquidity_one_coin(amount, 0, 1), // [amount vusd, 3crv], min_amount
-        suffix: 'remove _liquidity',
-        gas: 6385876
+        return txs
       })
-      return txs
     })
     const parseResults = function (transactionsData) {
       const { receipt } = transactionsData[transactionsData.length - 1]
@@ -423,6 +455,8 @@ const createVusdLib = function (web3, options = {}) {
     getRedeemFee,
     getVusdBalance,
     getCurveBalance,
+    calcLpWithdraw,
+    calcWithdraw,
     mint,
     redeem,
     addCurveLiquidity,

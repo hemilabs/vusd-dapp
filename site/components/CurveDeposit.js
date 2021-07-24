@@ -1,3 +1,4 @@
+import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
@@ -33,14 +34,17 @@ const CurveDeposit = function () {
     symbol: 'VUSD'
   }
 
+  const { active } = useWeb3React()
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
   const depositDisabled =
     Big(0).gte(Big(vusdAmount || 0)) ||
     Big(toUnit(vusdAmount || 0, 18)).gt(Big(vusdBalance || 0))
+
   const handleVusdMaxAmountClick = () =>
     vusdAvailable && setvusdAmount(fromUnit(vusdBalance, 18))
+
   const handleDeposit = function (_vusdToken, _vusdAmount) {
     const fixedAmount = Big(_vusdAmount).round(4, 0).toFixed(4)
     const internalTransactionId = Date.now()
@@ -48,9 +52,11 @@ const CurveDeposit = function () {
       _vusdToken,
       toUnit(_vusdAmount, _vusdToken.decimals)
     )
+
     setTimeout(function () {
       setvusdAmount('')
     }, 3000)
+
     return emitter
       .on('transactions', function (transactions) {
         addTransactionStatus({
@@ -114,14 +120,14 @@ const CurveDeposit = function () {
     function () {
       setvusdAmount('')
     },
-    [vusdBalance]
+    [vusdBalance, active]
   )
 
   return (
     <div className="flex flex-wrap py-4 w-80 space-y-6">
       <div className="w-full">
         <Input
-          disabled={!vusdAvailable}
+          disabled={!vusdAvailable || !active}
           onChange={vusdHandleChange}
           onSuffixClick={handleVusdMaxAmountClick}
           suffix="MAX"

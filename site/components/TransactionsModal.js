@@ -1,5 +1,4 @@
 import useTranslation from 'next-translate/useTranslation'
-
 import SvgContainer from './svg/SvgContainer'
 import JustifiedBetweenRow from './JustifiedBetweenRow'
 import Modal from './Modal'
@@ -60,7 +59,9 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                       name={transaction.sentSymbol}
                       width="33"
                     />
-                    {formatNumber(transaction.sent)}
+                    {isConfirmed
+                      ? formatNumber(transaction.received)
+                      : formatNumber(transaction.sent)}
                   </span>
                   {!isMint && <span>{transaction.sentSymbol}</span>}
                   {isMint && <div className="text-2xl">→</div>}
