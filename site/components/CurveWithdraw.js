@@ -155,7 +155,7 @@ const CurveWithdraw = function () {
           onChange={handleChange}
           onSuffixClick={() => handleMaxAmountClick()}
           suffix="MAX"
-          title={`${t('curve-input-title-withdraw')} ${vusdToken.symbol}`}
+          title={t('curve-input-title-withdraw', { symbol: vusdToken.symbol })}
           value={amount}
         />
       </div>

@@ -131,7 +131,7 @@ const CurveDeposit = function () {
           onChange={vusdHandleChange}
           onSuffixClick={handleVusdMaxAmountClick}
           suffix="MAX"
-          title={`${t('curve-input-title-deposit')} ${vusdToken.symbol}`}
+          title={t('curve-input-title-deposit', { symbol: vusdToken.symbol })}
           value={vusdAmount}
         />
       </div>
