@@ -13,12 +13,14 @@ const createExecutor = require('./exec-transactions')
 const minterAbi = require('./abi/Minter.json')
 const redeemerAbi = require('./abi/Redeemer.json')
 const curveMetapoolAbi = require('./abi/CurveMetapool.json')
+const triCurveAbi = require('./abi/3crv.json')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
   const minter = new web3.eth.Contract(minterAbi, contracts.Minter)
   const redeemer = new web3.eth.Contract(redeemerAbi, contracts.Redeemer)
   const vusd = new web3.eth.Contract(erc20Abi, contracts.VUSD)
+  const triCurve = new web3.eth.Contract(triCurveAbi, contracts.TriCurve)
   const curveMetapool = new web3.eth.Contract(
     curveMetapoolAbi,
     contracts.CurveMetapool
@@ -173,6 +175,17 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
+  const getTriCurveBalance = function (owner = from) {
+    debug('Getting 3CRV balance of %s', owner)
+    return triCurve.methods
+      .balanceOf(owner)
+      .call()
+      .then(function (balance) {
+        debug('Balance of %s is %s 3CRV', owner, fromUnit(balance))
+        return balance
+      })
+  }
+
   const calcLpWithdraw = function (vusdAmount) {
     if (!vusdAmount) return
     debug(
@@ -200,10 +213,14 @@ const createVusdLib = function (web3, options = {}) {
 
   const addCurveLiquidity = function (
     vusdToken,
+    triToken,
     vusdAmount,
+    triAmount,
     transactionOptions = {}
   ) {
     const { decimals, symbol } = vusdToken
+    const { decimals: decimalsTri, symbol: symbolTri } = triToken
+
     debug('Adding liquidity: ', fromUnit(vusdAmount, decimals), symbol)
     const owner = transactionOptions.from || from
     const transactionsPromise = isApprovalNeeded(
@@ -221,6 +238,7 @@ const createVusdLib = function (web3, options = {}) {
           gas: 66000
         })
       }
+
       txs.push({
         method: curveMetapool.methods.add_liquidity(
           [vusdAmount, 0],
@@ -236,7 +254,6 @@ const createVusdLib = function (web3, options = {}) {
       const { receipt } = transactionsData[transactionsData.length - 1]
       // @ts-ignore ts(2345)
       parseReceiptEvents(erc20Abi, contracts.VUSD, receipt)
-      const sent = vusdAmount
       const received = findReturnValue(
         receipt,
         'Transfer',
@@ -251,12 +268,31 @@ const createVusdLib = function (web3, options = {}) {
       )
 
       debug('Received %s LP', fromUnit(received))
+    }
+    const parseResultsTri = function (transactionsData) {
+      const { receipt } = transactionsData[transactionsData.length - 1]
+      // @ts-ignore ts(2345)
+      parseReceiptEvents(erc20Abi, contracts.TriCurve, receipt)
+      const sent = triAmount
+      const received = findReturnValue(
+        receipt,
+        'Transfer',
+        'value',
+        contracts.TriCurve
+      )
+      debug(
+        'deposit of 3Crv from %s %s completed',
+        fromUnit(triAmount, decimalsTri),
+        symbolTri
+      )
+      debug('Received %s VUSD', fromUnit(received))
       return { sent, received }
     }
 
     return executeTransactions(
       transactionsPromise,
       parseResultsVusd,
+      parseResultsTri,
       transactionOptions
     )
   }
@@ -298,6 +334,7 @@ const createVusdLib = function (web3, options = {}) {
         return txs
       })
     })
+
     const parseResults = function (transactionsData) {
       const { receipt } = transactionsData[transactionsData.length - 1]
       // @ts-ignore ts(2345)
@@ -455,6 +492,7 @@ const createVusdLib = function (web3, options = {}) {
     getRedeemFee,
     getVusdBalance,
     getCurveBalance,
+    getTriCurveBalance,
     calcLpWithdraw,
     calcWithdraw,
     mint,

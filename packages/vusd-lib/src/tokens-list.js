@@ -22,7 +22,15 @@ const VUSD3CRV = {
   symbol: 'VUSD3CRV-f'
 }
 
-const allTokens = [VUSD3CRV].concat([vusd].concat(tokens))
+const triToken = {
+  address: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
+  chainId: 1,
+  decimals: 18,
+  name: 'Curve.fi DAI/USDC/USDT',
+  symbol: '3Crv'
+}
+
+const allTokens = [triToken].concat([VUSD3CRV].concat([vusd].concat(tokens)))
 
 const findByAddress = (address, chainId = 1) =>
   allTokens.find((t) => t.address === address && t.chainId === chainId)

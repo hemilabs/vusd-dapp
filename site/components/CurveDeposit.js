@@ -14,8 +14,10 @@ import { useNumberFormat } from '../hooks/useNumberFormat'
 const CurveDeposit = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
-  const { vusdBalance, curveBalance, addCurveLiquidity } = vusd
+  const { triBalance, vusdBalance, curveBalance, addCurveLiquidity } = vusd
   const [vusdAmount, setvusdAmount] = useState('')
+  const [triAmount, settriAmount] = useState('')
+
   const { t } = useTranslation('common')
 
   const formatNumber = useNumberFormat()
@@ -34,10 +36,23 @@ const CurveDeposit = function () {
     symbol: 'VUSD'
   }
 
-  const { active } = useWeb3React()
+  const triToken = {
+    chainId: 1,
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    name: 'Curve.fi DAI/USDC/USDT',
+    symbol: '3Crv',
+    address: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
+    decimals: 18
+  }
+
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
+  const fixedTriBalance = toFixed(fromUnit(triBalance || 0), 4)
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
+  const triAvailable = Big(triBalance || 0).gt(0)
+  const { active } = useWeb3React()
+
   const depositDisabled =
     Big(0).gte(Big(vusdAmount || 0)) ||
     Big(toUnit(vusdAmount || 0, 18)).gt(Big(vusdBalance || 0))
@@ -45,16 +60,27 @@ const CurveDeposit = function () {
   const handleVusdMaxAmountClick = () =>
     vusdAvailable && setvusdAmount(fromUnit(vusdBalance, 18))
 
-  const handleDeposit = function (_vusdToken, _vusdAmount) {
+  const handleTriMaxAmountClick = () =>
+    triAvailable && settriAmount(fromUnit(triBalance, 18))
+
+  const handleDeposit = function (
+    _vusdToken,
+    _triToken,
+    _vusdAmount,
+    _triAmount
+  ) {
     const fixedAmount = Big(_vusdAmount).round(4, 0).toFixed(4)
     const internalTransactionId = Date.now()
     const { emitter } = addCurveLiquidity(
       _vusdToken,
-      toUnit(_vusdAmount, _vusdToken.decimals)
+      _triToken,
+      toUnit(_vusdAmount, _vusdToken.decimals),
+      toUnit(_triAmount, _triToken.decimals)
     )
 
     setTimeout(function () {
       setvusdAmount('')
+      settriAmount('')
     }, 3000)
 
     return emitter
@@ -109,6 +135,13 @@ const CurveDeposit = function () {
       })
   }
 
+  const triHandleChange = function (e) {
+    const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
+    if (e.target.value === '' || re.test(e.target.value)) {
+      settriAmount(e.target.value)
+    }
+  }
+
   const vusdHandleChange = function (e) {
     const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
     if (e.target.value === '' || re.test(e.target.value)) {
@@ -119,8 +152,9 @@ const CurveDeposit = function () {
   useEffect(
     function () {
       setvusdAmount('')
+      settriAmount('')
     },
-    [vusdBalance, active]
+    [vusdBalance, triBalance, active]
   )
 
   return (
@@ -135,9 +169,24 @@ const CurveDeposit = function () {
           value={vusdAmount}
         />
       </div>
+      <div className="w-full">
+        <Input
+          disabled={!triAvailable}
+          onChange={triHandleChange}
+          onSuffixClick={handleTriMaxAmountClick}
+          suffix="MAX"
+          title={`${t('curve-input-title-deposit')} ${triToken.symbol}`}
+          value={triAmount}
+        />
+      </div>
       <div className="flex justify-between w-full text-xs text-gray-400">
         <div className="font-semibold">{t('current-vusd-balance')}:</div>
         <div className="font-sm">{formatNumber(fixedVusdBalance)}</div>
+      </div>
+
+      <div className="flex justify-between w-full text-xs text-gray-400">
+        <div className="font-semibold">{t('current-tricurve-balance')}:</div>
+        <div className="font-sm">{formatNumber(fixedTriBalance)}</div>
       </div>
 
       <div className="flex justify-between w-full text-xs text-gray-400">
@@ -148,7 +197,9 @@ const CurveDeposit = function () {
       <div className="w-full">
         <Button
           disabled={depositDisabled}
-          onClick={() => handleDeposit(vusdToken, vusdAmount)}
+          onClick={() =>
+            handleDeposit(vusdToken, triToken, vusdAmount, triAmount)
+          }
         >
           {t('curve-button-deposit')}
         </Button>
