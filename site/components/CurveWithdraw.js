@@ -2,7 +2,8 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { fromUnit, toFixed, toUnit } from '../utils'
+import { fromUnit, toFixed, toUnit, ONLY_NUMBERS_REGEX } from '../utils'
+import { findBySymbol } from 'vusd-lib'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
@@ -14,55 +15,38 @@ const CurveWithdraw = function () {
   const { active } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
+
+  const vusdToken = findBySymbol('VUSD')
+  const lpToken = findBySymbol('VUSD3CRV-f')
+
   const {
-    vusdBalance,
+    calcLpWithdraw,
+    calcWithdraw,
     curveBalance,
     removeCurveLiquidity,
-    calcLpWithdraw,
-    calcWithdraw
+    vusdBalance
   } = vusd
-  const [amount, setAmount] = useState('')
 
+  const [amount, setAmount] = useState('')
   const [amountVusd, setAmountVusd] = useState(0)
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
-
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
   const withdrawDisabled =
     Big(0).gte(Big(amount || 0)) ||
     Big(toUnit(amount || 0, 18)).gt(Big(toUnit(amountVusd) || 0))
 
-  const vusdToken = {
-    address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
-    chainId: 1,
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-    name: 'VUSD',
-    symbol: 'VUSD'
-  }
-
-  const lpToken = {
-    chainId: 1,
-    logoURI:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-    name: 'VUSD3CRV-f',
-    symbol: 'VUSD3CRV-f',
-    address: '0x4dF9E1A764Fb8Df1113EC02fc9dc75963395b508',
-    decimals: 18
-  }
-
   useEffect(
     function () {
       setAmount('')
-      if (active) {
+      if (active && calcWithdraw) {
         calcWithdraw(curveBalance).then(function (result) {
           setAmountVusd(fromUnit(result))
         })
       }
     },
-    [vusdBalance]
+    [vusdBalance, curveBalance, active, calcWithdraw]
   )
 
   const handleMaxAmountClick = function () {
@@ -141,8 +125,7 @@ const CurveWithdraw = function () {
   }
 
   const handleChange = function (e) {
-    const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
-    if (e.target.value === '' || re.test(e.target.value)) {
+    if (e.target.value === '' || ONLY_NUMBERS_REGEX.test(e.target.value)) {
       setAmount(e.target.value)
     }
   }
@@ -154,7 +137,7 @@ const CurveWithdraw = function () {
           disabled={!curveBalance || !active}
           onChange={handleChange}
           onSuffixClick={() => handleMaxAmountClick()}
-          suffix="MAX"
+          suffix={t('max')}
           title={t('curve-input-title-withdraw', { symbol: vusdToken.symbol })}
           value={amount}
         />

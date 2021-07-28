@@ -6,13 +6,14 @@ const erc20Abi = require('erc-20-abi')
 const parseReceiptEvents = require('web3-parse-receipt-events')
 
 const { fromUnit, toUnit } = require('./utils')
-const { findByAddress } = require('./tokens-list')
+const { findByAddress, findBySymbol } = require('./tokens-list')
 const addressListAbi = require('./abi/AddressList.json')
 const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
 const minterAbi = require('./abi/Minter.json')
 const redeemerAbi = require('./abi/Redeemer.json')
 const curveMetapoolAbi = require('./abi/CurveMetapool.json')
+const vusdToken = findBySymbol('VUSD')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
@@ -182,27 +183,18 @@ const createVusdLib = function (web3, options = {}) {
     return curveMetapool.methods
       .calc_token_amount([toUnit(vusdAmount), 0], false)
       .call()
-      .then(function (amount) {
-        return amount
-      })
   }
 
   const sweepDust = (tokenAmount, balance, limit = 0.999) =>
     Big(tokenAmount).div(balance).toNumber() > limit ? balance : tokenAmount
 
-  const calcWithdraw = function (lpAmount) {
-    if (!lpAmount) return
+  const calcWithdraw = function (amt) {
     return curveMetapool.methods
-      .calc_withdraw_one_coin(lpAmount, 0)
-      .call()
-      .then((result) => result)
+      .calc_withdraw_one_coin(amt, 0) // amount, coin[i]
+      .call() // returns the lp amount to burn to get vusd
   }
 
-  const addCurveLiquidity = function (
-    vusdToken,
-    vusdAmount,
-    transactionOptions = {}
-  ) {
+  const addCurveLiquidity = function (vusdAmount, transactionOptions = {}) {
     const { decimals, symbol } = vusdToken
     debug('Adding liquidity: ', fromUnit(vusdAmount, decimals), symbol)
     const owner = transactionOptions.from || from
@@ -218,7 +210,7 @@ const createVusdLib = function (web3, options = {}) {
         txs.push({
           method: contract.methods.approve(contracts.CurveMetapool, vusdAmount),
           suffix: 'approve',
-          gas: 66000
+          gas: 29000
         })
       }
       txs.push({
@@ -227,7 +219,7 @@ const createVusdLib = function (web3, options = {}) {
           min_mint_amount
         ),
         suffix: 'add_liquidity',
-        gas: 6385876
+        gas: 133000
       })
       return txs
     })
@@ -283,7 +275,7 @@ const createVusdLib = function (web3, options = {}) {
           txs.push({
             method: contract.methods.approve(owner, sweptAmount),
             suffix: 'approve',
-            gas: 66000
+            gas: 29000
           })
         }
         txs.push({
@@ -293,7 +285,7 @@ const createVusdLib = function (web3, options = {}) {
             1
           ),
           suffix: 'remove_liquidity',
-          gas: 6385876
+          gas: 128000
         })
         return txs
       })
@@ -450,18 +442,22 @@ const createVusdLib = function (web3, options = {}) {
   }
 
   return {
-    getUserBalances,
-    getTokens,
-    getRedeemFee,
-    getVusdBalance,
-    getCurveBalance,
+    addCurveLiquidity,
     calcLpWithdraw,
+    getCurveBalance,
     calcWithdraw,
+    getRedeemFee,
+    getTokens,
+    getUserBalances,
+    getVusdBalance,
     mint,
     redeem,
-    addCurveLiquidity,
-    removeCurveLiquidity
+    removeCurveLiquidity,
+    findBySymbol,
+    findByAddress
   }
 }
 
+createVusdLib.findBySymbol = findBySymbol
+createVusdLib.findByAddress = findByAddress
 module.exports = createVusdLib

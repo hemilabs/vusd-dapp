@@ -2,7 +2,8 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { fromUnit, toUnit, toFixed } from '../utils'
+import { fromUnit, toUnit, toFixed, ONLY_NUMBERS_REGEX } from '../utils'
+import { findBySymbol } from 'vusd-lib'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
@@ -17,22 +18,10 @@ const CurveDeposit = function () {
   const { vusdBalance, curveBalance, addCurveLiquidity } = vusd
   const [vusdAmount, setvusdAmount] = useState('')
   const { t } = useTranslation('common')
-
   const formatNumber = useNumberFormat()
-
-  const registerLPToken = useRegisterToken({
-    symbol: 'VUSD3CRV-f',
-    address: '0x4dF9E1A764Fb8Df1113EC02fc9dc75963395b508',
-    decimals: 18
-  })
-
-  const vusdToken = {
-    address: '0x677ddbd918637E5F2c79e164D402454dE7dA8619',
-    chainId: 1,
-    decimals: 18,
-    name: 'VUSD',
-    symbol: 'VUSD'
-  }
+  const vusdToken = findBySymbol('VUSD')
+  const lpToken = findBySymbol('VUSD3CRV-f')
+  const registerLPToken = useRegisterToken(lpToken)
 
   const { active } = useWeb3React()
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
@@ -45,12 +34,11 @@ const CurveDeposit = function () {
   const handleVusdMaxAmountClick = () =>
     vusdAvailable && setvusdAmount(fromUnit(vusdBalance, 18))
 
-  const handleDeposit = function (_vusdToken, _vusdAmount) {
+  const handleDeposit = function (_vusdAmount) {
     const fixedAmount = Big(_vusdAmount).round(4, 0).toFixed(4)
     const internalTransactionId = Date.now()
     const { emitter } = addCurveLiquidity(
-      _vusdToken,
-      toUnit(_vusdAmount, _vusdToken.decimals)
+      toUnit(_vusdAmount, vusdToken.decimals)
     )
 
     setTimeout(function () {
@@ -110,8 +98,7 @@ const CurveDeposit = function () {
   }
 
   const vusdHandleChange = function (e) {
-    const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
-    if (e.target.value === '' || re.test(e.target.value)) {
+    if (e.target.value === '' || ONLY_NUMBERS_REGEX.test(e.target.value)) {
       setvusdAmount(e.target.value)
     }
   }
@@ -130,7 +117,7 @@ const CurveDeposit = function () {
           disabled={!vusdAvailable || !active}
           onChange={vusdHandleChange}
           onSuffixClick={handleVusdMaxAmountClick}
-          suffix="MAX"
+          suffix={t('max')}
           title={t('curve-input-title-deposit', { symbol: vusdToken.symbol })}
           value={vusdAmount}
         />
@@ -148,7 +135,7 @@ const CurveDeposit = function () {
       <div className="w-full">
         <Button
           disabled={depositDisabled}
-          onClick={() => handleDeposit(vusdToken, vusdAmount)}
+          onClick={() => handleDeposit(vusdAmount)}
         >
           {t('curve-button-deposit')}
         </Button>

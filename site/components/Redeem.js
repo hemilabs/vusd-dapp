@@ -1,7 +1,7 @@
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { fromUnit, toFixed, toUnit } from '../utils'
+import { fromUnit, toFixed, toUnit, ONLY_NUMBERS_REGEX } from '../utils'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
@@ -104,8 +104,7 @@ const Redeem = function () {
   }
 
   const handleChange = function (e) {
-    const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
-    if (e.target.value === '' || re.test(e.target.value)) {
+    if (e.target.value === '' || ONLY_NUMBERS_REGEX.test(e.target.value)) {
       setAmount(e.target.value)
     }
   }
@@ -126,7 +125,7 @@ const Redeem = function () {
           disabled={!vusdAvailable}
           onChange={handleChange}
           onSuffixClick={() => handleMaxAmountClick()}
-          suffix="MAX"
+          suffix={t('max')}
           title={t('amount')}
           value={amount}
         />
