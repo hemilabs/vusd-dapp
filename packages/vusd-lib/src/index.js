@@ -175,7 +175,7 @@ const createVusdLib = function (web3, options = {}) {
   }
 
   const calcLpWithdraw = function (vusdAmount) {
-    if (!vusdAmount) return
+    if (vusdAmount === '0') return Promise.resolve('0')
     debug(
       'Calculating amount of LP to burn when exepecting to withdraw %s VUSD',
       vusdAmount
@@ -188,9 +188,9 @@ const createVusdLib = function (web3, options = {}) {
   const sweepDust = (tokenAmount, balance, limit = 0.999) =>
     Big(tokenAmount).div(balance).toNumber() > limit ? balance : tokenAmount
 
-  const calcWithdraw = function (amt) {
+  const calcWithdraw = function (vusdAmount) {
     return curveMetapool.methods
-      .calc_withdraw_one_coin(amt, 0) // amount, coin[i]
+      .calc_withdraw_one_coin(vusdAmount, 0) // amount, coin[i]
       .call() // returns the lp amount to burn to get vusd
   }
 
@@ -444,20 +444,20 @@ const createVusdLib = function (web3, options = {}) {
   return {
     addCurveLiquidity,
     calcLpWithdraw,
-    getCurveBalance,
     calcWithdraw,
+    findByAddress,
+    findBySymbol,
+    getCurveBalance,
     getRedeemFee,
     getTokens,
     getUserBalances,
     getVusdBalance,
     mint,
     redeem,
-    removeCurveLiquidity,
-    findBySymbol,
-    findByAddress
+    removeCurveLiquidity
   }
 }
 
-createVusdLib.findBySymbol = findBySymbol
 createVusdLib.findByAddress = findByAddress
+createVusdLib.findBySymbol = findBySymbol
 module.exports = createVusdLib
