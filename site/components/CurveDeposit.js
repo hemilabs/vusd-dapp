@@ -1,6 +1,6 @@
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
 import { fromUnit, toUnit, toFixed, ONLY_NUMBERS_REGEX } from '../utils'
 import { findBySymbol } from 'vusd-lib'
@@ -54,7 +54,8 @@ const CurveDeposit = function () {
           receivedSymbol: 'VUSD3CRV-f',
           suffixes: transactions.suffixes,
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
-          operation: 'curve-modal-title-deposit',
+          operation: 'liquidity',
+          title: 'curve-modal-title-deposit',
           sent: fixedAmount,
           estimatedReceive: Big(_vusdAmount).times(1).round(4, 0).toFixed(4)
         })
@@ -102,13 +103,6 @@ const CurveDeposit = function () {
       setvusdAmount(e.target.value)
     }
   }
-
-  useEffect(
-    function () {
-      setvusdAmount('')
-    },
-    [vusdBalance, active]
-  )
 
   return (
     <div className="flex flex-wrap py-4 w-80 space-y-6">

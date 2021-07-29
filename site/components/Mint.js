@@ -56,6 +56,7 @@ const Mint = function () {
           suffixes: transactions.suffixes,
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
           operation: 'mint',
+          title: 'mint',
           sent: fixedAmount,
           estimatedReceive: Big(mintAmount)
             .times(1 - token.mintingFee)

@@ -194,6 +194,10 @@ const createVusdLib = function (web3, options = {}) {
       .call() // returns the lp amount to burn to get vusd
   }
 
+  const getCurveBalanceInVusd = function () {
+    return getCurveBalance().then((result) => calcWithdraw(result))
+  }
+
   const addCurveLiquidity = function (vusdAmount, transactionOptions = {}) {
     const { decimals, symbol } = vusdToken
     debug('Adding liquidity: ', fromUnit(vusdAmount, decimals), symbol)
@@ -448,6 +452,7 @@ const createVusdLib = function (web3, options = {}) {
     findByAddress,
     findBySymbol,
     getCurveBalance,
+    getCurveBalanceInVusd,
     getRedeemFee,
     getTokens,
     getUserBalances,

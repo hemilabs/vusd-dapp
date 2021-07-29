@@ -21,40 +21,33 @@ const CurveWithdraw = function () {
 
   const {
     calcLpWithdraw,
-    calcWithdraw,
     curveBalance,
+    curveBalanceInVusd,
     removeCurveLiquidity,
     vusdBalance
   } = vusd
 
   const [amount, setAmount] = useState('')
-  const [amountVusd, setAmountVusd] = useState(0)
+  const [withdrawDisabled, setWithdrawDisabled] = useState(false)
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
-  const withdrawDisabled =
-    Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0, 18)).gt(Big(toUnit(amountVusd) || 0))
 
   useEffect(
     function () {
-      setAmount('')
-      if (active && calcWithdraw) {
-        calcWithdraw(curveBalance).then(function (result) {
-          setAmountVusd(fromUnit(result))
-        })
+      if (active) {
+        setWithdrawDisabled(
+          Big(0).gte(Big(amount || 0)) ||
+            Big(toUnit(amount || 0, 18)).gt(Big(curveBalanceInVusd || 0))
+        )
       }
     },
-    [vusdBalance, curveBalance, active, calcWithdraw]
+    [amount]
   )
 
-  const handleMaxAmountClick = function () {
-    active &&
-      calcWithdraw(curveBalance).then(function (result) {
-        setAmountVusd(fromUnit(result))
-        return curveBalance && setAmount(fromUnit(result))
-      })
+  const handleMaxAmountClick = () => {
+    if (active) return setAmount(fromUnit(curveBalanceInVusd))
   }
 
   const handleWithdraw = function (token, vusdAmount) {
@@ -75,7 +68,8 @@ const CurveWithdraw = function () {
             receivedSymbol: token.symbol,
             suffixes: transactions.suffixes,
             expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
-            operation: 'curve-modal-title-withdraw',
+            operation: 'liquidity',
+            title: 'curve-modal-title-withdraw',
             sent: Big(vusdAmount).round(4, 0).toFixed(4),
             estimatedReceive: Big(withdrawAmount)
               .times(1)
@@ -155,7 +149,7 @@ const CurveWithdraw = function () {
 
       <div className="w-full">
         <Button
-          disabled={!curveBalance || withdrawDisabled}
+          disabled={!active || withdrawDisabled}
           onClick={() => handleWithdraw(lpToken, amount)}
         >
           {t('curve-button-withdraw')}

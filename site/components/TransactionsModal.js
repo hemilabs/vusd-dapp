@@ -31,6 +31,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
   const formatNumber = useNumberFormat()
   const isConfirmed = transaction.transactionStatus === 'confirmed'
   const isMint = transaction.operation === 'mint'
+  const isLiquidity = transaction.operation === 'liquidity'
   const isError =
     transaction.transactionStatus === 'canceled' ||
     transaction.transactionStatus === 'error'
@@ -46,7 +47,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
             <button className="float-right" onClick={closeModal}>
               <SvgContainer name="close" />
             </button>
-            <p className="mb-2 font-bold ">{t(`${transaction.operation}`)}</p>
+            <p className="mb-2 font-bold ">{t(`${transaction.title}`)}</p>
           </div>
           <div className="mt-4">
             {transaction.sent && (
@@ -63,23 +64,19 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                       ? formatNumber(transaction.received)
                       : formatNumber(transaction.sent)}
                   </span>
-                  {!isMint && <span>{transaction.sentSymbol}</span>}
-                  {isMint && <div className="text-2xl">→</div>}
-                  {isMint && (
-                    <span>
-                      <p className="text-lg font-bold ">
-                        <span>
-                          {isConfirmed
-                            ? formatNumber(transaction.received)
-                            : formatNumber(transaction.estimatedReceive)}
-                          <SvgContainer
-                            className="inline ml-3"
-                            height="33"
-                            name={transaction.receivedSymbol}
-                            width="33"
-                          />
-                        </span>
-                      </p>
+                  {isLiquidity && <span>{transaction.sentSymbol}</span>}
+                  {!isLiquidity && <span className="text-2xl">→</span>}
+                  {!isLiquidity && (
+                    <span className="text-lg font-bold ">
+                      {isConfirmed
+                        ? formatNumber(transaction.received)
+                        : formatNumber(transaction.estimatedReceive)}
+                      <SvgContainer
+                        className="inline ml-3"
+                        height="33"
+                        name={transaction.receivedSymbol}
+                        width="33"
+                      />
                     </span>
                   )}
                 </p>

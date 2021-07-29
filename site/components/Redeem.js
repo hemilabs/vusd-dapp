@@ -55,6 +55,7 @@ const Redeem = function () {
           suffixes: transactions.suffixes,
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
           operation: 'redeem',
+          title: 'redeem',
           sent: fixedAmount,
           estimatedReceive: Big(mintAmount)
             .times(1 - token.redeemFee)
