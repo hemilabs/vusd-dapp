@@ -28,14 +28,26 @@ export const VusdContextProvider = function ({ children, tokensInitialData }) {
       const promises = [
         vusdLib.getTokens(),
         vusdLib.getUserBalances(),
-        vusdLib.getVusdBalance()
+        vusdLib.getVusdBalance(),
+        vusdLib.getCurveBalance(),
+        vusdLib.getCurveBalanceInVusd()
       ]
       return Promise.all(promises)
-        .then(([tokens, walletBalances, vusdBalance]) => ({
-          tokensData: mergeTokenData(tokens, walletBalances, vusdBalance),
-          vusdBalance,
-          ...vusdLib
-        }))
+        .then(
+          ([
+            tokens,
+            walletBalances,
+            vusdBalance,
+            curveBalance,
+            curveBalanceInVusd
+          ]) => ({
+            tokensData: mergeTokenData(tokens, walletBalances, vusdBalance),
+            vusdBalance,
+            curveBalance,
+            curveBalanceInVusd,
+            ...vusdLib
+          })
+        )
         .then(setVusd)
         .catch((e) => console.warn(e.message))
     },

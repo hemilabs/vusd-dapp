@@ -1,5 +1,4 @@
 import useTranslation from 'next-translate/useTranslation'
-
 import SvgContainer from './svg/SvgContainer'
 import JustifiedBetweenRow from './JustifiedBetweenRow'
 import Modal from './Modal'
@@ -32,6 +31,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
   const formatNumber = useNumberFormat()
   const isConfirmed = transaction.transactionStatus === 'confirmed'
   const isMint = transaction.operation === 'mint'
+  const isLiquidity = transaction.operation === 'liquidity'
   const isError =
     transaction.transactionStatus === 'canceled' ||
     transaction.transactionStatus === 'error'
@@ -47,13 +47,13 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
             <button className="float-right" onClick={closeModal}>
               <SvgContainer name="close" />
             </button>
-            <p className="mb-2 font-bold ">{t(`${transaction.operation}`)}</p>
+            <p className="mb-2 font-bold ">{t(`${transaction.title}`)}</p>
           </div>
           <div className="mt-4">
             {transaction.sent && (
               <div className="flex justify-between pb-2 mb-4 border-b border-gray-300">
                 <div>
-                  <p className="text-lg font-bold ">
+                  <p className="text-lg font-bold">
                     <span>
                       <SvgContainer
                         className="inline mr-3"
@@ -61,14 +61,17 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                         name={transaction.sentSymbol}
                         width="33"
                       />
-                      {formatNumber(transaction.sent)}
+                      {transaction.received && isLiquidity
+                        ? formatNumber(transaction.received)
+                        : formatNumber(transaction.sent)}
                     </span>
                   </p>
                 </div>
-                <div className="text-2xl">→</div>
-                <div>
-                  <p className="text-lg font-bold ">
-                    <span>
+                {!isLiquidity && (
+                  <>
+                    {' '}
+                    <div className="text-2xl">→</div>
+                    <div className="text-lg font-bold ">
                       {isConfirmed
                         ? formatNumber(transaction.received)
                         : formatNumber(transaction.estimatedReceive)}
@@ -78,9 +81,9 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                         name={transaction.receivedSymbol}
                         width="33"
                       />
-                    </span>
-                  </p>
-                </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
             {isMint && (
@@ -92,13 +95,15 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                 )}%`}
               />
             )}
-            <TransactionModalRow
-              text={isMint ? t('current-redeem-fee') : t('redeem-fee')}
-              tipLink="/"
-              value={`${formatNumber(
-                (transaction.redeemFee * 100).toFixed(2)
-              )}%`}
-            />
+            {transaction.redeemFee && (
+              <TransactionModalRow
+                text={isMint ? t('current-redeem-fee') : t('redeem-fee')}
+                tipLink="/"
+                value={`${formatNumber(
+                  (transaction.redeemFee * 100).toFixed(2)
+                )}%`}
+              />
+            )}
             <div className="py-4">
               <TransactionModalRow
                 text={t('total-transactions')}

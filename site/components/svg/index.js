@@ -3,6 +3,8 @@ import checkmark from './Checkmark'
 import close from './Close'
 import coinbasewallet from './CoinbaseWallet'
 import cross from './Cross'
+import addliquidity from './AddLiquidity'
+import removeliquidity from './RemoveLiquidity'
 import dai from './Dai'
 import loading from './Loading'
 import mint from './Mint'
@@ -16,6 +18,7 @@ import vusdlogo from './VusdLogo'
 import walletconnect from './WalletConnect'
 
 export default {
+  addliquidity,
   caret,
   checkmark,
   close,
@@ -27,6 +30,7 @@ export default {
   mint,
   questionmark,
   redeem,
+  removeliquidity,
   usdc,
   usdt,
   vusd,

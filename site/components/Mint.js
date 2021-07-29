@@ -1,7 +1,7 @@
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { fromUnit, toUnit, toFixed } from '../utils'
+import { fromUnit, toUnit, toFixed, ONLY_NUMBERS_REGEX } from '../utils'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
@@ -27,7 +27,7 @@ const Mint = function () {
     decimals: 18
   })
 
-  const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
+  const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const tokenAvailable = Big(selectedToken.balance || 0).gt(0)
   const mintDisabled =
     Big(0).gte(Big(amount || 0)) ||
@@ -56,6 +56,7 @@ const Mint = function () {
           suffixes: transactions.suffixes,
           expectedFee: Big(fromUnit(transactions.expectedFee)).toFixed(4),
           operation: 'mint',
+          title: 'mint',
           sent: fixedAmount,
           estimatedReceive: Big(mintAmount)
             .times(1 - token.mintingFee)
@@ -104,8 +105,7 @@ const Mint = function () {
   }
 
   const handleChange = function (e) {
-    const re = /^([0-9]\d*(\.)\d*|0?(\.)\d*[0-9]\d*|[0-9]\d*)$/
-    if (e.target.value === '' || re.test(e.target.value)) {
+    if (e.target.value === '' || ONLY_NUMBERS_REGEX.test(e.target.value)) {
       setAmount(e.target.value)
     }
   }
@@ -132,14 +132,14 @@ const Mint = function () {
           disabled={!tokenAvailable}
           onChange={handleChange}
           onSuffixClick={handleMaxAmountClick}
-          suffix="MAX"
+          suffix={t('max')}
           title={t('amount')}
           value={amount}
         />
       </div>
       <div className="flex justify-between w-full text-xs text-gray-400">
         <div className="font-semibold">{t('current-vusd-balance')}:</div>
-        <div className="font-sm">{formatNumber(fixedVUSBalance)}</div>
+        <div className="font-sm">{formatNumber(fixedVusdBalance)}</div>
       </div>
       <div className="w-full">
         <Button
