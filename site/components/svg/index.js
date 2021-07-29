@@ -3,8 +3,8 @@ import checkmark from './Checkmark'
 import close from './Close'
 import coinbasewallet from './CoinbaseWallet'
 import cross from './Cross'
-import curvedeposit from './CurveDeposit'
-import curvewithdraw from './CurveWithdraw'
+import addliquidity from './AddLiquidity'
+import removeliquidity from './RemoveLiquidity'
 import dai from './Dai'
 import loading from './Loading'
 import mint from './Mint'
@@ -15,24 +15,22 @@ import usdc from './Usdc'
 import usdt from './Usdt'
 import vusd from './Vusd'
 import vusdlogo from './VusdLogo'
-import vusd3crv from './Vusd3crv-f'
 import walletconnect from './WalletConnect'
 
 export default {
+  addliquidity,
   caret,
   checkmark,
   close,
   coinbasewallet,
   cross,
-  curvedeposit,
-  curvewithdraw,
-  'vusd3crv-f': vusd3crv,
   dai,
   loading,
   metamask,
   mint,
   questionmark,
   redeem,
+  removeliquidity,
   usdc,
   usdt,
   vusd,

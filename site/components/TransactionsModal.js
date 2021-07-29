@@ -51,23 +51,27 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
           </div>
           <div className="mt-4">
             {transaction.sent && (
-              <div className=" pb-2 mb-4 border-b border-gray-300">
-                <p className="flex justify-between text-lg font-bold">
-                  <span>
-                    <SvgContainer
-                      className="inline mr-3"
-                      height="33"
-                      name={transaction.sentSymbol}
-                      width="33"
-                    />
-                    {isConfirmed
-                      ? formatNumber(transaction.received)
-                      : formatNumber(transaction.sent)}
-                  </span>
-                  {isLiquidity && <span>{transaction.sentSymbol}</span>}
-                  {!isLiquidity && <span className="text-2xl">→</span>}
-                  {!isLiquidity && (
-                    <span className="text-lg font-bold ">
+              <div className="flex justify-between pb-2 mb-4 border-b border-gray-300">
+                <div>
+                  <p className="text-lg font-bold">
+                    <span>
+                      <SvgContainer
+                        className="inline mr-3"
+                        height="33"
+                        name={transaction.sentSymbol}
+                        width="33"
+                      />
+                      {isConfirmed
+                        ? formatNumber(transaction.received)
+                        : formatNumber(transaction.sent)}
+                    </span>
+                  </p>
+                </div>
+                {!isLiquidity && (
+                  <>
+                    {' '}
+                    <div className="text-2xl">→</div>
+                    <div className="text-lg font-bold ">
                       {isConfirmed
                         ? formatNumber(transaction.received)
                         : formatNumber(transaction.estimatedReceive)}
@@ -77,9 +81,9 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                         name={transaction.receivedSymbol}
                         width="33"
                       />
-                    </span>
-                  )}
-                </p>
+                    </div>
+                  </>
+                )}
               </div>
             )}
             {isMint && (

@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CurveWithdraw = (props) => (
+const RemoveLiquidity = (props) => (
   <svg
     height="32.991"
     viewBox="0 0 32.991 32.991"
@@ -27,4 +27,4 @@ const CurveWithdraw = (props) => (
   </svg>
 )
 
-export default CurveWithdraw
+export default RemoveLiquidity

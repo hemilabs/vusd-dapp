@@ -1,6 +1,7 @@
 import { useWeb3React } from '@web3-react/core'
+
 import Big from 'big.js'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
 import { fromUnit, toUnit, toFixed, ONLY_NUMBERS_REGEX } from '../utils'
 import { findBySymbol } from 'vusd-lib'
@@ -12,10 +13,10 @@ import VusdContext from './context/Vusd'
 import { useRegisterToken } from '../hooks/useRegisterToken'
 import { useNumberFormat } from '../hooks/useNumberFormat'
 
-const CurveDeposit = function () {
+const AddLiquidity = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
-  const { vusdBalance, curveBalance, addCurveLiquidity } = vusd
+  const { vusdBalance, curveBalanceInVusd, addCurveLiquidity } = vusd
   const [vusdAmount, setvusdAmount] = useState('')
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
@@ -25,7 +26,7 @@ const CurveDeposit = function () {
 
   const { active } = useWeb3React()
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
-  const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
+  const fixedCurveBalance = toFixed(fromUnit(curveBalanceInVusd || 0), 4)
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
   const depositDisabled =
     Big(0).gte(Big(vusdAmount || 0)) ||
@@ -98,6 +99,13 @@ const CurveDeposit = function () {
       })
   }
 
+  useEffect(
+    function () {
+      setvusdAmount('')
+    },
+    [active]
+  )
+
   const vusdHandleChange = function (e) {
     if (e.target.value === '' || ONLY_NUMBERS_REGEX.test(e.target.value)) {
       setvusdAmount(e.target.value)
@@ -122,7 +130,7 @@ const CurveDeposit = function () {
       </div>
 
       <div className="flex justify-between w-full text-xs text-gray-400">
-        <div className="font-semibold">{t('current-curve-balance')}:</div>
+        <div className="font-semibold">{t('current-deposited')}:</div>
         <div className="font-sm">{formatNumber(fixedCurveBalance)}</div>
       </div>
 
@@ -138,4 +146,4 @@ const CurveDeposit = function () {
   )
 }
 
-export default CurveDeposit
+export default AddLiquidity

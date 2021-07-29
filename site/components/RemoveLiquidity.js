@@ -11,7 +11,7 @@ import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
 import { useNumberFormat } from '../hooks/useNumberFormat'
 
-const CurveWithdraw = function () {
+const RemoveLiquidity = function () {
   const { active } = useWeb3React()
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
@@ -32,7 +32,7 @@ const CurveWithdraw = function () {
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
-  const fixedCurveBalance = toFixed(fromUnit(curveBalance || 0), 4)
+  const fixedCurveBalance = toFixed(fromUnit(curveBalanceInVusd || 0), 4)
 
   useEffect(
     function () {
@@ -143,7 +143,7 @@ const CurveWithdraw = function () {
       </div>
 
       <div className="flex justify-between w-full text-xs text-gray-400">
-        <div className="font-semibold">{t('current-curve-balance')}:</div>
+        <div className="font-semibold">{t('current-deposited')}:</div>
         <div className="font-sm">{formatNumber(fixedCurveBalance)}</div>
       </div>
 
@@ -159,4 +159,4 @@ const CurveWithdraw = function () {
   )
 }
 
-export default CurveWithdraw
+export default RemoveLiquidity

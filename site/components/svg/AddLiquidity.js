@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CurveDeposit = (props) => (
+const AddLiquidity = (props) => (
   <svg
     height="32.991"
     viewBox="0 0 32.978 32.991"
@@ -54,4 +54,4 @@ const CurveDeposit = (props) => (
   </svg>
 )
 
-export default CurveDeposit
+export default AddLiquidity

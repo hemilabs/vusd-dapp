@@ -1,15 +1,15 @@
 import TabSelector from './TabSelector'
-import CurveDeposit from './CurveDeposit'
-import CurveWithdraw from './CurveWithdraw'
+import AddLiquidity from './AddLiquidity'
+import RemoveLiquidity from './RemoveLiquidity'
 
 const tabs = [
   {
-    name: 'curvedeposit',
-    component: CurveDeposit
+    name: 'addliquidity',
+    component: AddLiquidity
   },
   {
-    name: 'curvewithdraw',
-    component: CurveWithdraw
+    name: 'removeliquidity',
+    component: RemoveLiquidity
   }
 ]
 
