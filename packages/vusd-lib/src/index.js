@@ -189,6 +189,7 @@ const createVusdLib = function (web3, options = {}) {
     Big(tokenAmount).div(balance).toNumber() > limit ? balance : tokenAmount
 
   const calcWithdraw = function (vusdAmount) {
+    if (vusdAmount === '0') return Promise.resolve('0')
     return curveMetapool.methods
       .calc_withdraw_one_coin(vusdAmount, 0) // amount, coin[i]
       .call() // returns the lp amount to burn to get vusd
@@ -237,7 +238,7 @@ const createVusdLib = function (web3, options = {}) {
         receipt,
         'Transfer',
         'value',
-        contracts.VUSD
+        contracts.CurveMetapool
       )
 
       debug(
@@ -246,7 +247,7 @@ const createVusdLib = function (web3, options = {}) {
         symbol
       )
 
-      debug('Received %s LP', fromUnit(received))
+      debug('-Received %s LP', fromUnit(received))
       return { sent, received }
     }
 

@@ -61,7 +61,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                         name={transaction.sentSymbol}
                         width="33"
                       />
-                      {isConfirmed
+                      {transaction.received && isLiquidity
                         ? formatNumber(transaction.received)
                         : formatNumber(transaction.sent)}
                     </span>

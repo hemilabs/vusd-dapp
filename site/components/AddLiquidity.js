@@ -81,13 +81,12 @@ const AddLiquidity = function () {
           )
         })
       })
-      .on('result', function ({ fees, status, received }) {
+      .on('result', function ({ fees, status }) {
         registerLPToken()
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: status ? 'confirmed' : 'canceled',
-          fee: Big(fromUnit(fees)).toFixed(4),
-          received: status && Big(fromUnit(received)).round(4, 0).toFixed(4)
+          fee: Big(fromUnit(fees)).toFixed(4)
         })
       })
       .on('error', function (error) {
