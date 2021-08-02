@@ -321,6 +321,17 @@ const createVusdLib = function (web3, options = {}) {
     )
   }
 
+  const getVusdSupply = function () {
+    debug('Getting VUSD supply')
+    return vusd.methods
+      .totalSupply()
+      .call()
+      .then(function (totalSupply) {
+        debug('Total VUSD supply is %s VUSD', fromUnit(totalSupply))
+        return totalSupply
+      })
+  }
+
   const getUserBalances = function (owner = from) {
     debug('Getting token balances of %s', owner)
     return getWhitelistedTokens().then(function (whitelistedTokens) {
@@ -458,6 +469,7 @@ const createVusdLib = function (web3, options = {}) {
     getTokens,
     getUserBalances,
     getVusdBalance,
+    getVusdSupply,
     mint,
     redeem,
     removeCurveLiquidity

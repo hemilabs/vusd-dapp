@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { useWeb3React } from '@web3-react/core'
-import getTokensSS from '../utils/getTokensSS'
+import { getTokens, getVusd } from '../utils/getDataSS'
 import Layout from '../components/Layout'
 import Transactions from '../components/Transactions'
 import Treasury from '../components/Treasury'
@@ -9,16 +9,24 @@ import { VusdContextProvider } from '../components/context/Vusd'
 import BetaModal from '../components/BetaModal'
 import SwapBox from '../components/SwapBox'
 
-const HomePage = function ({ tokensInitialData }) {
+const HomePage = function ({ tokensInitialData, vusdInitialData }) {
   const fetcher = (...args) => fetch(...args).then((res) => res.json())
   const { active } = useWeb3React()
-  const { data } = useSWR('/api/tokens', fetcher, {
+  const { data: tokensData } = useSWR('/api/tokens', fetcher, {
     initialData: tokensInitialData,
     refreshInterval: !active ? 15000 : false,
     revalidateOnFocus: !active
   })
+  const { data: vusdData } = useSWR('/api/vusd', fetcher, {
+    initialData: vusdInitialData,
+    refreshInterval: !active ? 15000 : false,
+    revalidateOnFocus: !active
+  })
   return (
-    <VusdContextProvider tokensInitialData={data}>
+    <VusdContextProvider
+      tokensInitialData={tokensData}
+      vusdInitialData={vusdData}
+    >
       <TransactionContextProvider>
         <Layout walletConnection>
           <div className="flex flex-wrap justify-between w-full mb-14">
@@ -34,10 +42,12 @@ const HomePage = function ({ tokensInitialData }) {
 }
 
 export async function getStaticProps() {
-  return getTokensSS().then((tokensInitialData) => ({
-    props: { tokensInitialData },
-    revalidate: 15 // seconds
-  }))
+  return Promise.all([getTokens(), getVusd()]).then(
+    ([tokensInitialData, vusdInitialData]) => ({
+      props: { tokensInitialData, vusdInitialData },
+      revalidate: 15 // seconds
+    })
+  )
 }
 
 export default HomePage

@@ -10,10 +10,17 @@ import createVusdLib from 'vusd-lib'
 
 const VusdContext = createContext()
 
-export const VusdContextProvider = function ({ children, tokensInitialData }) {
+export const VusdContextProvider = function ({
+  children,
+  tokensInitialData,
+  vusdInitialData
+}) {
   const { active, library, account } = useWeb3React()
   const [vusdLib, setVusdLib] = useState({})
-  const [vusd, setVusd] = useState({ tokensData: tokensInitialData })
+  const [vusd, setVusd] = useState({
+    tokensData: tokensInitialData,
+    ...vusdInitialData
+  })
 
   const mergeTokenData = (tokens, walletBalances, vusdBalance) =>
     tokens.map((token) => ({
@@ -30,7 +37,8 @@ export const VusdContextProvider = function ({ children, tokensInitialData }) {
         vusdLib.getUserBalances(),
         vusdLib.getVusdBalance(),
         vusdLib.getCurveBalance(),
-        vusdLib.getCurveBalanceInVusd()
+        vusdLib.getCurveBalanceInVusd(),
+        vusdLib.getVusdSupply()
       ]
       return Promise.all(promises)
         .then(
@@ -39,12 +47,14 @@ export const VusdContextProvider = function ({ children, tokensInitialData }) {
             walletBalances,
             vusdBalance,
             curveBalance,
-            curveBalanceInVusd
+            curveBalanceInVusd,
+            totalSupply
           ]) => ({
             tokensData: mergeTokenData(tokens, walletBalances, vusdBalance),
             vusdBalance,
             curveBalance,
             curveBalanceInVusd,
+            totalSupply,
             ...vusdLib
           })
         )
@@ -79,7 +89,7 @@ export const VusdContextProvider = function ({ children, tokensInitialData }) {
   useEffect(
     function () {
       if (!active) {
-        setVusd({ tokensData: tokensInitialData })
+        setVusd({ tokensData: tokensInitialData, ...vusdInitialData })
       } else {
         setVusdLib(createVusdLib(library, { from: account }))
       }

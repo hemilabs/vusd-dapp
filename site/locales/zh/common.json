@@ -74,5 +74,8 @@
   "transaction-failed": "交易失败",
   "transaction-hash": "交易哈希",
   "treasury": "国库",
-  "view-on-etherscan": "在 Etherscan 上查看"
+  "treasury-excess": "国库过剩",
+  "treasury-total": "国库总额",
+  "view-on-etherscan": "在 Etherscan 上查看",
+  "vusd-minted": "VUSD 铸造"
 }
