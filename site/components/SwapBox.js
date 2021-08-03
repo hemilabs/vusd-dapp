@@ -18,8 +18,8 @@ const SwapBox = function () {
   const { t } = useTranslation('common')
   return (
     <div className="h-full">
-      <p className="mb-2 text-sm font-bold text-vesper">
-        {t('mint').toUpperCase()} / {t('redeem').toUpperCase()}
+      <p className="mb-2 text-sm font-bold text-vesper uppercase">
+        {t('mint')} / {t('redeem')}
       </p>
       <TabSelector tabs={tabs} />
     </div>
