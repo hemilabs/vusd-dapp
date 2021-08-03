@@ -2,11 +2,11 @@ import { useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
 import SvgContainer from './svg/SvgContainer'
 
-const TabSelector = function ({ tabs, ...props }) {
+const TabSelector = function ({ tabs }) {
   const { t } = useTranslation('common')
   const [selectedTab, setSelectedTab] = useState(tabs[0])
   return (
-    <div {...props}>
+    <div className="w-full px-2 py-8 bg-white shadow-md md:px-8 xl:px-40 xl:w-160 rounded-md">
       <div className="flex w-full">
         {tabs.map((tab) => (
           <div

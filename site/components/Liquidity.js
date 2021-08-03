@@ -1,6 +1,7 @@
 import TabSelector from './TabSelector'
 import AddLiquidity from './AddLiquidity'
 import RemoveLiquidity from './RemoveLiquidity'
+import useTranslation from 'next-translate/useTranslation'
 
 const tabs = [
   {
@@ -14,11 +15,14 @@ const tabs = [
 ]
 
 const Liquidity = function () {
+  const { t } = useTranslation('common')
   return (
-    <TabSelector
-      className="w-full px-2 py-8 bg-white shadow-md md:px-8 xl:px-40 xl:w-160 rounded-md"
-      tabs={tabs}
-    />
+    <div className="h-full">
+      <p className="mb-2 text-sm font-bold text-vesper uppercase">
+        {t('liquidity')}
+      </p>
+      <TabSelector tabs={tabs} />
+    </div>
   )
 }
 

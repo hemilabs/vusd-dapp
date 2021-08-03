@@ -1,6 +1,6 @@
 'use strict'
-import getTokensSS from '../../utils/getTokensSS'
+import { getTokens } from '../../utils/getDataSS'
 
 export default function handler(req, res) {
-  return getTokensSS().then((tokens) => res.status(200).json(tokens))
+  return getTokens().then((tokens) => res.status(200).json(tokens))
 }

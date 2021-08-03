@@ -74,5 +74,8 @@
   "transaction-failed": "Transaction Failed",
   "transaction-hash": "Transaction Hash",
   "treasury": "Treasury",
-  "view-on-etherscan": "View on Etherscan"
+  "treasury-excess": "Treasury Excess",
+  "treasury-total": "Treasury Total",
+  "view-on-etherscan": "View on Etherscan",
+  "vusd-minted": "VUSD Minted"
 }
