@@ -5,11 +5,12 @@ import { fromUnit, toFixed, toUnit, ONLY_NUMBERS_REGEX } from '../utils'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
-import { useRegisterToken } from '../hooks/useRegisterToken'
 import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
 import { useNumberFormat } from '../hooks/useNumberFormat'
+import watchAsset from 'wallet-watch-asset'
+import { useWeb3React } from '@web3-react/core'
 
 const Redeem = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
@@ -26,8 +27,6 @@ const Redeem = function () {
     Big(0).gte(Big(amount || 0)) ||
     Big(toUnit(amount || 0)).gt(Big(selectedToken.walletRedeemable || 0))
 
-  const registerToken = useRegisterToken(selectedToken)
-
   useEffect(
     function () {
       setAmount('')
@@ -37,6 +36,8 @@ const Redeem = function () {
 
   const handleMaxAmountClick = () =>
     vusdAvailable && setAmount(fromUnit(selectedToken.walletRedeemable))
+
+  const { account } = useWeb3React()
 
   const handleRedeem = function (token, mintAmount) {
     const fixedAmount = Big(mintAmount).round(4, 0).toFixed(4)
@@ -85,7 +86,6 @@ const Redeem = function () {
         })
       })
       .on('result', function ({ fees, status, received }) {
-        registerToken()
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: status ? 'confirmed' : 'canceled',
@@ -94,6 +94,7 @@ const Redeem = function () {
             status &&
             Big(fromUnit(received, token.decimals)).round(4, 0).toFixed(4)
         })
+        watchAsset({ account, token: selectedToken })
       })
       .on('error', function (error) {
         addTransactionStatus({
