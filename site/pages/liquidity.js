@@ -3,11 +3,25 @@ import { useWeb3React } from '@web3-react/core'
 import { getTokens, getVusd } from '../utils/getDataSS'
 import Layout from '../components/Layout'
 import Transactions from '../components/Transactions'
-import Liquidity from '../components/Liquidity'
 import Treasury from '../components/Treasury'
 import { TransactionContextProvider } from '../components/TransactionContext'
 import { VusdContextProvider } from '../components/context/Vusd'
 import BetaModal from '../components/BetaModal'
+import TabSelector from '../components/TabSelector'
+import AddLiquidity from '../components/AddLiquidity'
+import RemoveLiquidity from '../components/RemoveLiquidity'
+import AppSelector from '../components//AppSelector'
+
+const tabs = [
+  {
+    name: 'addliquidity',
+    component: AddLiquidity
+  },
+  {
+    name: 'removeliquidity',
+    component: RemoveLiquidity
+  }
+]
 
 const HomePage = function ({ tokensInitialData, vusdInitialData }) {
   const fetcher = (...args) => fetch(...args).then((res) => res.json())
@@ -31,7 +45,10 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
         <Layout walletConnection>
           <div className="flex flex-wrap justify-between w-full mb-14">
             <Treasury />
-            <Liquidity />
+            <div>
+              <AppSelector />
+              <TabSelector tabs={tabs} />
+            </div>
           </div>
           <BetaModal />
           <Transactions />

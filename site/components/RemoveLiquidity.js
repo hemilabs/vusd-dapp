@@ -125,7 +125,7 @@ const RemoveLiquidity = function () {
   }
 
   return (
-    <div className="flex flex-wrap py-4 w-80 space-y-6">
+    <div className="flex flex-wrap w-full py-4 space-y-6">
       <div className="w-full">
         <Input
           disabled={!curveBalance || !active}
