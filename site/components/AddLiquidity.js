@@ -111,7 +111,7 @@ const AddLiquidity = function () {
   }
 
   return (
-    <div className="flex flex-wrap py-4 space-y-6 w-80">
+    <div className="flex flex-wrap w-full py-4 space-y-6">
       <div className="w-full">
         <Input
           disabled={!vusdAvailable || !active}
