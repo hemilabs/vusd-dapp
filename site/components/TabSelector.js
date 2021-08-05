@@ -6,7 +6,7 @@ const TabSelector = function ({ tabs }) {
   const { t } = useTranslation('common')
   const [selectedTab, setSelectedTab] = useState(tabs[0])
   return (
-    <div className="w-full px-2 py-8 bg-white shadow-md md:px-8 xl:px-40 xl:w-160 rounded-md">
+    <div className="w-full px-2 py-8 bg-white shadow-md md:px-8 xl:px-40 xl:w-160 rounded-md h-105">
       <div className="flex w-full">
         {tabs.map((tab) => (
           <div

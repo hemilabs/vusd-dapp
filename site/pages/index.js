@@ -7,7 +7,21 @@ import Treasury from '../components/Treasury'
 import { TransactionContextProvider } from '../components/TransactionContext'
 import { VusdContextProvider } from '../components/context/Vusd'
 import BetaModal from '../components/BetaModal'
-import SwapBox from '../components/SwapBox'
+import AppSelector from '../components/AppSelector'
+import Mint from '../components/Mint'
+import Redeem from '../components/Redeem'
+import TabSelector from '../components/TabSelector'
+
+const tabs = [
+  {
+    name: 'mint',
+    component: Mint
+  },
+  {
+    name: 'redeem',
+    component: Redeem
+  }
+]
 
 const HomePage = function ({ tokensInitialData, vusdInitialData }) {
   const fetcher = (...args) => fetch(...args).then((res) => res.json())
@@ -31,7 +45,10 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
         <Layout walletConnection>
           <div className="flex flex-wrap justify-between w-full mb-14">
             <Treasury />
-            <SwapBox />
+            <div>
+              <AppSelector />
+              <TabSelector tabs={tabs} />
+            </div>
           </div>
           <BetaModal />
           <Transactions />
