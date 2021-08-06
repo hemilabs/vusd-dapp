@@ -10,8 +10,8 @@ import Button from './Button'
 import Input from './Input'
 import TransactionContext from './TransactionContext'
 import VusdContext from './context/Vusd'
-import { useRegisterToken } from '../hooks/useRegisterToken'
 import { useNumberFormat } from '../hooks/useNumberFormat'
+import watchAsset from 'wallet-watch-asset'
 
 const AddLiquidity = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
@@ -22,9 +22,8 @@ const AddLiquidity = function () {
   const formatNumber = useNumberFormat()
   const vusdToken = findBySymbol('VUSD')
   const lpToken = findBySymbol('VUSD3CRV-f')
-  const registerLPToken = useRegisterToken(lpToken)
 
-  const { active } = useWeb3React()
+  const { account, active } = useWeb3React()
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const fixedCurveBalance = toFixed(fromUnit(curveBalanceInVusd || 0), 4)
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
@@ -82,7 +81,7 @@ const AddLiquidity = function () {
         })
       })
       .on('result', function ({ fees, status }) {
-        registerLPToken()
+        watchAsset({ account, token: lpToken })
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: status ? 'confirmed' : 'canceled',
