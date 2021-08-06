@@ -15,7 +15,7 @@ const AppLink = ({ href, text }) => {
 const AppSelector = () => {
   const { t } = useTranslation('common')
   return (
-    <div className="flex mb-2 text-sm font-bold uppercase text-vesper space-x-4">
+    <div className="text-vesper flex mb-2 text-sm font-bold uppercase space-x-4">
       <AppLink href="/" text={`${t('mint')} / ${t('redeem')}`} />
       <AppLink href="/liquidity" text={t('curve-title')} />
     </div>

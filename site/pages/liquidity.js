@@ -43,7 +43,7 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
     >
       <TransactionContextProvider>
         <Layout walletConnection>
-          <div className="flex flex-wrap justify-between w-full mb-14">
+          <div className="flex flex-wrap justify-between mb-14 w-full">
             <Treasury />
             <div>
               <AppSelector />
