@@ -22,15 +22,15 @@ const BetaModal = function () {
           🛠
         </div>
       </div>
-      <div className="py-6 text-center w-72">
+      <div className="py-6 w-72 text-center">
         <p className="p-2 font-bold">{t('beta-title')}</p>
-        <p className="p-2 text-sm text-gray-400 text-justify-center">
+        <p className="text-justify-center p-2 text-gray-400 text-sm">
           {t('beta-description')}
         </p>
       </div>
-      <div className="flex flex-wrap text-base text-white w-72 space-y-4">
+      <div className="flex flex-wrap w-72 text-white text-base space-y-4">
         <a
-          className="flex items-center justify-center w-full h-12 py-1 text-sm font-bold text-white uppercase rounded-3xl focus:outline-none bg-vesper hover:opacity-75"
+          className="bg-vesper flex items-center justify-center py-1 w-full h-12 text-white text-sm font-bold rounded-3xl focus:outline-none hover:opacity-75 uppercase"
           href="https://docs.google.com/document/d/1SdorbmiUP2hjPCrrxjLyDouCffXmuGAM5S0Yec2b0rs/edit"
           rel="noreferrer"
           target="_blank"
@@ -38,7 +38,7 @@ const BetaModal = function () {
           Learn more
         </a>
         <button
-          className="w-full h-12 py-1 text-sm font-bold text-center text-white uppercase bg-purple-300 rounded-3xl focus:outline-none hover:opacity-75"
+          className="py-1 w-full h-12 text-center text-white text-sm font-bold bg-purple-300 rounded-3xl focus:outline-none hover:opacity-75 uppercase"
           onClick={() => closeModal()}
         >
           Got it

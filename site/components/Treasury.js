@@ -9,10 +9,10 @@ import { useNumberFormat } from '../hooks/useNumberFormat'
 const TreasuryAssetBox = function ({ title, symbol, valueInUnit }) {
   const formatNumber = useNumberFormat()
   return (
-    <div className="flex items-center justify-between w-full h-20 px-5 mb-4 bg-white shadow-md rounded-md">
+    <div className="flex items-center justify-between mb-4 px-5 w-full h-20 bg-white rounded-md shadow-md">
       <div className="flex items-center">
         <SvgContainer height="45" name={symbol} width="45" />
-        <span className="ml-2 font-semibold text-vesper">
+        <span className="text-vesper ml-2 font-semibold">
           {title || symbol}
         </span>
       </div>
@@ -35,8 +35,8 @@ const Treasury = function () {
   const treasuryExcess = Big(treasuryValue).minus(totalSupply)
 
   return (
-    <div className="w-full mb-12 xl:w-88">
-      <p className="mb-2 text-sm font-bold text-vesper">
+    <div className="xl:w-88 mb-12 w-full">
+      <p className="text-vesper mb-2 text-sm font-bold">
         {t('treasury').toUpperCase()}
       </p>
       <div className="w-full">
@@ -48,21 +48,21 @@ const Treasury = function () {
               valueInUnit={redeemable}
             />
           ))}
-        <div className="w-full pt-4 mt-4 border-t-2">
+        <div className="mt-4 pt-4 w-full border-t-2">
           <TreasuryAssetBox
             symbol="vusd"
             title={t('vusd-minted')}
             valueInUnit={totalSupply}
           />
         </div>
-        <div className="flex w-full pt-4 mt-4 border-t-2 space-x-4">
-          <div className="w-full py-8 font-semibold text-center bg-white rounded-md">
-            <p className="pb-1 text-vesper">{t('treasury-total')}</p>
+        <div className="flex mt-4 pt-4 w-full border-t-2 space-x-4">
+          <div className="py-8 w-full text-center font-semibold bg-white rounded-md">
+            <p className="text-vesper pb-1">{t('treasury-total')}</p>
             <p>{formatNumber(toFixed(fromUnit(treasuryValue), 4))}</p>
           </div>
 
-          <div className="w-full py-8 font-semibold text-center bg-white rounded-md">
-            <p className="pb-1 text-vesper">{t('treasury-excess')}</p>
+          <div className="py-8 w-full text-center font-semibold bg-white rounded-md">
+            <p className="text-vesper pb-1">{t('treasury-excess')}</p>
             <p>{formatNumber(toFixed(fromUnit(treasuryExcess), 4))}</p>
           </div>
         </div>

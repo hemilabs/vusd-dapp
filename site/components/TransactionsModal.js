@@ -20,7 +20,7 @@ const TransactionModalRow = function ({ text, value, tipLink }) {
           ) : null}
         </p>
       }
-      valueComponent={<p className="text-sm font-semibold ">{value}</p>}
+      valueComponent={<p className="text-sm font-semibold">{value}</p>}
     />
   )
 }
@@ -37,21 +37,21 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
     transaction.transactionStatus === 'error'
   return (
     <Modal
-      className="relative flex flex-col w-full h-screen bg-white border-0 shadow-lg outline-none md:w-105 focus:outline-none md:rounded-lg md:h-auto"
+      className="md:w-105 relative flex flex-col w-full h-screen bg-white border-0 outline-none focus:outline-none shadow-lg md:h-auto md:rounded-lg"
       modalIsOpen={modalIsOpen}
       onRequestClose={closeModal}
     >
       <div key={transaction.internalTransactionId}>
         <div className="p-6">
-          <div className="border-b ">
+          <div className="border-b">
             <button className="float-right" onClick={closeModal}>
               <SvgContainer name="close" />
             </button>
-            <p className="mb-2 font-bold ">{t(`${transaction.title}`)}</p>
+            <p className="mb-2 font-bold">{t(`${transaction.title}`)}</p>
           </div>
           <div className="mt-4">
             {transaction.sent && (
-              <div className="flex justify-between pb-2 mb-4 border-b border-gray-300">
+              <div className="flex justify-between mb-4 pb-2 border-b border-gray-300">
                 <div>
                   <p className="text-lg font-bold">
                     <span>
@@ -71,7 +71,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                   <>
                     {' '}
                     <div className="text-2xl">→</div>
-                    <div className="text-lg font-bold ">
+                    <div className="text-lg font-bold">
                       {isConfirmed
                         ? formatNumber(transaction.received)
                         : formatNumber(transaction.estimatedReceive)}
@@ -119,12 +119,12 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
               />
               <JustifiedBetweenRow
                 keyComponent={
-                  <p className="text-sm text-gray-350">
+                  <p className="text-gray-350 text-sm">
                     {t('global-tx-status')}
                   </p>
                 }
                 valueComponent={
-                  <p className="text-sm font-semibold ">
+                  <p className="text-sm font-semibold">
                     {t(`status-${transaction.transactionStatus}`)}
                   </p>
                 }
@@ -158,7 +158,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
                         )}`}
                       />
                       <a
-                        className="text-xs "
+                        className="text-xs"
                         href={`https://etherscan.io/tx/${
                           transaction[`transactionHash-${idx}`]
                         }`}
@@ -178,7 +178,7 @@ const TransactionsModal = function ({ transaction, modalIsOpen, closeModal }) {
               />
               {transaction.message && (
                 <p className="mt-1 text-center">
-                  <span className="text-sm font-semibold text-red-600">
+                  <span className="text-red-600 text-sm font-semibold">
                     {transaction.message}
                   </span>
                 </p>

@@ -5,9 +5,9 @@ import Head from './Head'
 const Layout = ({ children, title, walletConnection }) => (
   <div className="h-full min-h-screen bg-gradient-to-b from-white to-indigo-300">
     <Head title={title} />
-    <div className="w-full px-8 py-4 mx-auto max-w-customscreen xl:px-0">
+    <div className="max-w-customscreen mx-auto px-8 py-4 w-full xl:px-0">
       <Navbar walletConnection={walletConnection} />
-      <div className="w-full pt-6 pb-8 mx-auto md:pb-0 md:pt-19 md:min-h-content">
+      <div className="md:pt-19 md:min-h-content mx-auto pb-8 pt-6 w-full md:pb-0">
         {children}
       </div>
       <Footer />

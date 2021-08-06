@@ -6,7 +6,7 @@ const Footer = function () {
   const { t } = useTranslation('common')
   return (
     <div className="flex flex-wrap justify-center w-full">
-      <div className="flex justify-between w-full mt-20 text-xs font-semibold text-vesper space-x-4">
+      <div className="text-vesper flex justify-between mt-20 w-full text-xs font-semibold space-x-4">
         <LanguageSelector />
         <div className="w-1/2 text-right">
           <p>

@@ -158,14 +158,14 @@ const Wallet = function () {
       />
       {!active ? (
         <button
-          className="font-semibold text-gray-400 focus:outline-none hover:text-gray-200"
+          className="hover:text-gray-200 text-gray-400 font-semibold focus:outline-none"
           onClick={() => setShowWalletConnector(true)}
         >
           {t('connect-wallet')}
         </button>
       ) : (
-        <div className="pt-2 text-center md:text-right md:pt-0">
-          <p className="text-xs font-semibold text-gray-400">{t('address')}:</p>
+        <div className="pt-2 text-center md:pt-0 md:text-right">
+          <p className="text-gray-400 text-xs font-semibold">{t('address')}:</p>
           <div>
             <div className="font-bold focus:outline-none">
               {shortenedAccount}

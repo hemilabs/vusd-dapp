@@ -1,14 +1,14 @@
 const InputTitle = ({ title }) => (
-  <p className="font-bold text-gray-600 mb-1.5">{title}</p>
+  <p className="mb-1.5 text-gray-600 font-bold">{title}</p>
 )
 
 const SimpleInput = (props) => (
-  <input {...props} className="w-full h-10 align-middle border-2" />
+  <input {...props} className="align-middle w-full h-10 border-2" />
 )
 
 const SuffixedInput = ({ disabled, suffix, onSuffixClick, ...props }) => (
-  <div className="flex w-full h-10 align-middle border-2">
-    <input {...props} className="flex-1 pl-2 border-r-2 tabular-nums" />
+  <div className="flex align-middle w-full h-10 border-2">
+    <input {...props} className="flex-1 pl-2 tabular-nums border-r-2" />
     <div
       className={`w-16 m-auto text-center ${
         !disabled && onSuffixClick ? 'cursor-pointer' : ''

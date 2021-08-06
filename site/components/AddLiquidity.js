@@ -111,7 +111,7 @@ const AddLiquidity = function () {
   }
 
   return (
-    <div className="flex flex-wrap w-full py-4 space-y-6">
+    <div className="flex flex-wrap py-4 w-full space-y-6">
       <div className="w-full">
         <Input
           disabled={!vusdAvailable || !active}
@@ -122,12 +122,12 @@ const AddLiquidity = function () {
           value={vusdAmount}
         />
       </div>
-      <div className="flex justify-between w-full text-xs text-gray-400">
+      <div className="flex justify-between w-full text-gray-400 text-xs">
         <div className="font-semibold">{t('current-vusd-balance')}:</div>
         <div className="font-sm">{formatNumber(fixedVusdBalance)}</div>
       </div>
 
-      <div className="flex justify-between w-full text-xs text-gray-400">
+      <div className="flex justify-between w-full text-gray-400 text-xs">
         <div className="font-semibold">{t('current-deposited')}:</div>
         <div className="font-sm">{formatNumber(fixedCurveBalance)}</div>
       </div>
