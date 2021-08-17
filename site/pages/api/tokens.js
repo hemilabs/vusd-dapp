@@ -1,4 +1,3 @@
-'use strict'
 import { getTokens } from '../../utils/getDataSS'
 
 export default function handler(req, res) {
