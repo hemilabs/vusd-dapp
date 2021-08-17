@@ -21,5 +21,15 @@
   },
   "engines": {
     "node": ">= 12"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "src/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   }
 }

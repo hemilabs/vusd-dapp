@@ -124,16 +124,6 @@
     "*.js": "eslint --cache --fix",
     "*.{css,js,json,md}": "prettier --write"
   },
-  "nyc": {
-    "all": true,
-    "include": [
-      "src/**/*.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ]
-  },
   "prettier": {
     "semi": false,
     "singleQuote": true,
