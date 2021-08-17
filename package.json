@@ -101,7 +101,18 @@
           ]
         }
       }
-    ]
+    ],
+    "settings": {
+      "node": {
+        "allowModules": [
+          "@truffle/hdwallet-provider",
+          "chai-subset",
+          "chai",
+          "dotenv",
+          "web3"
+        ]
+      }
+    }
   },
   "husky": {
     "hooks": {
