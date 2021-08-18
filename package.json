@@ -2,13 +2,19 @@
   "name": "vusd-dapp",
   "version": "1.0.0",
   "license": "MIT",
-  "author": "Gabriel Montes",
+  "author": "Gabriel Montes <gabriel@bloq.com>",
+  "contributors": [
+    "Martin Bon Foster <martin.bonfoster@bloq.com>",
+    "leo <leo@bloq.com>",
+    "Gonzalo D'Elia <gonzalo@bloq.com>",
+    "Maxi <maximo@bloq.com>"
+  ],
   "scripts": {
     "lerna": "lerna",
     "deps:check": "lerna run --stream deps:check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint --cache .",
+    "lint": "eslint --cache --quiet .",
     "lint:fix": "eslint --cache --fix .",
     "postinstall": "lerna bootstrap",
     "test": "lerna run --stream test"
@@ -22,30 +28,22 @@
     "dependency-check": "^4.1.0",
     "dotenv": "^10.0.0",
     "eslint": "^7.21.0",
-    "eslint-config-next": "^11.0.1",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-bloq": "^3.0.0",
     "husky": "^4.3.8",
     "lerna": "^4.0.0",
     "lint-staged": "^10.5.4",
     "mocha": "^8.4.0",
-    "nyc": "^15.1.0",
     "next": "^11.0.1",
+    "nyc": "^15.1.0",
     "precinct": "^8.1.0",
     "prettier": "^2.3.1",
     "prettier-plugin-tailwind": "^2.2.12",
     "tailwindcss": "^2.2.7",
-    "web3": "^1.3.6"
-  },
-  "engines": {
-    "node": "14"
+    "web3": "~1.3.6"
   },
   "eslintConfig": {
-    "env": {
-      "es2017": true,
-      "node": true
-    },
     "extends": [
-      "eslint:recommended",
+      "bloq",
       "prettier"
     ],
     "ignorePatterns": [
@@ -55,42 +53,31 @@
     "overrides": [
       {
         "files": [
+          "packages/**/*.js"
+        ],
+        "extends": [
+          "bloq/node",
+          "prettier"
+        ]
+      },
+      {
+        "files": [
           "*.spec.js"
         ],
-        "env": {
-          "mocha": true
-        }
+        "extends": [
+          "bloq/mocha",
+          "prettier"
+        ]
       },
       {
         "files": [
           "site/**/*.js",
           "dashboard/**/*.js"
         ],
-        "env": {
-          "browser": true,
-          "es2020": true
-        },
         "extends": [
-          "eslint:recommended",
-          "next",
+          "bloq/next",
           "prettier"
-        ],
-        "parserOptions": {
-          "ecmaFeatures": {
-            "jsx": true
-          },
-          "sourceType": "module"
-        },
-        "rules": {
-          "react/jsx-sort-props": "warn",
-          "react/prop-types": "off",
-          "react/react-in-jsx-scope": "off"
-        },
-        "settings": {
-          "react": {
-            "version": "17.0"
-          }
-        }
+        ]
       },
       {
         "files": [
@@ -115,12 +102,16 @@
         }
       }
     ],
-    "parserOptions": {
-      "ecmaVersion": 2020
-    },
-    "rules": {
-      "no-shadow": "warn",
-      "no-use-before-define": "error"
+    "settings": {
+      "node": {
+        "allowModules": [
+          "@truffle/hdwallet-provider",
+          "chai-subset",
+          "chai",
+          "dotenv",
+          "web3"
+        ]
+      }
     }
   },
   "husky": {
@@ -132,16 +123,6 @@
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.{css,js,json,md}": "prettier --write"
-  },
-  "nyc": {
-    "all": true,
-    "include": [
-      "src/**/*.js"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ]
   },
   "prettier": {
     "semi": false,
