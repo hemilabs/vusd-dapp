@@ -1,7 +1,7 @@
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { fromUnit, toUnit, toFixed, ONLY_NUMBERS_REGEX } from '../utils'
+import { ONLY_NUMBERS_REGEX, fromUnit, toFixed, toUnit } from '../utils'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
@@ -22,6 +22,8 @@ const Mint = function () {
   const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
+
+  const mintableTokens = tokensData.filter(({ mintable }) => mintable)
 
   const formatNumber = useNumberFormat()
 
@@ -66,7 +68,7 @@ const Mint = function () {
           redeemFee: token.redeemFee
         })
         return transactions.suffixes.forEach(function (suffix, idx) {
-          emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
+          emitter.on(`transactionHash-${suffix}`, transactionHash =>
             addTransactionStatus({
               internalTransactionId,
               transactionStatus: 'in-progress',
@@ -124,7 +126,7 @@ const Mint = function () {
           balanceKey="balance"
           selectedToken={selectedToken}
           setSelectedToken={setSelectedToken}
-          tokensList={tokensData}
+          tokensList={mintableTokens}
         />
       </div>
       <div className="w-full">

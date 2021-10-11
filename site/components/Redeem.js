@@ -1,7 +1,7 @@
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { fromUnit, toFixed, toUnit, ONLY_NUMBERS_REGEX } from '../utils'
+import { ONLY_NUMBERS_REGEX, fromUnit, toFixed, toUnit } from '../utils'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
 import Input from './Input'
@@ -20,6 +20,8 @@ const Redeem = function () {
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
+
+  const redeemableTokens = tokensData.filter(({ redeemable }) => redeemable)
 
   const fixedVUSBalance = toFixed(fromUnit(vusdBalance || 0), 4)
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
@@ -65,7 +67,7 @@ const Redeem = function () {
           redeemFee: token.redeemFee
         })
         return transactions.suffixes.forEach(function (suffix, idx) {
-          emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
+          emitter.on(`transactionHash-${suffix}`, transactionHash =>
             addTransactionStatus({
               internalTransactionId,
               transactionStatus: 'in-progress',
@@ -119,7 +121,7 @@ const Redeem = function () {
           decimals="18"
           selectedToken={selectedToken}
           setSelectedToken={setSelectedToken}
-          tokensList={tokensData}
+          tokensList={redeemableTokens}
         />
       </div>
       <div className="w-full">
