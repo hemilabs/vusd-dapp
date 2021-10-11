@@ -5,60 +5,73 @@ const debug = require('debug')('vusd-lib')
 const erc20Abi = require('erc-20-abi')
 const parseReceiptEvents = require('web3-parse-receipt-events')
 
-const { fromUnit, toUnit } = require('./utils')
 const { findByAddress, findBySymbol } = require('./tokens-list')
+const { fromUnit, toUnit } = require('./utils')
 const addressListAbi = require('./abi/AddressList.json')
 const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
+const curveMetapoolAbi = require('./abi/CurveMetapool.json')
 const minterAbi = require('./abi/Minter.json')
 const redeemerAbi = require('./abi/Redeemer.json')
-const curveMetapoolAbi = require('./abi/CurveMetapool.json')
+const treasuryAbi = require('./abi/Treasury.json')
+const unionBy = require('./union-by')
 const vusdToken = findBySymbol('VUSD')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
-  const minter = new web3.eth.Contract(minterAbi, contracts.Minter)
-  const redeemer = new web3.eth.Contract(redeemerAbi, contracts.Redeemer)
-  const vusd = new web3.eth.Contract(erc20Abi, contracts.VUSD)
+
   const curveMetapool = new web3.eth.Contract(
     curveMetapoolAbi,
     contracts.CurveMetapool
   )
+  const minter = new web3.eth.Contract(minterAbi, contracts.Minter)
+  const redeemer = new web3.eth.Contract(redeemerAbi, contracts.Redeemer)
+  const treasury = new web3.eth.Contract(treasuryAbi, contracts.Treasury)
+  const vusd = new web3.eth.Contract(erc20Abi, contracts.VUSD)
 
-  const min_mint_amount = 1
-  const getWhitelistedTokens = function () {
-    debug('Getting whitelisted tokens')
-    return minter.methods
-      .whitelistedTokens()
+  const getWhitelistedTokenAddresses = function (listAddress) {
+    debug('Whitelist address is %s', listAddress)
+    const addressList = new web3.eth.Contract(addressListAbi, listAddress)
+    return addressList.methods
+      .length()
       .call()
-      .then(function (address) {
-        debug('Whitelist address is %s', address)
-        const addressList = new web3.eth.Contract(addressListAbi, address)
-        return Promise.all([
-          addressList,
-          addressList.methods.length().call().then(Number.parseInt)
-        ])
-      })
-      .then(function ([addressList, length]) {
+      .then(Number.parseInt)
+      .then(function (length) {
         debug('Whitelist length is %s', length)
         return Promise.all(
           new Array(length).fill().map((_, i) =>
             addressList.methods
               .at(i)
               .call()
-              .then((response) => response[0])
+              .then(response => response[0])
           )
         )
       })
-      .then(function (addresses) {
-        const whitelistedTokens = addresses.map((address) =>
-          findByAddress(address)
-        )
-        debug(
-          'Whitelisted tokens are %s',
-          whitelistedTokens.map((t) => t.symbol).join(', ')
-        )
-        return whitelistedTokens
+  }
+
+  const getMinterWhitelistedTokens = function () {
+    debug('Getting Minter whitelisted tokens')
+    return minter.methods
+      .whitelistedTokens()
+      .call()
+      .then(getWhitelistedTokenAddresses)
+      .then(addresses => addresses.map(findByAddress))
+      .then(function (tokens) {
+        debug('Minter tokens are %s', tokens.map(t => t.symbol).join(', '))
+        return tokens
+      })
+  }
+
+  const getTreasuryWhitelistedTokens = function () {
+    debug('Getting Treasury whitelisted tokens')
+    return treasury.methods
+      .whitelistedTokens()
+      .call()
+      .then(getWhitelistedTokenAddresses)
+      .then(addresses => addresses.map(findByAddress))
+      .then(function (tokens) {
+        debug('Treasury tokens are %s', tokens.map(t => t.symbol).join(', '))
+        return tokens
       })
   }
 
@@ -76,36 +89,30 @@ const createVusdLib = function (web3, options = {}) {
       .call()
       .then(function (allowance) {
         debug('Allowance for %s is %s', symbol, fromUnit(allowance, decimals))
-        const approvalNeeded = Big(allowance).lt(amount)
+        const approvalNeeded = new Big(allowance).lt(amount)
         debug('Approval is %s', approvalNeeded ? 'needed' : 'not needed')
         return approvalNeeded
       })
   }
 
-  const getRedeemableBalances = function () {
-    debug('Getting whitelisted token treasury balances')
-    return getWhitelistedTokens().then(function (whitelistedTokens) {
-      return Promise.all(
-        whitelistedTokens.map(function (token) {
-          const { address, decimals, symbol } = token
-          return redeemer.methods
-            .redeemable(address)
-            .call()
-            .then(function (redeemable) {
-              const redeemableVusd = toUnit(redeemable, 18 - decimals)
-              debug(
-                'Redeemable balance is %s VUSD from %s',
-                fromUnit(redeemableVusd),
-                symbol
-              )
-              return {
-                ...token,
-                redeemable: redeemableVusd
-              }
-            })
-        })
-      )
-    })
+  const addRedeemableBalance = function (token) {
+    debug('Getting redeemable balance')
+    const { address, decimals, symbol } = token
+    return redeemer.methods
+      .redeemable(address)
+      .call()
+      .then(function (redeemable) {
+        const redeemableVusd = toUnit(redeemable, 18 - decimals)
+        debug(
+          'Redeemable balance is %s VUSD from %s',
+          fromUnit(redeemableVusd),
+          symbol
+        )
+        return {
+          ...token,
+          redeemable: redeemableVusd
+        }
+      })
   }
 
   const getMintingFee = function () {
@@ -132,23 +139,22 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  const execOptions = { from, web3, overestimation: 2 }
-  const executeTransactions = createExecutor(execOptions)
-
-  const findReturnValue = (receipt, eventName, prop, address) =>
-    []
-      .concat(receipt.events[eventName])
-      .filter((event) => event.address.toLowerCase() === address.toLowerCase())
-      .map((event) => event.returnValues[prop])[0]
-
   const getTokens = function () {
     debug('Getting tokens information')
     return Promise.all([
-      getRedeemableBalances(),
+      getMinterWhitelistedTokens(),
+      getTreasuryWhitelistedTokens().then(addRedeemableBalance),
       getMintingFee(),
       getRedeemFee()
-    ]).then(([redeemable, mintingFee, redeemFee]) =>
-      redeemable.map((r) => ({ ...r, mintingFee, redeemFee }))
+    ]).then(([mintableTokens, redeemableTokens, mintingFee, redeemFee]) =>
+      unionBy(
+        [
+          mintableTokens.map(t => ({ ...t, mintable: true, mintingFee })),
+          redeemableTokens.map(t => ({ ...t, redeemable: true, redeemFee }))
+        ],
+        t => t.address,
+        (a, b) => ({ ...a, ...b })
+      )
     )
   }
 
@@ -185,8 +191,14 @@ const createVusdLib = function (web3, options = {}) {
       .call()
   }
 
-  const sweepDust = (tokenAmount, balance, limit = 0.999) =>
-    Big(tokenAmount).div(balance).toNumber() > limit ? balance : tokenAmount
+  const execOptions = { from, web3, overestimation: 2 }
+  const executeTransactions = createExecutor(execOptions)
+
+  const findReturnValue = (receipt, eventName, prop, address) =>
+    []
+      .concat(receipt.events[eventName])
+      .filter(event => event.address.toLowerCase() === address.toLowerCase())
+      .map(event => event.returnValues[prop])[0]
 
   const calcWithdraw = function (vusdAmount) {
     if (vusdAmount === '0') return Promise.resolve('0')
@@ -195,9 +207,10 @@ const createVusdLib = function (web3, options = {}) {
       .call() // returns the lp amount to burn to get vusd
   }
 
-  const getCurveBalanceInVusd = function () {
-    return getCurveBalance().then((result) => calcWithdraw(result))
-  }
+  const getCurveBalanceInVusd = () =>
+    getCurveBalance().then(result => calcWithdraw(result))
+
+  const MIN_MINT_AMOUNT = 1
 
   const addCurveLiquidity = function (vusdAmount, transactionOptions = {}) {
     const { decimals, symbol } = vusdToken
@@ -221,7 +234,7 @@ const createVusdLib = function (web3, options = {}) {
       txs.push({
         method: curveMetapool.methods.add_liquidity(
           [vusdAmount, 0],
-          min_mint_amount
+          MIN_MINT_AMOUNT
         ),
         suffix: 'add_liquidity',
         gas: 133000
@@ -257,6 +270,9 @@ const createVusdLib = function (web3, options = {}) {
       transactionOptions
     )
   }
+
+  const sweepDust = (tokenAmount, balance, limit = 0.999) =>
+    new Big(tokenAmount).div(balance).toNumber() > limit ? balance : tokenAmount
 
   const removeCurveLiquidity = function (
     token,
@@ -334,8 +350,8 @@ const createVusdLib = function (web3, options = {}) {
 
   const getUserBalances = function (owner = from) {
     debug('Getting token balances of %s', owner)
-    return getWhitelistedTokens().then(function (whitelistedTokens) {
-      return Promise.all(
+    return getMinterWhitelistedTokens().then(whitelistedTokens =>
+      Promise.all(
         whitelistedTokens.map(function (token) {
           const { address, symbol, decimals } = token
           const contract = new web3.eth.Contract(erc20Abi, address)
@@ -353,7 +369,7 @@ const createVusdLib = function (web3, options = {}) {
             })
         })
       )
-    })
+    )
   }
 
   // Mints VUSD. The amount is token.
