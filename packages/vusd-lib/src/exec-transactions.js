@@ -102,7 +102,8 @@ const createEstimateGasAndSend = (web3, emitter, overestimation = 1.25) =>
     )
   }
 
-const createExecutor = ({ from, web3, overestimation }) => function (transactionsPromise, parseResults, transactionOptions = {}) {
+const createExecutor = ({ from, web3, overestimation }) =>
+  function (transactionsPromise, parseResults, transactionOptions = {}) {
     const _from = transactionOptions.from || from
 
     const emitter = new EventEmitter()
