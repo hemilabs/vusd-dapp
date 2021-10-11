@@ -8,7 +8,7 @@ const first = (...args) => args[0]
 // created using the `criteria` function.
 const unionBy = function (arrays, iteratee = identity, criteria = first) {
   const ids = {}
-  const all = [].concat(arrays)
+  const all = [].concat(...arrays)
   all.forEach(function (element) {
     const id = iteratee(element)
     const previous = ids[id]

@@ -55,7 +55,7 @@ const createVusdLib = function (web3, options = {}) {
       .whitelistedTokens()
       .call()
       .then(getWhitelistedTokenAddresses)
-      .then(addresses => addresses.map(findByAddress))
+      .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
         debug('Minter tokens are %s', tokens.map(t => t.symbol).join(', '))
         return tokens
@@ -68,7 +68,7 @@ const createVusdLib = function (web3, options = {}) {
       .whitelistedTokens()
       .call()
       .then(getWhitelistedTokenAddresses)
-      .then(addresses => addresses.map(findByAddress))
+      .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
         debug('Treasury tokens are %s', tokens.map(t => t.symbol).join(', '))
         return tokens
@@ -96,8 +96,8 @@ const createVusdLib = function (web3, options = {}) {
   }
 
   const addRedeemableBalance = function (token) {
-    debug('Getting redeemable balance')
     const { address, decimals, symbol } = token
+    debug('Getting redeemable balance of %s', symbol)
     return redeemer.methods
       .redeemable(address)
       .call()
@@ -110,10 +110,13 @@ const createVusdLib = function (web3, options = {}) {
         )
         return {
           ...token,
-          redeemable: redeemableVusd
+          redeemableVusd
         }
       })
   }
+
+  const addRedeemableBalances = tokens =>
+    Promise.all(tokens.map(addRedeemableBalance))
 
   const getMintingFee = function () {
     debug('Getting minting fee')
@@ -143,7 +146,7 @@ const createVusdLib = function (web3, options = {}) {
     debug('Getting tokens information')
     return Promise.all([
       getMinterWhitelistedTokens(),
-      getTreasuryWhitelistedTokens().then(addRedeemableBalance),
+      getTreasuryWhitelistedTokens().then(addRedeemableBalances),
       getMintingFee(),
       getRedeemFee()
     ]).then(([mintableTokens, redeemableTokens, mintingFee, redeemFee]) =>
