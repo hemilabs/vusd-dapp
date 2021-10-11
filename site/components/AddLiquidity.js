@@ -3,7 +3,7 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import { fromUnit, toUnit, toFixed, ONLY_NUMBERS_REGEX } from '../utils'
+import { ONLY_NUMBERS_REGEX, fromUnit, toFixed, toUnit } from '../utils'
 import { findBySymbol } from 'vusd-lib'
 import getErrorKey from '../utils/errorKeys'
 import Button from './Button'
@@ -60,7 +60,7 @@ const AddLiquidity = function () {
           estimatedReceive: Big(_vusdAmount).times(1).round(4, 0).toFixed(4)
         })
         return transactions.suffixes.forEach(function (suffix, idx) {
-          emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
+          emitter.on(`transactionHash-${suffix}`, transactionHash =>
             addTransactionStatus({
               internalTransactionId,
               transactionStatus: 'in-progress',

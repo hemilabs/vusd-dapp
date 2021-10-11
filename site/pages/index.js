@@ -24,7 +24,7 @@ const tabs = [
 ]
 
 const HomePage = function ({ tokensInitialData, vusdInitialData }) {
-  const fetcher = (...args) => fetch(...args).then((res) => res.json())
+  const fetcher = (...args) => fetch(...args).then(res => res.json())
   const { active } = useWeb3React()
   const { data: tokensData } = useSWR('/api/tokens', fetcher, {
     initialData: tokensInitialData,
@@ -58,13 +58,12 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
   )
 }
 
-export async function getStaticProps() {
-  return Promise.all([getTokens(), getVusd()]).then(
+export const getStaticProps = async () =>
+  Promise.all([getTokens(), getVusd()]).then(
     ([tokensInitialData, vusdInitialData]) => ({
       props: { tokensInitialData, vusdInitialData },
       revalidate: 15 // seconds
     })
   )
-}
 
 export default HomePage

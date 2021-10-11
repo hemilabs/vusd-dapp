@@ -17,7 +17,7 @@ function Transactions() {
     currentTransactions &&
     currentTransactions.length > 0 &&
     currentTransactions.map(
-      (transaction) =>
+      transaction =>
         transaction.internalTransactionId === openedInternalTransactionId && (
           <TransactionsModal
             closeModal={closeModal}

@@ -6,7 +6,6 @@ const apiFetch = (path, params = {}) =>
       ...params,
       apiKey
     }).toString()}`
-  ).then((response) => response.json())
+  ).then(response => response.json())
 
-export const getAddressInfo = (address) =>
-  apiFetch(`/getAddressInfo/${address}`)
+export const getAddressInfo = address => apiFetch(`/getAddressInfo/${address}`)

@@ -25,9 +25,9 @@ const poolTokens = [
 const allTokens = poolTokens.concat(tokens)
 
 const findByAddress = (address, chainId = 1) =>
-  allTokens.find((t) => t.address === address && t.chainId === chainId)
+  allTokens.find(t => t.address === address && t.chainId === chainId)
 
 const findBySymbol = (symbol, chainId = 1) =>
-  allTokens.find((t) => t.symbol === symbol && t.chainId === chainId)
+  allTokens.find(t => t.symbol === symbol && t.chainId === chainId)
 
 module.exports = { findByAddress, findBySymbol }

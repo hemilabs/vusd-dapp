@@ -1,4 +1,4 @@
-const VusdIcon = (props) => (
+const VusdIcon = props => (
   <svg
     height="50"
     viewBox="0 0 50 50"

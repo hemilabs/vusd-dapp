@@ -79,7 +79,7 @@ const RemoveLiquidity = function () {
             })
 
             return transactions.suffixes.forEach(function (suffix, idx) {
-              emitter.on(`transactionHash-${suffix}`, (transactionHash) =>
+              emitter.on(`transactionHash-${suffix}`, transactionHash =>
                 addTransactionStatus({
                   internalTransactionId,
                   transactionStatus: 'in-progress',

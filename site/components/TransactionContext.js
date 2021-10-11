@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, createContext } from 'react'
+import { createContext, useCallback, useEffect, useState } from 'react'
 
 const TransactionContext = createContext()
 
@@ -46,7 +46,7 @@ export function TransactionContextProvider({ children }) {
 
   const addTransactionStatus = useCallback(
     function (newTransaction) {
-      setTransactions((previousTransactions) => [
+      setTransactions(previousTransactions => [
         ...previousTransactions,
         newTransaction
       ])

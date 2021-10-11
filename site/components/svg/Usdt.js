@@ -1,4 +1,4 @@
-const UsdtIcon = (props) => (
+const UsdtIcon = props => (
   <svg
     height="44.986"
     viewBox="0 0 44.986 44.986"

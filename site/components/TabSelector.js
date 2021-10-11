@@ -8,7 +8,7 @@ const TabSelector = function ({ tabs }) {
   return (
     <div className="h-105 xl:w-160 px-2 py-8 w-full bg-white rounded-md shadow-md md:px-8 xl:px-40">
       <div className="flex w-full">
-        {tabs.map((tab) => (
+        {tabs.map(tab => (
           <div
             className={`w-24 flex flex-wrap justify-center uppercase text-center text-vesper p-2 rounded-md ${
               tab.name === selectedTab.name

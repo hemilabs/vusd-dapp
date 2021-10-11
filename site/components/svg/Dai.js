@@ -1,6 +1,6 @@
 import React from 'react'
 
-const DaiIcon = (props) => (
+const DaiIcon = props => (
   <svg
     height="45"
     viewBox="0 0 45 45"

@@ -1,6 +1,6 @@
 import { useWeb3React } from '@web3-react/core'
 import useTranslation from 'next-translate/useTranslation'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import shortAccount from '../utils/account'
 import { injected, walletconnect, walletlink } from '../utils/connectors'
@@ -9,7 +9,7 @@ import WalletConnectionErrorHandler from './WalletConnectionErrorHandler'
 import WalletConnectionModal from './WalletConnectionModal'
 const persistLastConnectorKey = 'lastConnector'
 
-const persistLastConnector = (connectorName) =>
+const persistLastConnector = connectorName =>
   window.localStorage.setItem(persistLastConnectorKey, connectorName)
 const getLastConnector = () =>
   window.localStorage.getItem(persistLastConnectorKey)
@@ -141,7 +141,7 @@ const Wallet = function () {
   ]
 
   const deactivateConnector = function () {
-    wallets.find((w) => w.connector === connector).handleDisconnection()
+    wallets.find(w => w.connector === connector).handleDisconnection()
   }
 
   return (
