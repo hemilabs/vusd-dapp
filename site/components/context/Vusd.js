@@ -28,7 +28,9 @@ export const VusdContextProvider = function ({
       walletRedeemable: Big(token.redeemableVusd).lt(vusdBalance)
         ? token.redeemableVusd
         : vusdBalance,
-      balance: walletBalances.find(t => t.address === token.address).balance
+      balance:
+        token.mintable &&
+        walletBalances.find(t => t.address === token.address).balance
     }))
   const updateData = useCallback(
     function () {
