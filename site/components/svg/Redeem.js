@@ -1,4 +1,4 @@
-const Redeem = (props) => (
+const Redeem = props => (
   <svg
     height="32.991"
     viewBox="0 0 32.991 32.991"

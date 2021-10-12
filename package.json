@@ -102,6 +102,9 @@
         }
       }
     ],
+    "rules": {
+      "promise/no-nesting": "off"
+    },
     "settings": {
       "node": {
         "allowModules": [
@@ -125,6 +128,7 @@
     "*.{css,js,json,md}": "prettier --write"
   },
   "prettier": {
+    "arrowParens": "avoid",
     "semi": false,
     "singleQuote": true,
     "tabWidth": 2,

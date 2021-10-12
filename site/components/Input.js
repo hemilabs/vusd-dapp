@@ -2,7 +2,7 @@ const InputTitle = ({ title }) => (
   <p className="mb-1.5 text-gray-600 font-bold">{title}</p>
 )
 
-const SimpleInput = (props) => (
+const SimpleInput = props => (
   <input {...props} className="align-middle w-full h-10 border-2" />
 )
 

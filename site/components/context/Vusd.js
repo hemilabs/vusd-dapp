@@ -23,12 +23,12 @@ export const VusdContextProvider = function ({
   })
 
   const mergeTokenData = (tokens, walletBalances, vusdBalance) =>
-    tokens.map((token) => ({
+    tokens.map(token => ({
       ...token,
-      walletRedeemable: Big(token.redeemable).lt(vusdBalance)
-        ? token.redeemable
+      walletRedeemable: Big(token.redeemableVusd).lt(vusdBalance)
+        ? token.redeemableVusd
         : vusdBalance,
-      balance: walletBalances.find((t) => t.address === token.address).balance
+      balance: walletBalances.find(t => t.address === token.address).balance
     }))
   const updateData = useCallback(
     function () {
@@ -59,7 +59,7 @@ export const VusdContextProvider = function ({
           })
         )
         .then(setVusd)
-        .catch((e) => console.warn(e.message))
+        .catch(e => console.warn(e.message))
     },
     [vusdLib]
   )

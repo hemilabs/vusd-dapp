@@ -1,6 +1,6 @@
 import React from 'react'
 
-const AddLiquidity = (props) => (
+const AddLiquidity = props => (
   <svg
     height="32.991"
     viewBox="0 0 32.978 32.991"

@@ -3,7 +3,7 @@ const knownErrors = [
   -32001, -32002, -32003, -32004, -32005, -32006
 ]
 
-const getErrorKey = (err) =>
+const getErrorKey = err =>
   knownErrors.indexOf(err.code) !== -1
     ? `error-code${err.code}`
     : 'error-unknown'

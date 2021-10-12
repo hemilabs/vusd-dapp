@@ -25,7 +25,7 @@ const TokenSelector = function ({
         setSelectedToken(tokensList[0])
       } else {
         setSelectedToken(
-          tokensList.find((token) => token.address === selectedToken.address)
+          tokensList.find(token => token.address === selectedToken.address)
         )
       }
     },
@@ -77,7 +77,7 @@ const TokenSelector = function ({
         <div className="absolute z-10 pt-2 w-full">
           <ul className="w-full bg-white border shadow-lg">
             {tokensList &&
-              tokensList.map((token) => (
+              tokensList.map(token => (
                 <li key={token.symbol}>
                   <div onClick={() => setSelectedToken(token)}>
                     <div className="justify-bewtween flex items-center px-4 py-1 w-full hover:bg-gray-200">

@@ -29,7 +29,7 @@ const Treasury = function () {
   const { vusd } = useContext(VusdContext)
   const { tokensData, totalSupply } = vusd
   const treasuryValue = tokensData.reduce(
-    (accumulator, token) => accumulator.plus(Big(token.redeemable)),
+    (accumulator, token) => accumulator.plus(Big(token.redeemableVusd)),
     Big(0)
   )
   const treasuryExcess = Big(treasuryValue).minus(totalSupply)
@@ -41,11 +41,11 @@ const Treasury = function () {
       </p>
       <div className="w-full">
         {tokensData &&
-          tokensData.map(({ symbol, redeemable }) => (
+          tokensData.map(({ symbol, redeemableVusd }) => (
             <TreasuryAssetBox
               key={symbol}
               symbol={symbol}
-              valueInUnit={redeemable}
+              valueInUnit={redeemableVusd}
             />
           ))}
         <div className="mt-4 pt-4 w-full border-t-2">
