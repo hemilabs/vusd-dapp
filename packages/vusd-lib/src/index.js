@@ -14,20 +14,31 @@ const curveMetapoolAbi = require('./abi/CurveMetapool.json')
 const minterAbi = require('./abi/Minter.json')
 const redeemerAbi = require('./abi/Redeemer.json')
 const treasuryAbi = require('./abi/Treasury.json')
+const vusdAbi = require('./abi/VUSD.json')
 const unionBy = require('./union-by')
 const vusdToken = findBySymbol('VUSD')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
 
+  const vusd = new web3.eth.Contract(vusdAbi, contracts.VUSD)
+
+  const minterPromise = vusd.methods
+    .minter()
+    .call()
+    .then(address => new web3.eth.Contract(minterAbi, address))
+  const treasuryPromise = vusd.methods
+    .treasury()
+    .call()
+    .then(address => new web3.eth.Contract(treasuryAbi, address))
+  const redeemerPromise = treasuryPromise
+    .then(treasury => treasury.methods.redeemer().call())
+    .then(address => new web3.eth.Contract(redeemerAbi, address))
+
   const curveMetapool = new web3.eth.Contract(
     curveMetapoolAbi,
     contracts.CurveMetapool
   )
-  const minter = new web3.eth.Contract(minterAbi, contracts.Minter)
-  const redeemer = new web3.eth.Contract(redeemerAbi, contracts.Redeemer)
-  const treasury = new web3.eth.Contract(treasuryAbi, contracts.Treasury)
-  const vusd = new web3.eth.Contract(erc20Abi, contracts.VUSD)
 
   const getWhitelistedTokenAddresses = function (listAddress) {
     debug('Whitelist address is %s', listAddress)
@@ -51,9 +62,8 @@ const createVusdLib = function (web3, options = {}) {
 
   const getMinterWhitelistedTokens = function () {
     debug('Getting Minter whitelisted tokens')
-    return minter.methods
-      .whitelistedTokens()
-      .call()
+    return minterPromise
+      .then(minter => minter.methods.whitelistedTokens().call())
       .then(getWhitelistedTokenAddresses)
       .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
@@ -64,9 +74,8 @@ const createVusdLib = function (web3, options = {}) {
 
   const getTreasuryWhitelistedTokens = function () {
     debug('Getting Treasury whitelisted tokens')
-    return treasury.methods
-      .whitelistedTokens()
-      .call()
+    return treasuryPromise
+      .then(treasury => treasury.methods.whitelistedTokens().call())
       .then(getWhitelistedTokenAddresses)
       .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
@@ -98,9 +107,8 @@ const createVusdLib = function (web3, options = {}) {
   const addRedeemableBalance = function (token) {
     const { address, decimals, symbol } = token
     debug('Getting redeemable balance of %s', symbol)
-    return redeemer.methods
-      .redeemable(address)
-      .call()
+    return redeemerPromise
+      .then(redeemer => redeemer.methods.redeemable(address).call())
       .then(function (redeemable) {
         const redeemableVusd = toUnit(redeemable, 18 - decimals)
         debug(
@@ -120,9 +128,8 @@ const createVusdLib = function (web3, options = {}) {
 
   const getMintingFee = function () {
     debug('Getting minting fee')
-    return minter.methods
-      .mintingFee()
-      .call()
+    return minterPromise
+      .then(minter => minter.methods.mintingFee().call())
       .then(function (response) {
         const fee = Number.parseInt(response) / 10000
         debug('Minting fee is %s%', (fee * 100).toFixed(2))
@@ -132,9 +139,8 @@ const createVusdLib = function (web3, options = {}) {
 
   const getRedeemFee = function () {
     debug('Getting redeem fee')
-    return redeemer.methods
-      .redeemFee()
-      .call()
+    return redeemerPromise
+      .then(redeemer => redeemer.methods.redeemFee().call())
       .then(function (response) {
         const fee = Number.parseInt(response) / 10000
         debug('Redeem fee is %s%', (fee * 100).toFixed(2))
@@ -380,28 +386,30 @@ const createVusdLib = function (web3, options = {}) {
     const { decimals, symbol } = findByAddress(token)
     debug('Minting %s VUSD from %s', fromUnit(amount, decimals), symbol)
     const owner = transactionOptions.from || from
-    const transactionsPromise = isApprovalNeeded(
-      token,
-      owner,
-      contracts.Minter,
-      amount
-    ).then(function (approvalNeeded) {
-      const txs = []
-      if (approvalNeeded) {
-        const contract = new web3.eth.Contract(erc20Abi, token)
+    const transactionsPromise = minterPromise
+      .then(minter =>
+        Promise.all([
+          minter,
+          isApprovalNeeded(token, owner, minter.options.address, amount)
+        ])
+      )
+      .then(function ([minter, approvalNeeded]) {
+        const txs = []
+        if (approvalNeeded) {
+          const contract = new web3.eth.Contract(erc20Abi, token)
+          txs.push({
+            method: contract.methods.approve(minter.options.address, amount),
+            suffix: 'approve',
+            gas: 66000
+          })
+        }
         txs.push({
-          method: contract.methods.approve(contracts.Minter, amount),
-          suffix: 'approve',
-          gas: 66000
+          method: minter.methods.mint(token, amount),
+          suffix: 'mint',
+          gas: 100000
         })
-      }
-      txs.push({
-        method: minter.methods.mint(token, amount),
-        suffix: 'mint',
-        gas: 100000
+        return txs
       })
-      return txs
-    })
     const parseResults = function (transactionsData) {
       const { receipt } = transactionsData[transactionsData.length - 1]
       // @ts-ignore ts(2345)
@@ -438,27 +446,34 @@ const createVusdLib = function (web3, options = {}) {
     const { decimals, symbol } = findByAddress(token)
     debug('Redeeming %s VUSD from %s', fromUnit(amount), symbol)
     const owner = transactionOptions.from || from
-    const transactionsPromise = isApprovalNeeded(
-      contracts.VUSD,
-      owner,
-      contracts.Redeemer,
-      amount
-    ).then(function (approvalNeeded) {
-      const txs = []
-      if (approvalNeeded) {
+    const transactionsPromise = redeemerPromise
+      .then(redeemer =>
+        Promise.all([
+          redeemer,
+          isApprovalNeeded(
+            contracts.VUSD,
+            owner,
+            redeemer.options.address,
+            amount
+          )
+        ])
+      )
+      .then(function ([redeemer, approvalNeeded]) {
+        const txs = []
+        if (approvalNeeded) {
+          txs.push({
+            method: vusd.methods.approve(redeemer.options.address, amount),
+            suffix: 'approve',
+            gas: 66000
+          })
+        }
         txs.push({
-          method: vusd.methods.approve(contracts.Redeemer, amount),
-          suffix: 'approve',
-          gas: 66000
+          method: redeemer.methods.redeem(token, amount, tokenReceiver || from),
+          suffix: 'redeem',
+          gas: 100000
         })
-      }
-      txs.push({
-        method: redeemer.methods.redeem(token, amount, tokenReceiver || from),
-        suffix: 'redeem',
-        gas: 100000
+        return txs
       })
-      return txs
-    })
     const parseResults = function (transactionsData) {
       const { receipt } = transactionsData[transactionsData.length - 1]
       // @ts-ignore ts(2345)
