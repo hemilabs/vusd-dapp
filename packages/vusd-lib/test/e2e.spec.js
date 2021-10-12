@@ -95,15 +95,15 @@ describe('End-to-end', function () {
       })
   })
 
-  it('should mint from USDT', function () {
+  it('should mint from DAI', function () {
     const calls = fixtures.mint
     const from = fixtures.from
     // @ts-ignore ts(2351)
     const web3 = new Web3(provider(calls))
     const vusdLib = createVusdLib(web3, { from })
     const uniswap = createUniswapRouter(web3)
-    // Swap ETH for USDT
-    const { address, decimals } = findBySymbol('USDT')
+    // Swap ETH for DAI
+    const { address, decimals } = findBySymbol('DAI')
     const token = new web3.eth.Contract(erc20Abi, address)
     const ONE_ETH = '1000000000000000000'
     return uniswap.methods
@@ -116,48 +116,48 @@ describe('End-to-end', function () {
       .send({ from, gas: 200000, value: ONE_ETH })
       .then(function (receipt) {
         receipt.status.should.be.true
-        // Get USDT and VUSD balances
+        // Get DAI and VUSD balances
         return Promise.all([
           token.methods.balanceOf(from).call(),
           vusdLib.getVusdBalance(from)
         ])
       })
-      .then(function ([usdtBalance, vusdBalance]) {
-        // Check USDT balance
-        usdtBalance.should.be
+      .then(function ([daiBalance, vusdBalance]) {
+        // Check DAI balance
+        daiBalance.should.be
           .a('string')
           .that.that.matches(/^[0-9]+$/)
           .and.not.equals('0')
-        // Mint VUSD from USDT
+        // Mint VUSD from DAI
         return Promise.all([
-          usdtBalance,
+          daiBalance,
           vusdBalance,
           vusdLib.mint(address, toUnit('10', decimals)).promise
         ])
       })
-      .then(function ([usdtBalance, vusdBalance, result]) {
+      .then(function ([daiBalance, vusdBalance, result]) {
         // Check the mint op succedded
         result.status.should.be.true
         // Check sent and received
         result.sent.should.equals(toUnit('10', decimals))
         result.received.should.equals(toUnit('10'))
-        // Get USDT and VUSD balances
+        // Get DAI and VUSD balances
         return Promise.all([
-          usdtBalance,
+          daiBalance,
           vusdBalance,
           token.methods.balanceOf(from).call(),
           vusdLib.getVusdBalance(from)
         ])
       })
       .then(function ([
-        oldUsdtBalance,
+        oldDaiBalance,
         oldVusdBalance,
-        newUsdtBalance,
+        newDaiBalance,
         newVusdBalance
       ]) {
-        // Check USDT balance
-        new Big(oldUsdtBalance)
-          .minus(newUsdtBalance)
+        // Check DAI balance
+        new Big(oldDaiBalance)
+          .minus(newDaiBalance)
           .toFixed()
           .should.equals(toUnit('10', decimals))
         // Check VUSD balance
