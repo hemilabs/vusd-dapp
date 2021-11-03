@@ -19,17 +19,14 @@ const TokenSelector = function ({
 
   useEffect(
     function () {
-      if (!active || !tokensList) {
-        setSelectedToken({})
-      } else if (!selectedToken.symbol && tokensList) {
+      if (active && tokensList && !selectedToken.symbol) {
         setSelectedToken(tokensList[0])
-      } else {
-        setSelectedToken(
-          tokensList.find(token => token.address === selectedToken.address)
-        )
+      }
+      if ((!active || !tokensList) && selectedToken.symbol) {
+        setSelectedToken({})
       }
     },
-    [active, tokensList]
+    [active, selectedToken, setSelectedToken, tokensList]
   )
 
   return (
