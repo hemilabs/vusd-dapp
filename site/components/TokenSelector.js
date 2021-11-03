@@ -19,13 +19,14 @@ const TokenSelector = function ({
 
   useEffect(
     function () {
-      if ((!active || !tokensList) && selectedToken.symbol) {
-        setSelectedToken({})
-      } else if (!selectedToken.symbol) {
+      if (active && tokensList && !selectedToken.symbol) {
         setSelectedToken(tokensList[0])
       }
+      if ((!active || !tokensList) && selectedToken.symbol) {
+        setSelectedToken({})
+      }
     },
-    [active, selectedToken.symbol, setSelectedToken, tokensList]
+    [active, selectedToken, setSelectedToken, tokensList]
   )
 
   return (
