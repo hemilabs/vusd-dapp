@@ -1,11 +1,7 @@
 [
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_vusd",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_vusd", "type": "address" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -51,36 +47,20 @@
   {
     "inputs": [],
     "name": "NAME",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "VERSION",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_keeperAddress",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_keeperAddress", "type": "address" }
     ],
     "name": "addKeeper",
     "outputs": [],
@@ -89,16 +69,9 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_cToken",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "address", "name": "_cToken", "type": "address" },
+      { "internalType": "address", "name": "_oracle", "type": "address" }
     ],
     "name": "addWhitelistedToken",
     "outputs": [],
@@ -109,46 +82,22 @@
     "inputs": [],
     "name": "cTokenList",
     "outputs": [
-      {
-        "internalType": "contract IAddressList",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "address[]", "name": "", "type": "address[]" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "cTokens",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_toToken",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_minOut",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_toToken", "type": "address" },
+      { "internalType": "uint256", "name": "_minOut", "type": "uint256" }
     ],
     "name": "claimCompAndConvertTo",
     "outputs": [],
@@ -158,13 +107,16 @@
   {
     "inputs": [],
     "name": "governor",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_address", "type": "address" }
     ],
+    "name": "isWhitelistedToken",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -172,22 +124,14 @@
     "inputs": [],
     "name": "keepers",
     "outputs": [
-      {
-        "internalType": "contract IAddressList",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "address[]", "name": "", "type": "address[]" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newTreasury",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_newTreasury", "type": "address" }
     ],
     "name": "migrate",
     "outputs": [],
@@ -195,25 +139,22 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "oracles",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "redeemer",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_keeperAddress",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_keeperAddress", "type": "address" }
     ],
     "name": "removeKeeper",
     "outputs": [],
@@ -222,11 +163,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" }
     ],
     "name": "removeWhitelistedToken",
     "outputs": [],
@@ -237,22 +174,14 @@
     "inputs": [],
     "name": "swapManager",
     "outputs": [
-      {
-        "internalType": "contract ISwapManager",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract ISwapManager", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_fromToken",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_fromToken", "type": "address" }
     ],
     "name": "sweep",
     "outputs": [],
@@ -261,11 +190,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newRedeemer",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_newRedeemer", "type": "address" }
     ],
     "name": "updateRedeemer",
     "outputs": [],
@@ -289,11 +214,7 @@
     "inputs": [],
     "name": "vusd",
     "outputs": [
-      {
-        "internalType": "contract IVUSD",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "contract IVUSD", "name": "", "type": "address" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -302,32 +223,16 @@
     "inputs": [],
     "name": "whitelistedTokens",
     "outputs": [
-      {
-        "internalType": "contract IAddressList",
-        "name": "",
-        "type": "address"
-      }
+      { "internalType": "address[]", "name": "", "type": "address[]" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenReceiver",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "address", "name": "_tokenReceiver", "type": "address" }
     ],
     "name": "withdraw",
     "outputs": [],
@@ -336,16 +241,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "withdraw",
     "outputs": [],
@@ -354,11 +251,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_tokens",
-        "type": "address[]"
-      }
+      { "internalType": "address[]", "name": "_tokens", "type": "address[]" }
     ],
     "name": "withdrawAll",
     "outputs": [],
@@ -367,16 +260,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_tokens",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
+      { "internalType": "address[]", "name": "_tokens", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "_amounts", "type": "uint256[]" }
     ],
     "name": "withdrawMulti",
     "outputs": [],
@@ -385,20 +270,10 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_token", "type": "address" }
     ],
     "name": "withdrawable",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   }
