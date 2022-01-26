@@ -7,7 +7,6 @@ const parseReceiptEvents = require('web3-parse-receipt-events')
 
 const { findByAddress, findBySymbol } = require('./tokens-list')
 const { fromUnit, toUnit } = require('./utils')
-const addressListAbi = require('./abi/AddressList.json')
 const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
 const curveMetapoolAbi = require('./abi/CurveMetapool.json')
@@ -40,31 +39,10 @@ const createVusdLib = function (web3, options = {}) {
     contracts.CurveMetapool
   )
 
-  const getWhitelistedTokenAddresses = function (listAddress) {
-    debug('Whitelist address is %s', listAddress)
-    const addressList = new web3.eth.Contract(addressListAbi, listAddress)
-    return addressList.methods
-      .length()
-      .call()
-      .then(Number.parseInt)
-      .then(function (length) {
-        debug('Whitelist length is %s', length)
-        return Promise.all(
-          new Array(length).fill().map((_, i) =>
-            addressList.methods
-              .at(i)
-              .call()
-              .then(response => response[0])
-          )
-        )
-      })
-  }
-
   const getMinterWhitelistedTokens = function () {
     debug('Getting Minter whitelisted tokens')
     return minterPromise
       .then(minter => minter.methods.whitelistedTokens().call())
-      .then(getWhitelistedTokenAddresses)
       .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
         debug('Minter tokens are %s', tokens.map(t => t.symbol).join(', '))
@@ -76,7 +54,6 @@ const createVusdLib = function (web3, options = {}) {
     debug('Getting Treasury whitelisted tokens')
     return treasuryPromise
       .then(treasury => treasury.methods.whitelistedTokens().call())
-      .then(getWhitelistedTokenAddresses)
       .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
         debug('Treasury tokens are %s', tokens.map(t => t.symbol).join(', '))
