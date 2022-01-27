@@ -50,6 +50,7 @@ const Mint = function () {
     }, 3000)
     return emitter
       .on('transactions', function (transactions) {
+        window.gtag('event', `Mint with ${token.symbol} initiated`)
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: 'created',
@@ -89,6 +90,7 @@ const Mint = function () {
         })
       })
       .on('result', function ({ fees, status, received }) {
+        window.gtag('event', `Mint with ${token.symbol} succeeded`)
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: status ? 'confirmed' : 'canceled',
@@ -98,6 +100,15 @@ const Mint = function () {
         watchAsset({ account, token: vusdToken })
       })
       .on('error', function (error) {
+        if (
+          error.message
+            ?.toLowerCase()
+            ?.includes('be aware that it might still be mined')
+        ) {
+          window.gtag('event', `Mint with ${token.symbol} timeout in wallet`)
+        } else {
+          window.gtag('event', `Mint with ${token.symbol} failed`)
+        }
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: 'error',
