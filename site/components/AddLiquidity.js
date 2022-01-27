@@ -47,6 +47,7 @@ const AddLiquidity = function () {
 
     return emitter
       .on('transactions', function (transactions) {
+        window.gtag('event', 'Add Liquidity initiated')
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: 'created',
@@ -81,6 +82,7 @@ const AddLiquidity = function () {
         })
       })
       .on('result', function ({ fees, status }) {
+        window.gtag('event', 'Add Liquidity succeeded')
         watchAsset({ account, token: lpToken })
         addTransactionStatus({
           internalTransactionId,
@@ -89,6 +91,15 @@ const AddLiquidity = function () {
         })
       })
       .on('error', function (error) {
+        if (
+          error.message
+            ?.toLowerCase()
+            ?.includes('be aware that it might still be mined')
+        ) {
+          window.gtag('event', 'Add Liquidity timeout in wallet')
+        } else {
+          window.gtag('event', 'Add Liquidity failed')
+        }
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: 'error',

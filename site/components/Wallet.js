@@ -104,6 +104,7 @@ const Wallet = function () {
         activate(injected, setError)
         persistLastConnector('injected')
         setShowWalletConnector(false)
+        window.gtag('event', `Connected to Metamask`)
       },
       handleDisconnection() {
         deactivate()
@@ -118,6 +119,7 @@ const Wallet = function () {
         activate(walletconnect, setError)
         persistLastConnector('walletconnect')
         setShowWalletConnector(false)
+        window.gtag('event', `Connected to WalletConnect`)
       },
       handleDisconnection() {
         connector.close()
@@ -132,6 +134,7 @@ const Wallet = function () {
         activate(walletlink, setError)
         persistLastConnector('walletlink')
         setShowWalletConnector(false)
+        window.gtag('event', `Connected to Coinbase Wallet`)
       },
       handleDisconnection() {
         connector.close()

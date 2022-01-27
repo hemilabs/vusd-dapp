@@ -50,6 +50,7 @@ const Redeem = function () {
     }, 3000)
     return emitter
       .on('transactions', function (transactions) {
+        window.gtag('event', `Redeem of ${token.symbol} initiated`)
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: 'created',
@@ -88,6 +89,7 @@ const Redeem = function () {
         })
       })
       .on('result', function ({ fees, status, received }) {
+        window.gtag('event', `Redeem of ${token.symbol} succeeded`)
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: status ? 'confirmed' : 'canceled',
@@ -99,6 +101,15 @@ const Redeem = function () {
         watchAsset({ account, token: selectedToken })
       })
       .on('error', function (error) {
+        if (
+          error.message
+            ?.toLowerCase()
+            ?.includes('be aware that it might still be mined')
+        ) {
+          window.gtag('event', `Redeem of ${token.symbol} timeout in wallet`)
+        } else {
+          window.gtag('event', `Redeem of ${token.symbol} failed`)
+        }
         addTransactionStatus({
           internalTransactionId,
           transactionStatus: 'error',

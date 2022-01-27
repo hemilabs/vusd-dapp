@@ -16,6 +16,9 @@ const LanguageSelector = function () {
                   ? 'text-gray-800'
                   : 'hover:text-gray-400'
               }`}
+              onClick={() =>
+                window.gtag('event', `Change language to ${localeOption}`)
+              }
             >
               {idx > 0 && ' / '}
               {t(`common:language-${localeOption}`)}

@@ -62,6 +62,7 @@ const RemoveLiquidity = function () {
 
         return emitter
           .on('transactions', function (transactions) {
+            window.gtag('event', 'Remove Liquidity initiated')
             addTransactionStatus({
               internalTransactionId,
               transactionStatus: 'created',
@@ -100,6 +101,7 @@ const RemoveLiquidity = function () {
             })
           })
           .on('result', function ({ fees, status, received }) {
+            window.gtag('event', 'Remove Liquidity succeeded')
             addTransactionStatus({
               internalTransactionId,
               transactionStatus: status ? 'confirmed' : 'canceled',
@@ -110,6 +112,15 @@ const RemoveLiquidity = function () {
             })
           })
           .on('error', function (error) {
+            if (
+              error.message
+                ?.toLowerCase()
+                ?.includes('be aware that it might still be mined')
+            ) {
+              window.gtag('event', 'Remove Liquidity timeout in wallet')
+            } else {
+              window.gtag('event', 'Remove Liquidity failed')
+            }
             addTransactionStatus({
               internalTransactionId,
               transactionStatus: 'error',
