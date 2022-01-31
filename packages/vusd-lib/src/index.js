@@ -22,17 +22,20 @@ const createVusdLib = function (web3, options = {}) {
 
   const vusd = new web3.eth.Contract(vusdAbi, contracts.VUSD)
 
-  const minterPromise = vusd.methods
-    .minter()
-    .call()
-    .then(address => new web3.eth.Contract(minterAbi, address))
-  const treasuryPromise = vusd.methods
-    .treasury()
-    .call()
-    .then(address => new web3.eth.Contract(treasuryAbi, address))
-  const redeemerPromise = treasuryPromise
-    .then(treasury => treasury.methods.redeemer().call())
-    .then(address => new web3.eth.Contract(redeemerAbi, address))
+  const getMinterContract = () =>
+    vusd.methods
+      .minter()
+      .call()
+      .then(address => new web3.eth.Contract(minterAbi, address))
+  const getTreasuryContract = () =>
+    vusd.methods
+      .treasury()
+      .call()
+      .then(address => new web3.eth.Contract(treasuryAbi, address))
+  const getRedeemerContract = () =>
+    getTreasuryContract()
+      .then(treasury => treasury.methods.redeemer().call())
+      .then(address => new web3.eth.Contract(redeemerAbi, address))
 
   const curveMetapool = new web3.eth.Contract(
     curveMetapoolAbi,
@@ -41,7 +44,7 @@ const createVusdLib = function (web3, options = {}) {
 
   const getMinterWhitelistedTokens = function () {
     debug('Getting Minter whitelisted tokens')
-    return minterPromise
+    return getMinterContract()
       .then(minter => minter.methods.whitelistedTokens().call())
       .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
@@ -52,7 +55,7 @@ const createVusdLib = function (web3, options = {}) {
 
   const getTreasuryWhitelistedTokens = function () {
     debug('Getting Treasury whitelisted tokens')
-    return treasuryPromise
+    return getTreasuryContract()
       .then(treasury => treasury.methods.whitelistedTokens().call())
       .then(addresses => addresses.map(a => findByAddress(a)))
       .then(function (tokens) {
@@ -84,7 +87,7 @@ const createVusdLib = function (web3, options = {}) {
   const addRedeemableBalance = function (token) {
     const { address, decimals, symbol } = token
     debug('Getting redeemable balance of %s', symbol)
-    return redeemerPromise
+    return getRedeemerContract()
       .then(redeemer => redeemer.methods.redeemable(address).call())
       .then(function (redeemable) {
         const redeemableVusd = toUnit(redeemable, 18 - decimals)
@@ -105,7 +108,7 @@ const createVusdLib = function (web3, options = {}) {
 
   const getMintingFee = function () {
     debug('Getting minting fee')
-    return minterPromise
+    return getMinterContract()
       .then(minter => minter.methods.mintingFee().call())
       .then(function (response) {
         const fee = Number.parseInt(response) / 10000
@@ -116,7 +119,7 @@ const createVusdLib = function (web3, options = {}) {
 
   const getRedeemFee = function () {
     debug('Getting redeem fee')
-    return redeemerPromise
+    return getRedeemerContract()
       .then(redeemer => redeemer.methods.redeemFee().call())
       .then(function (response) {
         const fee = Number.parseInt(response) / 10000
@@ -363,7 +366,7 @@ const createVusdLib = function (web3, options = {}) {
     const { decimals, symbol } = findByAddress(token)
     debug('Minting %s VUSD from %s', fromUnit(amount, decimals), symbol)
     const owner = transactionOptions.from || from
-    const transactionsPromise = minterPromise
+    const transactionsPromise = getMinterContract()
       .then(minter =>
         Promise.all([
           minter,
@@ -423,7 +426,7 @@ const createVusdLib = function (web3, options = {}) {
     const { decimals, symbol } = findByAddress(token)
     debug('Redeeming %s VUSD from %s', fromUnit(amount), symbol)
     const owner = transactionOptions.from || from
-    const transactionsPromise = redeemerPromise
+    const transactionsPromise = getRedeemerContract()
       .then(redeemer =>
         Promise.all([
           redeemer,
