@@ -16,7 +16,7 @@ const AppSelector = () => {
   const { t } = useTranslation('common')
   return (
     <div className="text-vesper flex mb-2 text-sm font-bold uppercase space-x-4">
-      <AppLink href="/" text={`${t('mint')} / ${t('redeem')}`} />
+      <AppLink href="/" text={t('mint-redeem')} />
     </div>
   )
 }
