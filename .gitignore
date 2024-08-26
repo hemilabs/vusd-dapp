@@ -1,9 +1,13 @@
+.bash_history
+.cache
+.config
 .DS_Store
 .env
 .eslintcache
+.next
+.npm
 .nyc_output
 coverage
-node_modules
 lerna-debug.log
+node_modules
 out
-.next
