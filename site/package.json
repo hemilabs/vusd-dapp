@@ -6,7 +6,6 @@
     "build": "next build",
     "dev": "next dev",
     "deps:check": "dependency-check --detective precinct --ignore-module autoprefixer --ignore-module patch-package --ignore-module react-dom --ignore-module react --ignore-module tailwindcss --ignore-module cors --ignore-module next-secure-headers --no-dev pages/*",
-    "postinstall": "patch-package",
     "prestart": "npm run build",
     "start": "next start"
   },
@@ -21,7 +20,6 @@
     "next": "^11.0.1",
     "next-secure-headers": "^2.2.0",
     "next-translate": "^1.2.0",
-    "patch-package": "^6.4.7",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "swr": "^0.5.6",
