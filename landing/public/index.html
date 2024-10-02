@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Inter"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { fontFamily: { sans: ['Inter'] } } }
+      }
+    </script>
+  </head>
+
+  <body class="flex justify-center p-3 pt-10 min-h-screen">
+    <div
+      class="
+        to-indigo-500/20
+        border-indigo-500/30
+        flex
+        justify-center
+        w-full
+        bg-gradient-to-b
+        border border-solid
+        rounded-2xl
+        from-transparent
+      "
+    >
+      <div
+        class="
+          flex flex-col
+          items-center
+          mt-12
+          px-4
+          text-center
+          sm:mt-16
+          md:mt-24
+        "
+      >
+        <div class="border border-solid border-indigo-700 rounded-xl">
+          <img alt="VUSD icon" src="vusd-icon.svg" />
+        </div>
+        <div
+          class="
+            text-slate-950
+            font-inter-display
+            mt-5
+            max-w-md
+            text-5xl
+            font-semibold
+            sm:max-w-lg sm:text-6xl
+            md:max-w-2xl md:text-7xl
+          "
+        >
+          A DeFi-native <span class="text-indigo-500">collateral-backed</span>
+          stablecoin
+        </div>
+        <div class="text-slate-950 mt-5 max-w-md font-medium">
+          vUSD is a stablecoin pegged to the US dollar, backed by
+          over-collateralized, interest-generating collateral tokens.
+        </div>
+        <a href="https://app.vdollar.finance">
+          <button
+            class="
+              border-indigo-800/30
+              to-indigo-500/20
+              flex
+              items-center
+              justify-center
+              mb-24
+              mt-5
+              px-4
+              py-2
+              text-blue-50
+              bg-gradient-to-b
+              border border-solid
+              rounded-lg
+              from-indigo-400
+            "
+          >
+            Launch app
+          </button>
+        </a>
+        <div class="mb-5 mt-auto text-gray-600 text-sm font-medium">
+          Copyright © 2022-<span id="currentYear">2024</span> VUSD. All Rights
+          Reserved. Sponsored by
+          <a href="https://vesper.finance" rel="noreferrer" target="_blank">
+            <span class="text-indigo-500">Vesper</span>
+          </a>
+          .
+        </div>
+      </div>
+    </div>
+    <script>
+      document.getElementById('currentYear').innerText =
+        new Date().getFullYear()
+    </script>
+  </body>
+</html>
