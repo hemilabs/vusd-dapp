@@ -7,6 +7,7 @@
 .next
 .npm
 .nyc_output
+.vscode
 coverage
 lerna-debug.log
 node_modules
