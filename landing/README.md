@@ -1,3 +1,3 @@
 # Landing
 
-Static HTML page that redirects uses to the app.
+Static HTML page that redirects users to the app.
