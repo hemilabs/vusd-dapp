@@ -1,0 +1,33 @@
+name: AWS EB Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish-to-eb:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install --upgrade awscli==1.27.81 awsebcli==3.20.5
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - run: ./scripts/1-site
+        env:
+          NEXT_PUBLIC_ANALYTICS_ID: ${{ vars.NEXT_PUBLIC_ANALYTICS_ID }}
+          NEXT_PUBLIC_NODE_URL: ${{ vars.NEXT_PUBLIC_NODE_URL }}
+          NODE_URL: ${{ secrets.NODE_URL }}
+          STAGE: ${{ vars.STAGE }}
+    timeout-minutes: 10
