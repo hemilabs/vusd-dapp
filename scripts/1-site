@@ -20,7 +20,6 @@ fi
 # ------------------------------------------------------------------------------
 
 function install-prod-deps-only() {
-  git submodule deinit --all -f
   npx lerna clean --yes
   npx lerna bootstrap -- --production --no-optional
 }
@@ -33,7 +32,6 @@ function replace-symlinked-deps() {
 
 function eb-init() {
   eb init "$1" \
-    --debug \
     --platform "docker" \
     --region "$REGION"
 }
@@ -45,7 +43,6 @@ function eb-list() {
 
 function eb-create() {
   eb create "$1" \
-    --debug \
     --elb-type application \
     --envvars "$2" \
     --instance_type "$3" \
@@ -61,7 +58,6 @@ function eb-status() {
 function eb-deploy() {
   # shellcheck disable=SC2046
   eb setenv $(echo "$2" | tr "," " ") \
-    --debug \
     --environment "$1" \
     --region "$REGION" \
     --timeout 20 &
@@ -84,7 +80,6 @@ function eb-deploy() {
   done
 
   eb deploy "$1" \
-    --debug \
     --region "$REGION" \
     --timeout 20 &
   PID=$!
