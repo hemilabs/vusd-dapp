@@ -17,7 +17,7 @@ const TreasuryAssetBox = function ({ title, symbol, valueInUnit }) {
         </span>
       </div>
       <div className="font-bold">
-        {formatNumber(toFixed(fromUnit(valueInUnit), 4))}
+        {formatNumber(toFixed(fromUnit(valueInUnit), 2))}
       </div>
     </div>
   )
@@ -58,12 +58,12 @@ const Treasury = function () {
         <div className="flex mt-4 pt-4 w-full border-t-2 space-x-4">
           <div className="py-8 w-full text-center font-semibold bg-white rounded-md">
             <p className="text-vesper pb-1">{t('treasury-total')}</p>
-            <p>{formatNumber(toFixed(fromUnit(treasuryValue), 4))}</p>
+            <p>{formatNumber(toFixed(fromUnit(treasuryValue), 2))}</p>
           </div>
 
           <div className="py-8 w-full text-center font-semibold bg-white rounded-md">
             <p className="text-vesper pb-1">{t('treasury-excess')}</p>
-            <p>{formatNumber(toFixed(fromUnit(treasuryExcess), 4))}</p>
+            <p>{formatNumber(toFixed(fromUnit(treasuryExcess), 2))}</p>
           </div>
         </div>
       </div>
