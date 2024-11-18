@@ -38,7 +38,7 @@ const TokenSelector = function ({
         }`}
         disabled={!active}
         selector={
-          <div className="flex items-center justify-between px-4 py-1 w-full h-10 font-semibold border border-gray-200 focus:outline-none">
+          <div className="flex items-center justify-between px-4 py-1 w-full h-10 font-semibold border-2 border-gray-200 rounded-md focus:outline-none">
             {active && (
               <>
                 <div className="flex items-center justify-between w-full">
@@ -72,7 +72,7 @@ const TokenSelector = function ({
         }
       >
         <div className="absolute z-10 pt-2 w-full">
-          <ul className="w-full bg-white border shadow-lg">
+          <ul className="w-full bg-white border-2 rounded-md shadow-lg">
             {tokensList &&
               tokensList.map(token => (
                 <li key={token.symbol}>
