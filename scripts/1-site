@@ -5,8 +5,8 @@ set -e
 # shellcheck disable=SC1091
 [ -f .env ] && . .env
 
+AWS_REGION=${AWS_REGION:-us-east-2}
 CONTACT=${CONTACT:-$(whoami)}
-REGION=${REGION:-us-east-2}
 STAGE=${STAGE:-staging}
 
 VERSION=$(git rev-parse HEAD | cut -c-7)
@@ -33,12 +33,12 @@ function replace-symlinked-deps() {
 function eb-init() {
   eb init "$1" \
     --platform "docker" \
-    --region "$REGION"
+    --region "$AWS_REGION"
 }
 
 function eb-list() {
   eb list \
-    --region "$REGION" | { grep "$1" || true; }
+    --region "$AWS_REGION" | { grep "$1" || true; }
 }
 
 function eb-create() {
@@ -46,20 +46,20 @@ function eb-create() {
     --elb-type application \
     --envvars "$2" \
     --instance_type "$3" \
-    --region "$REGION" \
+    --region "$AWS_REGION" \
     --tags Contact="$CONTACT",Service=vusd
 }
 
 function eb-status() {
   eb status "$1" \
-    --region "$REGION" | { grep "Status: Ready" || true; }
+    --region "$AWS_REGION" | { grep "Status: Ready" || true; }
 }
 
 function eb-deploy() {
   # shellcheck disable=SC2046
   eb setenv $(echo "$2" | tr "," " ") \
     --environment "$1" \
-    --region "$REGION" \
+    --region "$AWS_REGION" \
     --timeout 20 &
   PID=$!
 
@@ -80,7 +80,7 @@ function eb-deploy() {
   done
 
   eb deploy "$1" \
-    --region "$REGION" \
+    --region "$AWS_REGION" \
     --timeout 20 &
   PID=$!
 
