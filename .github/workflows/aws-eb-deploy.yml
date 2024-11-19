@@ -32,4 +32,4 @@ jobs:
           NEXT_PUBLIC_NODE_URL: ${{ vars.NEXT_PUBLIC_NODE_URL }}
           NODE_URL: ${{ secrets.NODE_URL }}
           STAGE: ${{ vars.STAGE }}
-        timeout-minutes: 10
+        timeout-minutes: 30
