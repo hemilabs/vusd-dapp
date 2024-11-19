@@ -6,7 +6,7 @@ set -e
 [ -f .env ] && . .env
 
 AWS_REGION=${AWS_REGION:-us-east-2}
-CONTACT=${CONTACT:-$(whoami)}
+CONTACT=${CONTACT:-$(jq -r '.author.name' package.json)}
 STAGE=${STAGE:-staging}
 
 VERSION=$(git rev-parse HEAD | cut -c-7)
