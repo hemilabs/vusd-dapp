@@ -2,7 +2,10 @@
   "name": "vusd-dapp",
   "version": "1.0.0",
   "license": "MIT",
-  "author": "Gabriel Montes <gabriel@bloq.com>",
+  "author": {
+    "name": "Gabriel Montes",
+    "email": "<gabriel@bloq.com>"
+  },
   "contributors": [
     "Martin Bon Foster <martin.bonfoster@bloq.com>",
     "leo <leo@bloq.com>",
