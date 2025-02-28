@@ -9,13 +9,11 @@ const { findByAddress, findBySymbol } = require('./tokens-list')
 const { fromUnit, toUnit } = require('./utils')
 const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
-const curveMetapoolAbi = require('./abi/CurveMetapool.json')
 const minterAbi = require('./abi/Minter.json')
 const redeemerAbi = require('./abi/Redeemer.json')
 const treasuryAbi = require('./abi/Treasury.json')
 const vusdAbi = require('./abi/VUSD.json')
 const unionBy = require('./union-by')
-const vusdToken = findBySymbol('VUSD')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
@@ -36,11 +34,6 @@ const createVusdLib = function (web3, options = {}) {
     getTreasuryContract()
       .then(treasury => treasury.methods.redeemer().call())
       .then(address => new web3.eth.Contract(redeemerAbi, address))
-
-  const curveMetapool = new web3.eth.Contract(
-    curveMetapoolAbi,
-    contracts.CurveMetapool
-  )
 
   const getMinterWhitelistedTokens = function () {
     debug('Getting Minter whitelisted tokens')
@@ -158,28 +151,6 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  const getCurveBalance = function (owner = from) {
-    debug('Getting VUSD3CRV-f balance of %s', owner)
-    return curveMetapool.methods
-      .balanceOf(owner)
-      .call()
-      .then(function (balance) {
-        debug('Balance of %s is %s VUSD3CRV-f', owner, fromUnit(balance))
-        return balance
-      })
-  }
-
-  const calcLpWithdraw = function (vusdAmount) {
-    if (vusdAmount === '0') return Promise.resolve('0')
-    debug(
-      'Calculating amount of LP to burn when exepecting to withdraw %s VUSD',
-      vusdAmount
-    )
-    return curveMetapool.methods
-      .calc_token_amount([toUnit(vusdAmount), 0], false)
-      .call()
-  }
-
   const execOptions = { from, web3, overestimation: 2 }
   const executeTransactions = createExecutor(execOptions)
 
@@ -188,143 +159,6 @@ const createVusdLib = function (web3, options = {}) {
       .concat(receipt.events[eventName])
       .filter(event => event.address.toLowerCase() === address.toLowerCase())
       .map(event => event.returnValues[prop])[0]
-
-  const calcWithdraw = function (vusdAmount) {
-    if (vusdAmount === '0') return Promise.resolve('0')
-    return curveMetapool.methods
-      .calc_withdraw_one_coin(vusdAmount, 0) // amount, coin[i]
-      .call() // returns the lp amount to burn to get vusd
-  }
-
-  const getCurveBalanceInVusd = () =>
-    getCurveBalance().then(result => calcWithdraw(result))
-
-  const MIN_MINT_AMOUNT = 1
-
-  const addCurveLiquidity = function (vusdAmount, transactionOptions = {}) {
-    const { decimals, symbol } = vusdToken
-    debug('Adding liquidity: ', fromUnit(vusdAmount, decimals), symbol)
-    const owner = transactionOptions.from || from
-    const transactionsPromise = isApprovalNeeded(
-      vusdToken.address,
-      owner,
-      contracts.CurveMetapool,
-      vusdAmount
-    ).then(function (approvalNeeded) {
-      const txs = []
-      if (approvalNeeded) {
-        const contract = new web3.eth.Contract(erc20Abi, vusdToken.address)
-        txs.push({
-          method: contract.methods.approve(contracts.CurveMetapool, vusdAmount),
-          suffix: 'approve',
-          gas: 29000
-        })
-      }
-      txs.push({
-        method: curveMetapool.methods.add_liquidity(
-          [vusdAmount, 0],
-          MIN_MINT_AMOUNT
-        ),
-        suffix: 'add_liquidity',
-        gas: 133000
-      })
-      return txs
-    })
-
-    const parseResultsVusd = function (transactionsData) {
-      const { receipt } = transactionsData[transactionsData.length - 1]
-      // @ts-ignore ts(2345)
-      parseReceiptEvents(erc20Abi, contracts.VUSD, receipt)
-      const sent = vusdAmount
-      const received = findReturnValue(
-        receipt,
-        'Transfer',
-        'value',
-        contracts.CurveMetapool
-      )
-
-      debug(
-        'Deposit of VUSD from %s %s completed',
-        fromUnit(vusdAmount, decimals),
-        symbol
-      )
-
-      debug('-Received %s LP', fromUnit(received))
-      return { sent, received }
-    }
-
-    return executeTransactions(
-      transactionsPromise,
-      parseResultsVusd,
-      transactionOptions
-    )
-  }
-
-  const sweepDust = (tokenAmount, balance, limit = 0.999) =>
-    new Big(tokenAmount).div(balance).toNumber() > limit ? balance : tokenAmount
-
-  const removeCurveLiquidity = function (
-    token,
-    amount,
-    transactionOptions = {}
-  ) {
-    const { decimals, symbol } = findByAddress(token)
-    const owner = transactionOptions.from || from
-    debug('Removing liquidity: ', fromUnit(amount, decimals), symbol)
-    const transactionsPromise = getCurveBalance().then(function (bal) {
-      const sweptAmount = sweepDust(amount, bal)
-      return isApprovalNeeded(
-        token,
-        owner,
-        contracts.CurveMetapool,
-        sweptAmount
-      ).then(function (approvalNeeded) {
-        const txs = []
-        if (approvalNeeded) {
-          const contract = new web3.eth.Contract(erc20Abi, token)
-          txs.push({
-            method: contract.methods.approve(owner, sweptAmount),
-            suffix: 'approve',
-            gas: 29000
-          })
-        }
-        txs.push({
-          method: curveMetapool.methods.remove_liquidity_one_coin(
-            sweptAmount,
-            0,
-            1
-          ),
-          suffix: 'remove_liquidity',
-          gas: 128000
-        })
-        return txs
-      })
-    })
-    const parseResults = function (transactionsData) {
-      const { receipt } = transactionsData[transactionsData.length - 1]
-      // @ts-ignore ts(2345)
-      parseReceiptEvents(erc20Abi, contracts.VUSD, receipt)
-      const sent = amount
-      const received = findReturnValue(
-        receipt,
-        'Transfer',
-        'value',
-        contracts.VUSD
-      )
-      debug(
-        'Withdraw of VUSD from %s %s completed',
-        fromUnit(amount, decimals),
-        symbol
-      )
-      debug('Received %s VUSD', fromUnit(received))
-      return { sent, received }
-    }
-    return executeTransactions(
-      transactionsPromise,
-      parseResults,
-      transactionOptions
-    )
-  }
 
   const getVusdSupply = function () {
     debug('Getting VUSD supply')
@@ -472,21 +306,15 @@ const createVusdLib = function (web3, options = {}) {
   }
 
   return {
-    addCurveLiquidity,
-    calcLpWithdraw,
-    calcWithdraw,
     findByAddress,
     findBySymbol,
-    getCurveBalance,
-    getCurveBalanceInVusd,
     getRedeemFee,
     getTokens,
     getUserBalances,
     getVusdBalance,
     getVusdSupply,
     mint,
-    redeem,
-    removeCurveLiquidity
+    redeem
   }
 }
 
