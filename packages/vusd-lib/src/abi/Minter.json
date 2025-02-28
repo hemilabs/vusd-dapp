@@ -1,10 +1,38 @@
 [
   {
     "inputs": [
-      { "internalType": "address", "name": "_vusd", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_vusd",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxMintLimit",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "previousMintLimit",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMintLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "MintingLimitUpdated",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -31,59 +59,75 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "previousDeviationLimit",
+        "name": "previousPriceTolerance",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "newDeviationLimit",
+        "name": "newPriceTolerance",
         "type": "uint256"
       }
     ],
-    "name": "UpdatedPriceDeviationLimit",
+    "name": "UpdatedPriceTolerance",
     "type": "event"
   },
   {
     "inputs": [],
-    "name": "CURVE_METAPOOL",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "MAX_BPS",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MINT_LIMIT",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "NAME",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "VERSION",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_token", "type": "address" },
-      { "internalType": "address", "name": "_cToken", "type": "address" },
-      { "internalType": "address", "name": "_oracle", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_cToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_oracle",
+        "type": "address"
+      }
     ],
     "name": "addWhitelistedToken",
     "outputs": [],
@@ -94,26 +138,54 @@
     "inputs": [],
     "name": "availableMintage",
     "outputs": [
-      { "internalType": "uint256", "name": "_mintage", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_mintage",
+        "type": "uint256"
+      }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "cTokens",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_token", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "cTokens",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountIn",
+        "type": "uint256"
+      }
     ],
     "name": "calculateMintage",
     "outputs": [
-      { "internalType": "uint256", "name": "_mintReturn", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_mintage",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -121,33 +193,65 @@
   {
     "inputs": [],
     "name": "governor",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_token", "type": "address" }
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    "name": "isMintingAllowed",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_address", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
     ],
     "name": "isWhitelistedToken",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxMintLimit",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_token", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "address", "name": "_receiver", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountIn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      }
     ],
     "name": "mint",
     "outputs": [],
@@ -156,8 +260,16 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_token", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountIn",
+        "type": "uint256"
+      }
     ],
     "name": "mint",
     "outputs": [],
@@ -166,9 +278,13 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
     ],
-    "name": "mintAndAddLiquidity",
+    "name": "mint",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -176,27 +292,55 @@
   {
     "inputs": [],
     "name": "mintingFee",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "oracles",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "priceDeviationLimit",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_token", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "oracles",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "priceTolerance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      }
     ],
     "name": "removeWhitelistedToken",
     "outputs": [],
@@ -206,13 +350,36 @@
   {
     "inputs": [],
     "name": "treasury",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_newMintingFee", "type": "uint256" }
+      {
+        "internalType": "uint256",
+        "name": "_newMintLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateMaxMintAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newMintingFee",
+        "type": "uint256"
+      }
     ],
     "name": "updateMintingFee",
     "outputs": [],
@@ -223,11 +390,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_newDeviationLimit",
+        "name": "_newPriceTolerance",
         "type": "uint256"
       }
     ],
-    "name": "updatePriceDeviationLimit",
+    "name": "updatePriceTolerance",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -236,7 +403,11 @@
     "inputs": [],
     "name": "vusd",
     "outputs": [
-      { "internalType": "contract IVUSD", "name": "", "type": "address" }
+      {
+        "internalType": "contract IVUSD",
+        "name": "",
+        "type": "address"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -245,7 +416,11 @@
     "inputs": [],
     "name": "whitelistedTokens",
     "outputs": [
-      { "internalType": "address[]", "name": "", "type": "address[]" }
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
