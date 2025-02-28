@@ -17,5 +17,5 @@ export const walletconnect = new WalletConnectConnector({
 })
 export const walletlink = new WalletLinkConnector({
   url: nodeUrl,
-  appName: `Vesper App${environment ? ` ${environment}` : ''}`
+  appName: `VUSD App${environment ? ` ${environment}` : ''}`
 })

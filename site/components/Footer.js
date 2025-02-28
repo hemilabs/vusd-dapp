@@ -11,13 +11,13 @@ const Footer = function () {
         <div className="w-1/2 text-right">
           <p>
             {t('copyright')} {t('sponsored-by')}
-            <Link href="https://vesper.finance">
+            <Link href="https://hemi.xyz">
               <a
                 className="ml-1 text-gray-800 underline"
                 rel="noreferrer"
                 target="_blank"
               >
-                Vesper
+                Hemi
               </a>
             </Link>
           </p>
