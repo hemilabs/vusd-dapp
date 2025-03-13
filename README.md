@@ -9,9 +9,17 @@ npx lerna run --stream dev
 
 Then open the browser at <http://localhost:3000>.
 
-### Issues in macOS
+### Issues in Apple silicon Macs
 
-`node-gyp@5` fails to complete the Lerna bootstrapping process in macOS.
+Node 14 fails to compile natively so the option is to run it with Rosetta:
+
+```sh
+arch -x86_64 zsh
+nvm install 14
+nvm use
+```
+
+And when installing the dependencies `node-gyp@5` may fail to complete the Lerna bootstrapping process.
 An alternative to spin up the app is to run everything inside a container:
 
 ```sh
