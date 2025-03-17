@@ -1,14 +1,14 @@
+import React, { createContext, useCallback, useEffect, useState } from 'react'
 import Big from 'big.js'
-import { useWeb3React } from '@web3-react/core'
-import { createContext, useCallback, useEffect, useState } from 'react'
 import createVusdLib from 'vusd-lib'
+import { useWeb3React } from '@web3-react/core'
 
 /**
  * This component must be a child of <App> to have access to the appropriate
  * context
  */
 
-const VusdContext = createContext()
+const VusdContext = createContext({})
 
 export const VusdContextProvider = function ({
   children,
@@ -25,7 +25,7 @@ export const VusdContextProvider = function ({
   const mergeTokenData = (tokens, walletBalances, vusdBalance) =>
     tokens.map(token => ({
       ...token,
-      walletRedeemable: Big(token.redeemableVusd).lt(vusdBalance)
+      walletRedeemable: new Big(token.redeemableVusd).lt(vusdBalance)
         ? token.redeemableVusd
         : vusdBalance,
       balance:
@@ -34,6 +34,9 @@ export const VusdContextProvider = function ({
     }))
   const updateData = useCallback(
     function () {
+      if (!vusdLib) {
+        return undefined
+      }
       const promises = [
         vusdLib.getTokens(),
         vusdLib.getUserBalances(),
@@ -55,7 +58,7 @@ export const VusdContextProvider = function ({
 
   useEffect(
     function () {
-      if (!vusdLib.getTokens || !library) {
+      if (!vusdLib?.getTokens || !library) {
         return undefined
       }
       const subscription = library.eth.subscribe('newBlockHeaders')
@@ -72,7 +75,7 @@ export const VusdContextProvider = function ({
         })
       return () => subscription.unsubscribe()
     },
-    [vusdLib, active]
+    [active, library, updateData, vusdLib]
   )
 
   useEffect(
@@ -80,10 +83,10 @@ export const VusdContextProvider = function ({
       if (!active) {
         setVusd({ tokensData: tokensInitialData, ...vusdInitialData })
       } else {
-        setVusdLib(createVusdLib(library, { from: account }))
+        setVusdLib(createVusdLib(library, { from: account || undefined }))
       }
     },
-    [active, library, account]
+    [account, active, library, tokensInitialData, vusdInitialData]
   )
 
   return (
