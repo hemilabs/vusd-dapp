@@ -111,21 +111,21 @@ const Wallet = function () {
         removeLastConnector()
       }
     },
-    {
-      name: 'WalletConnect',
-      connector: walletconnect,
-      handleConnection() {
-        setActivatingConnector(walletconnect)
-        activate(walletconnect, setError)
-        persistLastConnector('walletconnect')
-        setShowWalletConnector(false)
-        window.gtag('event', `Connected to WalletConnect`)
-      },
-      handleDisconnection() {
-        connector.close()
-        removeLastConnector()
-      }
-    },
+    // {
+    //   name: 'WalletConnect',
+    //   connector: walletconnect,
+    //   handleConnection() {
+    //     setActivatingConnector(walletconnect)
+    //     activate(walletconnect, setError)
+    //     persistLastConnector('walletconnect')
+    //     setShowWalletConnector(false)
+    //     window.gtag('event', `Connected to WalletConnect`)
+    //   },
+    //   handleDisconnection() {
+    //     connector.close()
+    //     removeLastConnector()
+    //   }
+    // },
     {
       name: 'Coinbase Wallet',
       connector: walletlink,
