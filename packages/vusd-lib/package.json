@@ -17,6 +17,8 @@
     "erc-20-abi": "^1.0.0",
     "p-series": "^2.1.0",
     "p-tap": "^3.0.0",
+    "promise-mem": "^1.0.3",
+    "semver": "^6.3.1",
     "web3-parse-receipt-events": "^1.0.2"
   },
   "engines": {
