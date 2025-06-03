@@ -2,47 +2,47 @@
 
 require('chai').should()
 
-const Big = require('big.js').default
+const Big = require('big.js')
 const erc20Abi = require('erc-20-abi')
 const Web3 = require('web3')
 
 const { findBySymbol } = require('../src/tokens-list')
 const { toUnit } = require('../src/utils')
+
 const createUniswapRouter = require('./helpers/uniswap')
 const testProvider = require('./helpers/test-provider')
 
 const createVusdLib = require('..')
 const fixtures = require('./fixtures.json')
 
+const RECORD_CALLS = false // Change to record calls and regenerate fixtures
+const getProvider = calls => testProvider(calls, RECORD_CALLS)
+
 describe('End-to-end', function () {
+  this.timeout(0)
+
   before(function () {
     if (!process.env.E2E) {
       this.skip()
-      return
     }
   })
 
-  //
-  // This commented code helps record Ethereum RPC calls with easy. Just change
-  // the Web3 provider used in any test to `recProvider`.
-  //
-  this.timeout(0)
   let provider
-  beforeEach(function () {
-    provider = () => testProvider([], true)
+
+  afterEach(function () {
+    if (!provider) return
+
+    const calls = provider.getCalls()
+    if (!(RECORD_CALLS && calls.length)) return
+
+    console.log('RECORDED CALLS:', JSON.stringify(calls))
   })
-  // afterEach(function () {
-  //   const calls = recProvider.getCalls()
-  //   if (calls.length) {
-  //     console.log('RECORDED CALLS:')
-  //     console.log(JSON.stringify(calls))
-  //   }
-  // })
 
   it('should get the list of whitelisted tokens', function () {
     const calls = fixtures.getWhitelistedTokens
+    provider = getProvider(calls)
     // @ts-ignore ts(2351)
-    const web3 = new Web3(provider(calls))
+    const web3 = new Web3(provider)
     const vusdLib = createVusdLib(web3)
     return vusdLib.getTokens().then(function (tokens) {
       tokens.should.be.an('array')
@@ -63,8 +63,9 @@ describe('End-to-end', function () {
 
   it("should get the user's balances", function () {
     const calls = fixtures.getUserBalances
+    provider = getProvider(calls)
     // @ts-ignore ts(2351)
-    const web3 = new Web3(provider(calls))
+    const web3 = new Web3(provider)
     const vusdLib = createVusdLib(web3)
     return vusdLib
       .getUserBalances(fixtures.testAccount)
@@ -85,8 +86,9 @@ describe('End-to-end', function () {
 
   it("should get the user's VUSD balance", function () {
     const calls = fixtures.getVusdBalance
+    provider = getProvider(calls)
     // @ts-ignore ts(2351)
-    const web3 = new Web3(provider(calls))
+    const web3 = new Web3(provider)
     const vusdLib = createVusdLib(web3)
     return vusdLib
       .getVusdBalance(fixtures.testAccount)
@@ -95,15 +97,16 @@ describe('End-to-end', function () {
       })
   })
 
-  it('should mint from DAI', function () {
+  it('should mint from USDT', function () {
     const calls = fixtures.mint
     const from = fixtures.from
+    provider = getProvider(calls)
     // @ts-ignore ts(2351)
-    const web3 = new Web3(provider(calls))
+    const web3 = new Web3(provider)
     const vusdLib = createVusdLib(web3, { from })
     const uniswap = createUniswapRouter(web3)
-    // Swap ETH for DAI
-    const { address, decimals } = findBySymbol('DAI')
+    // Swap ETH for USDT
+    const { address, decimals } = findBySymbol('USDT')
     const token = new web3.eth.Contract(erc20Abi, address)
     const ONE_ETH = '1000000000000000000'
     return uniswap.methods
@@ -111,53 +114,53 @@ describe('End-to-end', function () {
         1,
         [fixtures.wethAddress, address],
         from,
-        2000000000 // 2033-05-18T03:33:20.000Z
+        2000000000 // deadline 2033-05-18T03:33:20.000Z
       )
       .send({ from, gas: 200000, value: ONE_ETH })
       .then(function (receipt) {
         receipt.status.should.be.true
-        // Get DAI and VUSD balances
+        // Get USDT and VUSD balances
         return Promise.all([
           token.methods.balanceOf(from).call(),
           vusdLib.getVusdBalance(from)
         ])
       })
-      .then(function ([daiBalance, vusdBalance]) {
-        // Check DAI balance
-        daiBalance.should.be
+      .then(function ([tokenBalance, vusdBalance]) {
+        // Check USDT balance
+        tokenBalance.should.be
           .a('string')
           .that.that.matches(/^[0-9]+$/)
           .and.not.equals('0')
-        // Mint VUSD from DAI
+        // Mint VUSD from USDT
         return Promise.all([
-          daiBalance,
+          tokenBalance,
           vusdBalance,
           vusdLib.mint(address, toUnit('10', decimals)).promise
         ])
       })
-      .then(function ([daiBalance, vusdBalance, result]) {
-        // Check the mint op succedded
+      .then(function ([tokenBalance, vusdBalance, result]) {
+        // Check the mint op succeeded
         result.status.should.be.true
         // Check sent and received
         result.sent.should.equals(toUnit('10', decimals))
         result.received.should.equals(toUnit('10'))
-        // Get DAI and VUSD balances
+        // Get USDT and VUSD balances
         return Promise.all([
-          daiBalance,
+          tokenBalance,
           vusdBalance,
           token.methods.balanceOf(from).call(),
           vusdLib.getVusdBalance(from)
         ])
       })
       .then(function ([
-        oldDaiBalance,
+        oldTokenBalance,
         oldVusdBalance,
-        newDaiBalance,
+        newTokenBalance,
         newVusdBalance
       ]) {
         // Check DAI balance
-        new Big(oldDaiBalance)
-          .minus(newDaiBalance)
+        new Big(oldTokenBalance)
+          .minus(newTokenBalance)
           .toFixed()
           .should.equals(toUnit('10', decimals))
         // Check VUSD balance
@@ -171,8 +174,9 @@ describe('End-to-end', function () {
   it('should redeem from USDC', function () {
     const calls = fixtures.redeem
     const from = fixtures.from
+    provider = getProvider(calls)
     // @ts-ignore ts(2351)
-    const web3 = new Web3(provider(calls))
+    const web3 = new Web3(provider)
     const vusdLib = createVusdLib(web3, { from })
     const uniswap = createUniswapRouter(web3)
     // swap ETH for USDC

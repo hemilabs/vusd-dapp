@@ -5,6 +5,11 @@
         "internalType": "address",
         "name": "_vusd",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxMintLimit",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -14,39 +19,71 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousRedeemer",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "previousMintLimit",
+        "type": "uint256"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newRedeemer",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMintLimit",
+        "type": "uint256"
       }
     ],
-    "name": "UpdatedRedeemer",
+    "name": "MintingLimitUpdated",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousSwapManager",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "previousMintingFee",
+        "type": "uint256"
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newSwapManager",
-        "type": "address"
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMintingFee",
+        "type": "uint256"
       }
     ],
-    "name": "UpdatedSwapManager",
+    "name": "UpdatedMintingFee",
     "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "previousPriceTolerance",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newPriceTolerance",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdatedPriceTolerance",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -78,19 +115,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_keeperAddress",
-        "type": "address"
-      }
-    ],
-    "name": "addKeeper",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "_token",
         "type": "address"
       },
@@ -112,12 +136,12 @@
   },
   {
     "inputs": [],
-    "name": "cTokenList",
+    "name": "availableMintage",
     "outputs": [
       {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
+        "internalType": "uint256",
+        "name": "_mintage",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -146,18 +170,24 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_toToken",
+        "name": "_token",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_minOut",
+        "name": "_amountIn",
         "type": "uint256"
       }
     ],
-    "name": "claimCompAndConvertTo",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "calculateMintage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_mintage",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -194,12 +224,12 @@
   },
   {
     "inputs": [],
-    "name": "keepers",
+    "name": "maxMintLimit",
     "outputs": [
       {
-        "internalType": "address[]",
+        "internalType": "uint256",
         "name": "",
-        "type": "address[]"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -209,13 +239,67 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_newTreasury",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountIn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
         "type": "address"
       }
     ],
-    "name": "migrate",
+    "name": "mint",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "mintingFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -239,28 +323,15 @@
   },
   {
     "inputs": [],
-    "name": "redeemer",
+    "name": "priceTolerance",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_keeperAddress",
-        "type": "address"
-      }
-    ],
-    "name": "removeKeeper",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -278,10 +349,10 @@
   },
   {
     "inputs": [],
-    "name": "swapManager",
+    "name": "treasury",
     "outputs": [
       {
-        "internalType": "contract ISwapManager",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -292,12 +363,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_fromToken",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_newMintLimit",
+        "type": "uint256"
       }
     ],
-    "name": "sweep",
+    "name": "updateMaxMintAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -305,12 +376,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_newRedeemer",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_newMintingFee",
+        "type": "uint256"
       }
     ],
-    "name": "updateRedeemer",
+    "name": "updateMintingFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -318,12 +389,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_newSwapManager",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_newPriceTolerance",
+        "type": "uint256"
       }
     ],
-    "name": "updateSwapManager",
+    "name": "updatePriceTolerance",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -349,97 +420,6 @@
         "internalType": "address[]",
         "name": "",
         "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenReceiver",
-        "type": "address"
-      }
-    ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_tokens",
-        "type": "address[]"
-      }
-    ],
-    "name": "withdrawAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_tokens",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "withdrawMulti",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_token",
-        "type": "address"
-      }
-    ],
-    "name": "withdrawable",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",

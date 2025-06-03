@@ -1,159 +1,305 @@
 [
   {
-    "name": "Transfer",
     "inputs": [
-      { "type": "address", "name": "_from", "indexed": true },
-      { "type": "address", "name": "_to", "indexed": true },
-      { "type": "uint256", "name": "_value", "indexed": false }
+      {
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "name": "_symbol",
+        "type": "string"
+      },
+      {
+        "name": "_decimals",
+        "type": "uint256"
+      },
+      {
+        "name": "_supply",
+        "type": "uint256"
+      }
     ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "Approval",
-    "inputs": [
-      { "type": "address", "name": "_owner", "indexed": true },
-      { "type": "address", "name": "_spender", "indexed": true },
-      { "type": "uint256", "name": "_value", "indexed": false }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
     "outputs": [],
-    "inputs": [
-      { "type": "string", "name": "_name" },
-      { "type": "string", "name": "_symbol" },
-      { "type": "uint256", "name": "_decimals" },
-      { "type": "uint256", "name": "_supply" }
-    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "_spender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "gas": 1549,
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "name": "_spender",
+        "type": "address"
+      }
+    ],
+    "name": "allowance",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "gas": 39078,
+    "inputs": [
+      {
+        "name": "_spender",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "approve",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "gas": 1665,
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "gas": 75826,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "burnFrom",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "gas": 1481,
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "gas": 75808,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "mint",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "gas": 7823,
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "gas": 36247,
+    "inputs": [
+      {
+        "name": "_minter",
+        "type": "address"
+      }
+    ],
     "name": "set_minter",
     "outputs": [],
-    "inputs": [{ "type": "address", "name": "_minter" }],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 36247
+    "type": "function"
   },
   {
+    "gas": 178069,
+    "inputs": [
+      {
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "name": "_symbol",
+        "type": "string"
+      }
+    ],
     "name": "set_name",
     "outputs": [],
-    "inputs": [
-      { "type": "string", "name": "_name" },
-      { "type": "string", "name": "_symbol" }
-    ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 178069
+    "type": "function"
   },
   {
-    "name": "totalSupply",
-    "outputs": [{ "type": "uint256", "name": "" }],
+    "gas": 6876,
     "inputs": [],
-    "stateMutability": "view",
-    "type": "function",
-    "gas": 1211
-  },
-  {
-    "name": "allowance",
-    "outputs": [{ "type": "uint256", "name": "" }],
-    "inputs": [
-      { "type": "address", "name": "_owner" },
-      { "type": "address", "name": "_spender" }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "gas": 1549
-  },
-  {
-    "name": "transfer",
-    "outputs": [{ "type": "bool", "name": "" }],
-    "inputs": [
-      { "type": "address", "name": "_to" },
-      { "type": "uint256", "name": "_value" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 74832
-  },
-  {
-    "name": "transferFrom",
-    "outputs": [{ "type": "bool", "name": "" }],
-    "inputs": [
-      { "type": "address", "name": "_from" },
-      { "type": "address", "name": "_to" },
-      { "type": "uint256", "name": "_value" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 111983
-  },
-  {
-    "name": "approve",
-    "outputs": [{ "type": "bool", "name": "" }],
-    "inputs": [
-      { "type": "address", "name": "_spender" },
-      { "type": "uint256", "name": "_value" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 39078
-  },
-  {
-    "name": "mint",
-    "outputs": [{ "type": "bool", "name": "" }],
-    "inputs": [
-      { "type": "address", "name": "_to" },
-      { "type": "uint256", "name": "_value" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 75808
-  },
-  {
-    "name": "burnFrom",
-    "outputs": [{ "type": "bool", "name": "" }],
-    "inputs": [
-      { "type": "address", "name": "_to" },
-      { "type": "uint256", "name": "_value" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 75826
-  },
-  {
-    "name": "name",
-    "outputs": [{ "type": "string", "name": "" }],
-    "inputs": [],
-    "stateMutability": "view",
-    "type": "function",
-    "gas": 7823
-  },
-  {
     "name": "symbol",
-    "outputs": [{ "type": "string", "name": "" }],
-    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 6876
+    "type": "function"
   },
   {
-    "name": "decimals",
-    "outputs": [{ "type": "uint256", "name": "" }],
+    "gas": 1211,
     "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1481
+    "type": "function"
   },
   {
-    "name": "balanceOf",
-    "outputs": [{ "type": "uint256", "name": "" }],
-    "inputs": [{ "type": "address", "name": "arg0" }],
-    "stateMutability": "view",
-    "type": "function",
-    "gas": 1665
+    "gas": 74832,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "gas": 111983,
+    "inputs": [
+      {
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFrom",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ]

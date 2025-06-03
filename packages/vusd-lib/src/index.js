@@ -1,39 +1,102 @@
 'use strict'
 
-const Big = require('big.js').default
+const Big = require('big.js')
 const debug = require('debug')('vusd-lib')
 const erc20Abi = require('erc-20-abi')
 const parseReceiptEvents = require('web3-parse-receipt-events')
+const pMemoize = require('promise-mem')
+const semver = require('semver')
 
 const { findByAddress, findBySymbol } = require('./tokens-list')
 const { fromUnit, toUnit } = require('./utils')
 const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
-const minterAbi = require('./abi/Minter.json')
-const redeemerAbi = require('./abi/Redeemer.json')
+const minter140Abi = require('./abi/Minter-1.4.0.json')
+const minter142Abi = require('./abi/Minter-1.4.2.json')
+const redeemer110Abi = require('./abi/Redeemer-1.1.0.json')
+const redeemer142Abi = require('./abi/Redeemer-1.4.2.json')
 const treasuryAbi = require('./abi/Treasury.json')
-const vusdAbi = require('./abi/VUSD.json')
 const unionBy = require('./union-by')
+const vusdAbi = require('./abi/VUSD.json')
 
 const createVusdLib = function (web3, options = {}) {
   const { from } = options
 
   const vusd = new web3.eth.Contract(vusdAbi, contracts.VUSD)
 
-  const getMinterContract = () =>
+  const getMinterContract = pMemoize(() =>
     vusd.methods
       .minter()
       .call()
-      .then(address => new web3.eth.Contract(minterAbi, address))
-  const getTreasuryContract = () =>
+      .then(function (address) {
+        const minter = new web3.eth.Contract(minter142Abi, address)
+        return Promise.all([address, minter, minter.methods.VERSION().call()])
+      })
+      .then(function ([address, minter, version]) {
+        if (semver.gte(version, '1.4.2')) {
+          return minter
+        }
+
+        // Minter 1.4.0-1.4.1 use mint(token, amountIn)
+        const patched = new web3.eth.Contract(minter140Abi, address)
+        const mintMethod = patched.methods.mint
+        patched.methods.mint = function (
+          token,
+          amountIn,
+          minAmountOut, // eslint-disable-line no-unused-vars
+          receiver // eslint-disable-line no-unused-vars
+        ) {
+          const mint = () => mintMethod(token, amountIn)
+          const estimateGas = (...args) => mint().estimateGas(...args)
+          const send = (...args) => mint().send(...args)
+          return { estimateGas, send }
+        }
+        return patched
+
+        // Minter 1.1.0-1.3.0 use mint(token, amount) but this has long been
+        // deprecated so there is no need to patch it.
+      })
+  )
+
+  const getTreasuryContract = pMemoize(() =>
     vusd.methods
       .treasury()
       .call()
       .then(address => new web3.eth.Contract(treasuryAbi, address))
-  const getRedeemerContract = () =>
+  )
+
+  const getRedeemerContract = pMemoize(() =>
     getTreasuryContract()
       .then(treasury => treasury.methods.redeemer().call())
-      .then(address => new web3.eth.Contract(redeemerAbi, address))
+      .then(address => new web3.eth.Contract(redeemer142Abi, address))
+      .then(redeemer =>
+        Promise.all([redeemer, redeemer.methods.VERSION().call()])
+      )
+      .then(function ([redeemer, version]) {
+        if (semver.gte(version, '1.4.2')) {
+          return redeemer
+        }
+
+        // Redeemer 1.1.0-1.4.0 use redeem(token, vusdAmount, tokenReceiver)
+        const patched = new web3.eth.Contract(
+          redeemer110Abi,
+          redeemer.options.address
+        )
+        const redeemMethod = patched.methods.redeem
+        patched.methods.redeem = function (
+          token,
+          vusdAmount,
+          minAmountOut,
+          tokenReceiver
+        ) {
+          const redeem = () => redeemMethod(token, vusdAmount, tokenReceiver)
+          const estimateGas = (...args) => redeem().estimateGas(...args)
+          const send = (...args) => redeem().send(...args)
+          return { estimateGas, send }
+        }
+        return patched
+      })
+  )
 
   const getMinterWhitelistedTokens = function () {
     debug('Getting Minter whitelisted tokens')
@@ -151,7 +214,7 @@ const createVusdLib = function (web3, options = {}) {
       })
   }
 
-  const execOptions = { from, web3, overestimation: 2 }
+  const execOptions = { from, overestimation: 2, web3 }
   const executeTransactions = createExecutor(execOptions)
 
   const findReturnValue = (receipt, eventName, prop, address) =>
@@ -176,7 +239,7 @@ const createVusdLib = function (web3, options = {}) {
     return getMinterWhitelistedTokens().then(whitelistedTokens =>
       Promise.all(
         whitelistedTokens.map(function (token) {
-          const { address, symbol, decimals } = token
+          const { address, decimals, symbol } = token
           const contract = new web3.eth.Contract(erc20Abi, address)
           return contract.methods
             .balanceOf(owner)
@@ -195,6 +258,14 @@ const createVusdLib = function (web3, options = {}) {
     )
   }
 
+  /**
+   * Returns the amount with 2% less, rounded to the nearest integer.
+   *
+   * @param {string} amount
+   */
+  const toMinAmount = amount =>
+    new Big(amount).mul(0.98).round(0, Big.roundDown).toFixed(0)
+
   // Mints VUSD. The amount is token.
   const mint = function (token, amount, transactionOptions = {}) {
     const { decimals, symbol } = findByAddress(token)
@@ -212,15 +283,20 @@ const createVusdLib = function (web3, options = {}) {
         if (approvalNeeded) {
           const contract = new web3.eth.Contract(erc20Abi, token)
           txs.push({
+            gas: 66000,
             method: contract.methods.approve(minter.options.address, amount),
-            suffix: 'approve',
-            gas: 66000
+            suffix: 'approve'
           })
         }
         txs.push({
-          method: minter.methods.mint(token, amount),
-          suffix: 'mint',
-          gas: 100000
+          gas: 100000,
+          method: minter.methods.mint(
+            token,
+            amount,
+            toMinAmount(amount),
+            owner
+          ),
+          suffix: 'mint'
         })
         return txs
       })
@@ -241,7 +317,7 @@ const createVusdLib = function (web3, options = {}) {
         symbol
       )
       debug('Received %s VUSD', fromUnit(received))
-      return { sent, received }
+      return { received, sent }
     }
     return executeTransactions(
       transactionsPromise,
@@ -276,15 +352,20 @@ const createVusdLib = function (web3, options = {}) {
         const txs = []
         if (approvalNeeded) {
           txs.push({
+            gas: 66000,
             method: vusd.methods.approve(redeemer.options.address, amount),
-            suffix: 'approve',
-            gas: 66000
+            suffix: 'approve'
           })
         }
         txs.push({
-          method: redeemer.methods.redeem(token, amount, tokenReceiver || from),
-          suffix: 'redeem',
-          gas: 100000
+          gas: 100000,
+          method: redeemer.methods.redeem(
+            token,
+            amount,
+            toMinAmount(amount),
+            tokenReceiver || owner
+          ),
+          suffix: 'redeem'
         })
         return txs
       })
@@ -296,7 +377,7 @@ const createVusdLib = function (web3, options = {}) {
       const received = findReturnValue(receipt, 'Transfer', 'value', token)
       debug('Redeem of %s from %s VUSD completed', symbol, fromUnit(amount))
       debug('Received %s %s', fromUnit(received, decimals), symbol)
-      return { sent, received }
+      return { received, sent }
     }
     return executeTransactions(
       transactionsPromise,

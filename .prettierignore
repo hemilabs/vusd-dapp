@@ -1,5 +1,7 @@
+.config
 .github
+.npm
 .nyc_output
 coverage
-site/.next
-site/out
+*/.next
+*/out
