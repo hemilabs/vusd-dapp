@@ -52,7 +52,9 @@
       "prettier"
     ],
     "ignorePatterns": [
+      "site/.next",
       "site/out",
+      "dashboard/.next",
       "dashboard/out"
     ],
     "overrides": [
@@ -139,8 +141,13 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{css,js,json,md}": "prettier --write"
+    "*.js": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ],
+    "*.{css,json,md}": [
+      "prettier --write"
+    ]
   },
   "prettier": {
     "arrowParens": "avoid",
