@@ -2,7 +2,7 @@ import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import useTranslation from 'next-translate/useTranslation'
 import { useContext, useEffect, useState } from 'react'
-import { findBySymbol } from 'vusd-lib'
+import { vusdToken } from 'vusd-lib'
 import watchAsset from 'wallet-watch-asset'
 
 import { useNumberFormat } from '../hooks/useNumberFormat'
@@ -15,13 +15,11 @@ import Input from './Input'
 import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
 
-const vusdToken = findBySymbol('VUSD')
-
 const Mint = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { mint, tokensData, vusdBalance } = vusd
-  const [selectedToken, setSelectedToken] = useState({})
+  const [selectedToken, setSelectedToken] = useState()
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
 
@@ -30,16 +28,18 @@ const Mint = function () {
   const formatNumber = useNumberFormat()
 
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
-  const tokenAvailable = Big(selectedToken.balance || 0).gt(0)
+  const tokenAvailable = Big(selectedToken?.balance || 0).gt(0)
   const mintDisabled =
     Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0, selectedToken.decimals)).gt(
-      Big(selectedToken.balance || 0)
+    Big(toUnit(amount || 0, selectedToken?.decimals)).gt(
+      Big(selectedToken?.balance || 0)
     )
 
-  const handleMaxAmountClick = () =>
-    tokenAvailable &&
-    setAmount(fromUnit(selectedToken.balance, selectedToken.decimals))
+  function handleMaxAmountClick() {
+    if (tokenAvailable && selectedToken) {
+      setAmount(fromUnit(selectedToken.balance, selectedToken.decimals))
+    }
+  }
 
   const { account, library } = useWeb3React()
 
@@ -101,7 +101,7 @@ const Mint = function () {
         })
         watchAsset(
           library.currentProvider,
-          account,
+          /** @type {`0x${string}`} */ (account),
           vusdToken,
           localStorage
         ).catch(() => null)

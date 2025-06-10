@@ -7,7 +7,7 @@ const parseReceiptEvents = require('web3-parse-receipt-events')
 const pMemoize = require('promise-mem')
 const semver = require('semver')
 
-const { findByAddress, findBySymbol } = require('./tokens-list')
+const { findByAddress, findBySymbol, vusdToken } = require('./tokens-list')
 const { fromUnit, toUnit } = require('./utils')
 const contracts = require('./contracts.json')
 const createExecutor = require('./exec-transactions')
@@ -401,4 +401,5 @@ const createVusdLib = function (web3, options = {}) {
 
 createVusdLib.findByAddress = findByAddress
 createVusdLib.findBySymbol = findBySymbol
+createVusdLib.vusdToken = vusdToken
 module.exports = createVusdLib
