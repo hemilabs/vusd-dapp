@@ -1,17 +1,19 @@
+import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
+import { useContext, useEffect, useState } from 'react'
+import { findBySymbol } from 'vusd-lib'
+import watchAsset from 'wallet-watch-asset'
+
+import { useNumberFormat } from '../hooks/useNumberFormat'
 import { ONLY_NUMBERS_REGEX, fromUnit, toFixed, toUnit } from '../utils'
 import getErrorKey from '../utils/errorKeys'
+
 import Button from './Button'
+import VusdContext from './context/Vusd'
 import Input from './Input'
 import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
-import VusdContext from './context/Vusd'
-import { useNumberFormat } from '../hooks/useNumberFormat'
-import { useWeb3React } from '@web3-react/core'
-import watchAsset from 'wallet-watch-asset'
-import { findBySymbol } from 'vusd-lib'
 
 const vusdToken = findBySymbol('VUSD')
 
@@ -39,7 +41,7 @@ const Mint = function () {
     tokenAvailable &&
     setAmount(fromUnit(selectedToken.balance, selectedToken.decimals))
 
-  const { account } = useWeb3React()
+  const { account, library } = useWeb3React()
 
   const handleMint = function (token, mintAmount) {
     const fixedAmount = Big(mintAmount).round(4, 0).toFixed(4)
@@ -89,7 +91,7 @@ const Mint = function () {
           )
         })
       })
-      .on('result', function ({ fees, status, received }) {
+      .on('result', function ({ fees, received, status }) {
         window.gtag('event', `Mint with ${token.symbol} succeeded`)
         addTransactionStatus({
           internalTransactionId,
@@ -97,7 +99,12 @@ const Mint = function () {
           fee: Big(fromUnit(fees)).toFixed(4),
           received: status && Big(fromUnit(received)).round(4, 0).toFixed(4)
         })
-        watchAsset({ account, token: vusdToken })
+        watchAsset(
+          library.currentProvider,
+          account,
+          vusdToken,
+          localStorage
+        ).catch(() => null)
       })
       .on('error', function (error) {
         if (
