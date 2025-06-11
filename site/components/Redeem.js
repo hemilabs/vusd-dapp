@@ -1,22 +1,24 @@
+import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
-import { useContext, useEffect, useState } from 'react'
 import useTranslation from 'next-translate/useTranslation'
+import { useContext, useEffect, useState } from 'react'
+import watchAsset from 'wallet-watch-asset'
+
+import { useNumberFormat } from '../hooks/useNumberFormat'
 import { ONLY_NUMBERS_REGEX, fromUnit, toFixed, toUnit } from '../utils'
 import getErrorKey from '../utils/errorKeys'
+
 import Button from './Button'
+import VusdContext from './context/Vusd'
 import Input from './Input'
 import TokenSelector from './TokenSelector'
 import TransactionContext from './TransactionContext'
-import VusdContext from './context/Vusd'
-import { useNumberFormat } from '../hooks/useNumberFormat'
-import watchAsset from 'wallet-watch-asset'
-import { useWeb3React } from '@web3-react/core'
 
 const Redeem = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { redeem, tokensData, vusdBalance } = vusd
-  const [selectedToken, setSelectedToken] = useState({})
+  const [selectedToken, setSelectedToken] = useState()
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
@@ -27,19 +29,22 @@ const Redeem = function () {
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
   const redeemDisabled =
     Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0)).gt(Big(selectedToken.walletRedeemable || 0))
+    Big(toUnit(amount || 0)).gt(Big(selectedToken?.walletRedeemable || 0))
 
   useEffect(
     function () {
       setAmount('')
     },
-    [selectedToken.symbol]
+    [selectedToken?.symbol]
   )
 
-  const handleMaxAmountClick = () =>
-    vusdAvailable && setAmount(fromUnit(selectedToken.walletRedeemable))
+  function handleMaxAmountClick() {
+    if (vusdAvailable && selectedToken) {
+      setAmount(fromUnit(selectedToken.walletRedeemable))
+    }
+  }
 
-  const { account } = useWeb3React()
+  const { account, library } = useWeb3React()
 
   const handleRedeem = function (token, mintAmount) {
     const fixedAmount = Big(mintAmount).round(4, 0).toFixed(4)
@@ -88,7 +93,7 @@ const Redeem = function () {
           )
         })
       })
-      .on('result', function ({ fees, status, received }) {
+      .on('result', function ({ fees, received, status }) {
         window.gtag('event', `Redeem of ${token.symbol} succeeded`)
         addTransactionStatus({
           internalTransactionId,
@@ -98,7 +103,12 @@ const Redeem = function () {
             status &&
             Big(fromUnit(received, token.decimals)).round(4, 0).toFixed(4)
         })
-        watchAsset({ account, token: selectedToken })
+        watchAsset(
+          library.currentProvider,
+          /** @type {`0x${string}`} */ (account),
+          selectedToken,
+          window.localStorage
+        ).catch(() => null)
       })
       .on('error', function (error) {
         if (
