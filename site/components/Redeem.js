@@ -18,7 +18,7 @@ const Redeem = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { redeem, tokensData, vusdBalance } = vusd
-  const [selectedToken, setSelectedToken] = useState()
+  const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
   const formatNumber = useNumberFormat()
@@ -29,13 +29,13 @@ const Redeem = function () {
   const vusdAvailable = Big(vusdBalance || 0).gt(0)
   const redeemDisabled =
     Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0)).gt(Big(selectedToken?.walletRedeemable || 0))
+    Big(toUnit(amount || 0)).gt(Big(selectedToken.walletRedeemable || 0))
 
   useEffect(
     function () {
       setAmount('')
     },
-    [selectedToken?.symbol]
+    [selectedToken.symbol]
   )
 
   function handleMaxAmountClick() {

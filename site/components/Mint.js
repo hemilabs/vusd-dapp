@@ -19,7 +19,7 @@ const Mint = function () {
   const { addTransactionStatus } = useContext(TransactionContext)
   const { vusd } = useContext(VusdContext)
   const { mint, tokensData, vusdBalance } = vusd
-  const [selectedToken, setSelectedToken] = useState()
+  const [selectedToken, setSelectedToken] = useState({})
   const [amount, setAmount] = useState('')
   const { t } = useTranslation('common')
 
@@ -28,11 +28,11 @@ const Mint = function () {
   const formatNumber = useNumberFormat()
 
   const fixedVusdBalance = toFixed(fromUnit(vusdBalance || 0), 4)
-  const tokenAvailable = Big(selectedToken?.balance || 0).gt(0)
+  const tokenAvailable = Big(selectedToken.balance || 0).gt(0)
   const mintDisabled =
     Big(0).gte(Big(amount || 0)) ||
-    Big(toUnit(amount || 0, selectedToken?.decimals)).gt(
-      Big(selectedToken?.balance || 0)
+    Big(toUnit(amount || 0, selectedToken.decimals)).gt(
+      Big(selectedToken.balance || 0)
     )
 
   function handleMaxAmountClick() {
