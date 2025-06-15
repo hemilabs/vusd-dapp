@@ -168,7 +168,7 @@ const createVusdLib = function (web3, options = {}) {
       .then(minter => minter.methods.mintingFee().call())
       .then(function (response) {
         const fee = Number.parseInt(response) / 10000
-        debug('Minting fee is %s%', (fee * 100).toFixed(2))
+        debug('Minting fee is %s', (fee * 100).toFixed(2))
         return fee
       })
   }
@@ -179,7 +179,7 @@ const createVusdLib = function (web3, options = {}) {
       .then(redeemer => redeemer.methods.redeemFee().call())
       .then(function (response) {
         const fee = Number.parseInt(response) / 10000
-        debug('Redeem fee is %s%', (fee * 100).toFixed(2))
+        debug('Redeem fee is %s', (fee * 100).toFixed(2))
         return fee
       })
   }
@@ -293,7 +293,7 @@ const createVusdLib = function (web3, options = {}) {
           method: minter.methods.mint(
             token,
             amount,
-            toMinAmount(amount),
+            toUnit(toMinAmount(amount), 18 - decimals), // token to VUSD
             owner
           ),
           suffix: 'mint'
@@ -362,7 +362,7 @@ const createVusdLib = function (web3, options = {}) {
           method: redeemer.methods.redeem(
             token,
             amount,
-            toMinAmount(amount),
+            fromUnit(toMinAmount(amount), 18 - decimals), // VUSD to token
             tokenReceiver || owner
           ),
           suffix: 'redeem'
