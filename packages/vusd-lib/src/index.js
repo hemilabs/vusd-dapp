@@ -293,7 +293,7 @@ const createVusdLib = function (web3, options = {}) {
           method: minter.methods.mint(
             token,
             amount,
-            toMinAmount(amount),
+            toUnit(toMinAmount(amount), 18 - decimals), // token to VUSD
             owner
           ),
           suffix: 'mint'
@@ -362,7 +362,7 @@ const createVusdLib = function (web3, options = {}) {
           method: redeemer.methods.redeem(
             token,
             amount,
-            toMinAmount(amount),
+            fromUnit(toMinAmount(amount), 18 - decimals), // VUSD to token
             tokenReceiver || owner
           ),
           suffix: 'redeem'
