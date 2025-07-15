@@ -1,9 +1,6 @@
 {
   "address": "地址",
   "amount": "数量",
-  "beta-description": "我们希望您使用 VUSD，但我们也希望您了解 Beta 版带来的风险。",
-  "beta-ribbon": "VUSD 处于测试阶段，使用风险自负",
-  "beta-title": "VUSD 处于测试阶段",
   "connect-wallet": "连接钱包",
   "copyright": "版权所有©2022 VUSD。版权所有。",
   "current-redeem-fee": "当前兑换费用",
