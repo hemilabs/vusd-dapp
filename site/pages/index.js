@@ -1,16 +1,16 @@
-import useSWR from 'swr'
 import { useWeb3React } from '@web3-react/core'
-import { getTokens, getVusd } from '../utils/getDataSS'
-import Layout from '../components/Layout'
-import Transactions from '../components/Transactions'
-import Treasury from '../components/Treasury'
-import { TransactionContextProvider } from '../components/TransactionContext'
-import { VusdContextProvider } from '../components/context/Vusd'
-import BetaModal from '../components/BetaModal'
+import useSWR from 'swr'
+
 import AppSelector from '../components/AppSelector'
+import { VusdContextProvider } from '../components/context/Vusd'
+import Layout from '../components/Layout'
 import Mint from '../components/Mint'
 import Redeem from '../components/Redeem'
 import TabSelector from '../components/TabSelector'
+import { TransactionContextProvider } from '../components/TransactionContext'
+import Transactions from '../components/Transactions'
+import Treasury from '../components/Treasury'
+import { getTokens, getVusd } from '../utils/getDataSS'
 
 const tabs = [
   {
@@ -50,7 +50,6 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
               <TabSelector tabs={tabs} />
             </div>
           </div>
-          <BetaModal />
           <Transactions />
         </Layout>
       </TransactionContextProvider>
