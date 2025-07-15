@@ -21,8 +21,8 @@
     "lint:fix": "eslint --cache --fix .",
     "postinstall": "lerna bootstrap",
     "test": "lerna run --stream test",
-    "dev": "NODE_OPTIONS='--openssl-legacy-provider' lerna run dev",
-    "build": "NODE_OPTIONS='--openssl-legacy-provider' lerna run build"
+    "dev": "lerna run dev",
+    "build": "lerna run build"
   },
   "dependencies": {
     "lerna": "^4.0.0",
