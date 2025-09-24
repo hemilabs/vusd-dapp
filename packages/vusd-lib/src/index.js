@@ -362,7 +362,7 @@ const createVusdLib = function (web3, options = {}) {
           method: redeemer.methods.redeem(
             token,
             amount,
-            fromUnit(toMinAmount(amount), 18 - decimals), // VUSD to token
+            fromUnit(toMinAmount(amount), 18 - decimals, 0), // VUSD to token
             tokenReceiver || owner
           ),
           suffix: 'redeem'
