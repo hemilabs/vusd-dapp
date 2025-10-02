@@ -46,10 +46,10 @@ const createVusdLib = function (web3, options = {}) {
           minAmountOut, // eslint-disable-line no-unused-vars
           receiver // eslint-disable-line no-unused-vars
         ) {
-          const mint = () => mintMethod(token, amountIn)
-          const estimateGas = (...args) => mint().estimateGas(...args)
-          const send = (...args) => mint().send(...args)
-          return { estimateGas, send }
+          const mint = mintMethod(token, amountIn)
+          const estimateGas = (...args) => mint.estimateGas(...args)
+          const send = (...args) => mint.send(...args)
+          return { ...mint, estimateGas, send }
         }
         return patched
 
@@ -89,10 +89,10 @@ const createVusdLib = function (web3, options = {}) {
           minAmountOut,
           tokenReceiver
         ) {
-          const redeem = () => redeemMethod(token, vusdAmount, tokenReceiver)
-          const estimateGas = (...args) => redeem().estimateGas(...args)
-          const send = (...args) => redeem().send(...args)
-          return { estimateGas, send }
+          const redeem = redeemMethod(token, vusdAmount, tokenReceiver)
+          const estimateGas = (...args) => redeem.estimateGas(...args)
+          const send = (...args) => redeem.send(...args)
+          return { ...redeem, estimateGas, send }
         }
         return patched
       })
