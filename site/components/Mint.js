@@ -1,9 +1,9 @@
+import watchAsset from '@hemilabs/wallet-watch-asset'
 import { useWeb3React } from '@web3-react/core'
 import Big from 'big.js'
 import useTranslation from 'next-translate/useTranslation'
 import { useContext, useEffect, useState } from 'react'
 import { vusdToken } from 'vusd-lib'
-import watchAsset from 'wallet-watch-asset'
 
 import { useNumberFormat } from '../hooks/useNumberFormat'
 import { ONLY_NUMBERS_REGEX, fromUnit, toFixed, toUnit } from '../utils'
