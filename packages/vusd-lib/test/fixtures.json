@@ -218,6 +218,11 @@
     }
   ],
   "mint": [
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
+    },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
       "method": "eth_sendTransaction",
@@ -227,7 +232,6 @@
           "gas": "0x30d40",
           "value": "0xde0b6b3a7640000",
           "data": "0x7ff36ab500000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000080000000000000000000000000e4e58eedc2d7a6d967c2e374d5d14a3ce0bd1cdb00000000000000000000000000000000000000000000000000000000773594000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec7",
-          "gasPrice": "0x4a817c800",
           "to": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d"
         }
       ],
@@ -429,6 +433,11 @@
       ],
       "result": "0x78e5"
     },
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
+    },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
       "method": "eth_sendTransaction",
@@ -437,7 +446,6 @@
           "from": "0xe4e58eedc2d7a6d967c2e374d5d14a3ce0bd1cdb",
           "nonce": "0x19",
           "data": "0x095ea7b3000000000000000000000000fd22bcf90d63748288913336cd38bbc0e681e2980000000000000000000000000000000000000000000000000000000000989680",
-          "gasPrice": "0x4a817c800",
           "gas": "0xf1ca",
           "to": "0xdac17f958d2ee523a2206206994597c13d831ec7"
         }
@@ -527,6 +535,11 @@
         }
       ],
       "result": "0x5445a"
+    },
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
     },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
@@ -824,6 +837,11 @@
     }
   ],
   "redeem": [
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
+    },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
       "method": "eth_sendTransaction",
@@ -1024,6 +1042,11 @@
       ],
       "result": "0xc299"
     },
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
+    },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
       "method": "eth_sendTransaction",
@@ -1122,6 +1145,11 @@
         }
       ],
       "result": "0x5b20f"
+    },
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
     },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
@@ -1490,6 +1518,11 @@
       ],
       "result": "0xaf1a"
     },
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
+    },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
       "method": "eth_sendTransaction",
@@ -1588,6 +1621,11 @@
         }
       ],
       "result": "0x453b4"
+    },
+    {
+      "method": "eth_getBlockByNumber",
+      "params": ["latest", false],
+      "result": {}
     },
     { "method": "eth_gasPrice", "params": [], "result": "0x4a817c800" },
     {
