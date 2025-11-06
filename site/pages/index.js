@@ -4,7 +4,6 @@ import useSWR from 'swr'
 import AppSelector from '../components/AppSelector'
 import { VusdContextProvider } from '../components/context/Vusd'
 import Layout from '../components/Layout'
-import MessageModal from '../components/MessageModal'
 import Mint from '../components/Mint'
 import Redeem from '../components/Redeem'
 import TabSelector from '../components/TabSelector'
@@ -29,12 +28,12 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
   const { active } = useWeb3React()
   const { data: tokensData } = useSWR('/api/tokens', fetcher, {
     initialData: tokensInitialData,
-    refreshInterval: !active ? 15000 : undefined,
+    refreshInterval: !active ? 15000 : false,
     revalidateOnFocus: !active
   })
   const { data: vusdData } = useSWR('/api/vusd', fetcher, {
     initialData: vusdInitialData,
-    refreshInterval: !active ? 15000 : undefined,
+    refreshInterval: !active ? 15000 : false,
     revalidateOnFocus: !active
   })
   return (
@@ -51,7 +50,6 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
               <TabSelector tabs={tabs} />
             </div>
           </div>
-          <MessageModal />
           <Transactions />
         </Layout>
       </TransactionContextProvider>
