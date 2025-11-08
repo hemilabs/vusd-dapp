@@ -28,12 +28,12 @@ const HomePage = function ({ tokensInitialData, vusdInitialData }) {
   const { active } = useWeb3React()
   const { data: tokensData } = useSWR('/api/tokens', fetcher, {
     initialData: tokensInitialData,
-    refreshInterval: !active ? 15000 : false,
+    refreshInterval: !active ? 15000 : undefined,
     revalidateOnFocus: !active
   })
   const { data: vusdData } = useSWR('/api/vusd', fetcher, {
     initialData: vusdInitialData,
-    refreshInterval: !active ? 15000 : false,
+    refreshInterval: !active ? 15000 : undefined,
     revalidateOnFocus: !active
   })
   return (
