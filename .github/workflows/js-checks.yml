@@ -10,4 +10,4 @@ concurrency:
 
 jobs:
   run-checks:
-    uses: bloq/actions/.github/workflows/js-checks.yml@v1
+    uses: bloq/actions/.github/workflows/js-checks.yml@7a00bde576f8383a7afabf48dc6153bd7a7daab7 # v1.6.0
