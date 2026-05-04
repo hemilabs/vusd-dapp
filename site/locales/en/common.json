@@ -66,6 +66,8 @@
   "treasury": "Treasury",
   "treasury-excess": "Treasury Excess",
   "treasury-total": "Treasury Total",
+  "vetro-link": "Go to Vetro >",
+  "vetro-note": "Important: Vetro USD is an upgraded version of VUSD.",
   "view-on-etherscan": "View on Etherscan",
   "vusd-minted": "VUSD Minted"
 }
