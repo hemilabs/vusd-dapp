@@ -3,8 +3,8 @@ import useTranslation from 'next-translate/useTranslation'
 const Ribbon = function () {
   const { t } = useTranslation('common')
   return (
-    <div className="mb-4 h-6">
-      <div className="bg-vusd fixed z-10 py-2 w-full text-white">
+    <div className="mb-4 h-10">
+      <div className="bg-vusd fixed z-10 left-0 top-0 py-2 w-full text-white">
         <div className="flex gap-6 items-center justify-center w-full">
           {`⚠ ${t('vetro-note')}`}
           <a
