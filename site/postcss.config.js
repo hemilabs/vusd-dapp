@@ -1,6 +1,7 @@
 module.exports = {
   plugins: {
-    autoprefixer: {},
-    tailwindcss: {}
+    tailwindcss: {},
+    // eslint-disable-next-line sort-keys
+    autoprefixer: {}
   }
 }
