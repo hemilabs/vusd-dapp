@@ -1,12 +1,20 @@
 module.exports = {
+  plugins: [],
   purge: ['./components/**/*.{js,ts,jsx,tsx}', './pages/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    fontFamily: {
-      sans: ['Inter']
-    },
     extend: {
+      colors: {
+        vesper: '#4138AC',
+        vusd: '#596AEC'
+      },
       fontSize: {
         '1.5xl': '1.375rem'
+      },
+      maxWidth: {
+        customscreen: '1085px'
+      },
+      minHeight: {
+        content: '700px'
       },
       spacing: {
         5.5: '1.375rem',
@@ -18,19 +26,11 @@ module.exports = {
         88: '22rem',
         105: '26.25rem',
         160: '40rem'
-      },
-      maxWidth: {
-        customscreen: '1085px'
-      },
-      minHeight: {
-        content: '700px'
-      },
-      colors: {
-        vesper: '#4138AC',
-        vusd: '#596AEC'
       }
+    },
+    fontFamily: {
+      sans: ['Inter']
     }
   },
-  variants: {},
-  plugins: []
+  variants: {}
 }
