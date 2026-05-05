@@ -10,4 +10,21 @@ concurrency:
 
 jobs:
   run-checks:
-    uses: bloq/actions/.github/workflows/js-checks.yml@v1
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: hemilabs/actions/setup-node-env@88bcccfccf6ad24785e7c4ccb4a6b4e93734006c
+      - run: npm run --if-present format:check
+      - run: npm run --if-present lint
+      - run: npm run --if-present --include-workspace-root --workspaces deps:check
+      - run: npm run --if-present --include-workspace-root --workspaces build
+  run-tests:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: hemilabs/actions/setup-node-env@88bcccfccf6ad24785e7c4ccb4a6b4e93734006c
+      - run: npm run --if-present --include-workspace-root --workspaces test

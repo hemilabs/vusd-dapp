@@ -53,9 +53,7 @@
     ],
     "ignorePatterns": [
       "site/.next",
-      "site/out",
-      "dashboard/.next",
-      "dashboard/out"
+      "site/out"
     ],
     "overrides": [
       {
@@ -88,24 +86,12 @@
       },
       {
         "files": [
-          "site/**/*.js",
-          "dashboard/**/*.js"
+          "site/**/*.js"
         ],
         "extends": [
           "bloq/next",
           "prettier"
         ]
-      },
-      {
-        "files": [
-          "dashboard/**/*.js"
-        ],
-        "rules": {
-          "@next/next/no-html-link-for-pages": [
-            "warn",
-            "dashboard/pages"
-          ]
-        }
       },
       {
         "files": [
