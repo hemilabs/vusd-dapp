@@ -26,7 +26,8 @@ module.exports = {
         content: '700px'
       },
       colors: {
-        vesper: '#4138AC'
+        vesper: '#4138AC',
+        vusd: '#596AEC'
       }
     }
   },

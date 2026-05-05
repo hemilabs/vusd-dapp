@@ -66,6 +66,8 @@
   "treasury": "国库",
   "treasury-excess": "国库过剩",
   "treasury-total": "国库总额",
+  "vetro-link": "前往 Vetro >",
+  "vetro-note": "重要提示：Vetro USD 是 VUSD 的升级版本。",
   "view-on-etherscan": "在 Etherscan 上查看",
   "vusd-minted": "VUSD 铸造"
 }

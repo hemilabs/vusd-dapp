@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:24.14.1
 
 WORKDIR /usr/src/site
 
